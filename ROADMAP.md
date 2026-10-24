@@ -25,3 +25,4 @@ A trained dragon is sent from the jetty and comes back the next real day with 3 
 ## Open items
 - Real hen names: given, to be added in Update 1.
 - Refunds or undo for accidental purchases: backlog.
+- Hide and seek flags: tap area is too small, took many taps around the base of the flag to register. Fix in Update 2 (bigger hit area, ideally the whole flag and cloth). Check other small tap targets on the Village Green at the same time.
