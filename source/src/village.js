@@ -168,7 +168,7 @@ function runAct(a){
   if(a.startsWith('vill:')){const v=VILLAGERS.find(x=>x.id===a.slice(5));if(v)talkVillager(v);return}
   if(a.startsWith('dig:')){digMound(+a.slice(4));return}
   if(a==='millie'){const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
-    if(mi.rescued){vsay(pick(["Millie purrs and rubs against your leg.","Millie is washing her paw and pretending nothing happened.","Millie stares at you, then at the fish stall. She wants a fish.","Millie is eyeing the lantern. This will end badly."]),[{label:'Stroke her',fn:()=>Audio_.fx('pop')}].concat(S.day.trained&&!(S.day.bld&&S.day.bld.hide)?[{label:'Play hide and seek',fn:()=>travelTo('green')}]:[]));return}
+    if(mi.rescued){vsay(pick(["Millie purrs and rubs against your leg.","Millie is washing her paw and pretending nothing happened.","Millie stares at you, then at the fish stall. She wants a fish.","Millie is eyeing the lantern. This will end badly."]),[{label:'Stroke her',fn:()=>Audio_.fx('pop')}].concat(S.day.trained&&!(S.day.bld&&S.day.bld.hide)?[{label:'Play hide and seek',fn:()=>{travelTo('green').then(()=>{if(Z.id!=='green')return;const[x,y]=nearestWalkable(21.5,19.6);P.x=x;P.y=y;P.dir='u';Dg.x=x-1;Dg.y=y;Dg.trail=[];VS.pos={x:P.x,y:P.y,dir:P.dir};cam.init=false;setTimeout(()=>{if(Z.id==='green'&&!VS.traveling&&typeof hsBoard==='function')hsBoard()},1700)})}}]:[]));return}
     vsay(sp.text,[{label:'Help her',fn:()=>rescueMillie()},{label:'Not yet'}]);return}
   if(a==='school')return askDoor();
   if(a==='dash'){const r=dashLockedReason();if(r)vsay('The Dragon Dash gate. '+r);else vsay('Dragon Dash: ten quick ones you already know. Ready to race?',[{label:"Let's race",fn:()=>showDashIntro()},{label:'Not now'}]);return}
@@ -723,6 +723,7 @@ function frame(now){
   for(const it of list){
     if(it.fn){it.fn();continue}
     const o=it.o;
+    if(o.bob){c.save();c.translate(0,-Math.abs(Math.sin(G.t*3.2))*9);c.drawImage(o.spr,o.x-o.ax,o.y-o.ay,o.w,o.h);c.restore();continue}
     if(o.ship){c.save();c.translate(0,Math.sin(G.t*1.2)*1.6);c.drawImage(o.spr,o.x-o.ax,o.y-o.ay,o.w,o.h);c.restore();continue}
     c.drawImage(o.spr,o.x-o.ax,o.y-o.ay,o.w,o.h);
   }

@@ -8,7 +8,7 @@ const GREEN_PLOTS={
  bath:{x:27.5,y:19.4,sc:1,k:'build',tiles:[[26,18],[27,18],[28,18]],spr:'bath',ax:48,ay:76},
  coop:{x:35.5,y:19.2,sc:1,k:'build',tiles:[[34,17],[35,17],[36,17],[34,18],[35,18],[36,18]],spr:'coop',ax:55,ay:92}};
 const GREEN_SPOTS={bench:[19.4,15.7],birdhouse:[25.2,12.6],flowercart:[23.6,15.7]};
-const GREEN=Object.assign({id:'green',name:'Village Green',blurb:'The green is where the island keeps its workshops and shops.',welcome:'Welcome to the Village Green! New buildings you buy at the market are built on the plots here.',days:0,secure:0},
+const GREEN=Object.assign({id:'green',name:'Village Green',blurb:'The green is where the island keeps its workshops and shops. The orange paw-print board starts hide and seek with Millie.',welcome:'Welcome to the Village Green! New buildings you buy at the market are built on the plots here. Look for the orange paw-print board: that is where hide and seek with Millie starts.',days:0,secure:0},
  mkIsle({id:'green',W:44,H:28,cx:22,cy:14,rx:19.8,ry:11.4,seed:21,wob:.18,pal:PAL_HOME,
   rocks:[[4.5,5.5,2.4],[40,22,2.6],[39,5,2]],ponds:[[15.5,21.2,2.6,1.5]],
   segs:[[22,22.5,22,13.5,1],[22,13.5,9,13.5,.8],[22,13.5,36,13.5,.8],[9.5,13.5,9.5,10.8,.7],[17,13.5,17,10.8,.7],[25.5,13.5,25.5,10.8,.7],[33.5,13.5,33.5,10.8,.7],[9.5,13.5,9.5,18.8,.7],[27.5,13.5,27.5,19.2,.7],[35.5,13.5,35.5,18.6,.7]],plaza:[22,13.5,3,2]}),
@@ -19,7 +19,7 @@ const GREEN=Object.assign({id:'green',name:'Village Green',blurb:'The green is w
       if(built(id)){addObj(SPR[p.spr],p.x,p.y,p.ax,p.ay,{sc:p.sc,smoke:(id==='bakery'||id==='workshop')?[id==='bakery'?72:92,6]:null});block(p.tiles,null,id)}else plotOf(id)});
     if(built('coop')){HEN_SPOTS.forEach(([x,y],v)=>{addObj(henSprite(v),x,y,13,24,{});block([[Math.floor(x),Math.floor(y-.3)]],`${HEN_NAMES[v]} the hen clucks at you.`)})}
     Object.keys(GREEN_DECOR).forEach(id=>{const p=GREEN_DECOR[id];if(own(id)){addObj(SPR[id],p.x,p.y,p.ax,p.ay,{sc:p.sc});block([[Math.floor(p.x),Math.floor(p.y-.3)]],p.note)}else plotOf(id)});
-    addObj(SPR.sign,20.6,18.6,30,64,{});block([[20,18]],null,'hsboard');
+    addObj(SPR.hsboard,20.6,18.6,38,82,{});block([[20,18]],null,'hsboard');if(!dayB().hide)addObj(SPR.hsq,20.6,18.62,15,100,{bob:1});
     const hs=S.day.hs;if(hs&&!hs.found)hs.flags.forEach((f,i)=>{addObj(SPR.hsflag[f.n],f.x,f.y,20,78,{});block([[Math.floor(f.x),Math.floor(f.y-.3)]],null,'hs:'+i)});
     const cr=S.inv.crafted||[];
     if(cr.includes('bench')){addObj(SPR.bench,GREEN_SPOTS.bench[0],GREEN_SPOTS.bench[1],25,26,{});block([[Math.floor(GREEN_SPOTS.bench[0]),Math.floor(GREEN_SPOTS.bench[1]-.3)]],"A neat bench from the workshop. It is a good spot to sit and think.")}
@@ -156,6 +156,12 @@ function henSprite(v){const b=own('henbows')?1:0,h=own('henhats')?1:0,k='hen'+v+
 function millieSprite(pose,prop){const col=own('milliecollar')?1:0,hat=own('milliehat')?1:0,k='m'+pose+prop+col+hat;
   return SPCACHE[k]||(SPCACHE[k]=mk(64,66,c=>drawCat(c,pose,prop,Object.assign({},MILLIE_COAT,{collar:col,hat}))))}
 function makeSprites5(){
+  SPR.hsboard=mk(76,88,(c)=>{shadowBlob(c,38,82,20,6,.3);c.fillStyle='#5a3920';c.fillRect(34,40,8,42);
+    c.fillStyle=lg(c,6,8,70,48,['#f0a24a','#d9782a']);c.beginPath();c.moveTo(8,12);c.lineTo(68,12);c.lineTo(68,46);c.lineTo(8,46);c.closePath();c.fill();
+    c.strokeStyle='#5a3920';c.lineWidth=3;c.strokeRect(8,12,60,34);c.strokeStyle='#fff3d6';c.lineWidth=2;c.strokeRect(12,16,52,26);
+    c.fillStyle='#3a2416';c.beginPath();c.ellipse(38,34,8,6.5,0,0,6.3);c.fill();[[27,24,3],[34,20,3.2],[42,20,3.2],[49,24,3]].forEach(([x,y,r])=>{c.beginPath();c.ellipse(x,y,r,r*1.15,0,0,6.3);c.fill()})});
+  SPR.hsq=mk(30,34,(c)=>{c.fillStyle='#fff3d6';c.strokeStyle='#5a3920';c.lineWidth=2.5;c.beginPath();c.arc(15,15,12,0,6.3);c.fill();c.stroke();
+    c.fillStyle='#d9782a';c.font='bold 20px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('?',15,16)});
   SPR.pumpkinpatch=mk(92,58,c=>{shadowBlob(c,46,48,40,8,.34);[[22,34,13,'#ee7a1c'],[48,40,15,'#f08a24'],[70,34,12,'#e86a14'],[36,26,9,'#f39a3a']].forEach(([x,y,r,col])=>{c.fillStyle=col;c.beginPath();c.ellipse(x,y,r,r*.8,0,0,6.3);c.fill();c.strokeStyle='rgba(130,50,0,.45)';c.lineWidth=1.2;[-.4,0,.4].forEach(d=>{c.beginPath();c.ellipse(x+d*r,y,r*.45,r*.78,0,0,6.3);c.stroke()});c.fillStyle='#3f7a3a';c.fillRect(x-1.6,y-r*.8-4,3.2,5)});
     c.strokeStyle='#4f8a3a';c.lineWidth=2;c.beginPath();c.moveTo(30,22);c.quadraticCurveTo(46,12,64,22);c.stroke()});
   SPR.jacklantern=mk(44,56,c=>{shadowBlob(c,22,50,16,5,.34);c.fillStyle='#ee7a1c';c.beginPath();c.ellipse(22,32,17,15,0,0,6.3);c.fill();c.strokeStyle='rgba(130,50,0,.4)';c.lineWidth=1.2;[-.5,0,.5].forEach(d=>{c.beginPath();c.ellipse(22+d*15,32,7,14,0,0,6.3);c.stroke()});

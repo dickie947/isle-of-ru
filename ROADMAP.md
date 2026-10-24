@@ -4,7 +4,7 @@ Eight weekly updates from 23 October 2026. Each has one new mini-game for after 
 
 | Update | Friday | Mini-game | Also in this update |
 | --- | --- | --- | --- |
-| 1 | 30 Oct (built 24 Oct, awaiting go-live) | Hide and seek: Millie or a baby dragon hides each day, number clues. Halloween-themed | "Are you sure?" on every ember purchase; extra-practice cap 30 to 90; real hen names (Skullcrusher, Hookfang, Channel, Floppsie) and a fourth hen; check other screens for unreadable buttons; autumn and Halloween items |
+| 1 | 30 Oct (live 24 Oct; 1.1 hotfix (hide and seek board) built 24 Oct) | Hide and seek: Millie or a baby dragon hides each day, number clues. Halloween-themed | "Are you sure?" on every ember purchase; extra-practice cap 30 to 90; real hen names (Skullcrusher, Hookfang, Channel, Floppsie) and a fourth hen; check other screens for unreadable buttons; autumn and Halloween items |
 | 2 | 6 Nov | Treasure map digging: grid clues | Drop 2 maths begins; retention work (calm mixed check-up every couple of weeks, word problems and mini-games feed the number facts, weekly retention summary for parents, spaced repetition for each new question type) |
 | 3 | 13 Nov | Fishing at the jetty | Dragon fishing trips; more Drop 2 maths; first Drop 2 villagers and shop items |
 | 4 | 20 Nov | Garden and farm | Drop 2 island and number-door puzzle |
