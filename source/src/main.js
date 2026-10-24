@@ -246,6 +246,17 @@ function wearItem(id,slot){
   if(g[slot]===id) delete g[slot]; else g[slot]=id; saveState(); Audio_.fx('pop'); reopenSheet();
 }
 
+/* ---- "Are you sure?" before any ember is spent ---- */
+function askSure(what,cost,go){
+  const old=document.getElementById('cfm'); if(old) old.remove();
+  const d=document.createElement('div'); d.id='cfm'; d.className='cfm';
+  d.innerHTML=`<div class="cfm-in" role="alertdialog" aria-modal="true" aria-label="Are you sure?"><h3>Are you sure?</h3><p>Spend <b>${cost}</b> embers on <b>${esc(what)}</b>?</p><p class="cfm-sub">You have ${S.embers}. You would have ${Math.max(0,S.embers-cost)} left.</p><div class="cfm-row"><button class="btn" data-cfm="no">No, go back</button><button class="btn" data-cfm="yes">Yes, buy it</button></div></div>`;
+  document.body.appendChild(d);
+  d.querySelector('[data-cfm="no"]').onclick=()=>{ d.remove(); Audio_.fx('tap'); };
+  d.querySelector('[data-cfm="yes"]').onclick=()=>{ d.remove(); go(); };
+  d.addEventListener('click',e=>{ if(e.target===d) d.remove(); });
+  d.querySelector('[data-cfm="no"]').focus();
+}
 /* ---- the market stall (shop) ---- */
 let shopTab='treats';
 function openShop(){
@@ -261,7 +272,7 @@ function openShop(){
     else btn=S.inv.acc.includes(it.id)?`<button class="btn btn-sm" data-act="wear" data-id="${it.id}" data-slot="${it.slot}">${(S.dragon.gear||{})[it.slot]===it.id?'Take off':'Wear'}</button>`:buyBtn;
     return `<div class="card">${catalogIcon(shopTab,it)}<b>${it.name}</b><small>${it.note}${shopTab==='treats'?` You have ${S.inv[it.id]}.`:''}</small>${btn}</div>`;
   }).join('');
-  const hint=shopTab==='build'?`<p class="sub">New buildings appear on the island where you see a staked-out plot.${built('forge')?'':' The forge unlocks metal armour.'}${built('stables')?'':' The stables make room for more dragons.'}${built('clothes')?'':' The clothes shop sells outfits and gear for you.'} The newer buildings go on the Village Green: tap Map, then Village Green.</p>`:shopTab==='decor'?`<p class="sub">Look for the plots on the island to see where each one goes.</p>`:'';
+  const hint=shopTab==='build'?`<p class="sub">New buildings appear on the island where you see a staked-out plot.${built('forge')?'':' The forge unlocks metal armour.'}${built('stables')?'':' The stables make room for more dragons.'}${built('clothes')?'':' The clothes shop sells outfits and gear for you.'} The newer buildings go on the Village Green: tap Map, then Village Green.</p>`:shopTab==='decor'?`<p class="sub">Look for the plots to see where each one goes. Autumn things go on the Village Green. Millie and hen items show up on Millie and at the coop.</p>`:'';
   openSheet(`<div class="row spread"><h2>Market</h2><div class="row"><span class="pill gold num">${ic('ember',18)} ${S.embers}</span><button class="btn btn-ghost btn-sm" data-act="close">${ic('close',18)} Close</button></div></div>
     <div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button class="tab" role="tab" data-act="shoptab" data-k="${k}" aria-selected="${shopTab===k}">${l}</button>`).join('')}</div>${hint}<div class="shop">${cards}</div>`,{wide:true});
 }
@@ -404,6 +415,7 @@ document.addEventListener('click',e=>{
     case 'surprise': { const bs=shuffle(PAL).slice(0,2); draft.name=pick(NAMES); draft.body=bs[0].hex; draft.wing=bs[1].hex; draft.eyes=pick(EYES).hex; draft.horn=pick(HORNS)[0]; draft.pattern=pick(PATTERNS)[0]; draft.tail=pick(TAILS)[0]; $('#dname').value=draft.name; updateCreate(); Audio_.fx('pop'); break; }
     case 'create-go': { const n=(draft.name||'').trim(); if(!n){toast('Give your dragon a name first.');$('#dname').focus();break;}
       if(createExtra){ const cost=EGG_COSTS[S.extra.length]; if(!(S.embers>=cost)||S.extra.length>=EGG_COSTS.length){toast('Not enough embers yet.');break;}
+        if(!window.__eggSure){ askSure('a new dragon egg',cost,()=>{ window.__eggSure=true; $('[data-act="create-go"]').click(); window.__eggSure=false; }); break; }
         S.embers-=cost; S.extra.push(Object.assign({},draft,{name:n,hatched:false,gear:{},since:S.days.length})); createExtra=false; saveState(); Audio_.fx('good'); draft=null; goHome(); toast(`${n}'s egg is waiting in the stables.`); break; }
       S.dragon=Object.assign({},draft,{name:n,hatched:false,gear:{},since:S.days.length}); saveState(); Audio_.fx('good'); draft=null; goHome(); break; }
     case 'create-cancel': createExtra=false; draft=null; goHome(); break;
@@ -416,7 +428,7 @@ document.addEventListener('click',e=>{
     case 'hero-cancel': { const k=lastPlayed()||SLOTS[0]; heroDraft=null; if(heroMode==='edit'){ goHome(); } else { S=loadState(k); rollDay(); Village.reset(); renderWho(); } break; }
     case 'edithero': closeSheet(); heroMode='edit'; heroDraft=JSON.parse(JSON.stringify(S.hero)); renderHero(); break;
     case 'clothtab': clothTab=el.dataset.k; openClothes(); break;
-    case 'buyc': buyCloth(el.dataset.id); break;
+    case 'buyc': { const it=CATALOG.wardrobe.find(x=>x.id===el.dataset.id); if(it) askSure(it.name,it.cost,()=>buyCloth(it.id)); break; }
     case 'wearc': wearCloth(el.dataset.id,el.dataset.slot); break;
     case 'newegg': if(S.extra.length<EGG_COSTS.length&&S.embers>=EGG_COSTS[S.extra.length]){ createExtra=true; draft=null; closeSheet(); renderCreate(); } break;
     case 'swapdragon': swapDragon(+el.dataset.k); break;
@@ -427,13 +439,13 @@ document.addEventListener('click',e=>{
     case 'dragonbook': openBook(); break;
     case 'nest': openNest(); break;
     case 'drill': closeSheet(); Village.drill(); break;
-    case 'craft': craft(el.dataset.id); break;
-    case 'trainskill': trainSkill(el.dataset.id); break;
+    case 'craft': { const c=CRAFTS.find(x=>x.id===el.dataset.id); if(c) askSure('a '+c.name.toLowerCase(),c.cost,()=>craft(c.id)); break; }
+    case 'trainskill': { const ab=ABILITIES.find(x=>x.id===el.dataset.id); if(ab) askSure('training: '+ab.name,ab.cost,()=>trainSkill(ab.id)); break; }
     case 'splash-go': { const f=SPLASH_CB; SPLASH_CB=null; if(f) f(); break; }
     case 'claimc': claimCloth(el.dataset.id); break;
     case 'vmap': Village.openMap(); break;
     case 'travel': Village.travelTo(el.dataset.id); break;
-    case 'buyf': buyForge(el.dataset.id); break;
+    case 'buyf': { const it=CATALOG.forge.find(x=>x.id===el.dataset.id); if(it) askSure(it.name,it.cost,()=>buyForge(it.id)); break; }
     case 'sfx': S.settings.sfx=!S.settings.sfx; saveState(); Village.hud(); break;
     case 'music': S.settings.music=!S.settings.music; saveState(); Audio_.syncMusic(); Village.hud(); break;
     case 'train': startTraining(false); break;
@@ -450,7 +462,7 @@ document.addEventListener('click',e=>{
     case 'give': giveTreat(el.dataset.id); break;
     case 'shop': openShop(); break;
     case 'shoptab': shopTab=el.dataset.k; openShop(); break;
-    case 'buy': buy(el.dataset.id); break;
+    case 'buy': { const it=CATALOG[shopTab].find(x=>x.id===el.dataset.id); if(it) askSure(it.name,costOf(shopTab,it),()=>buy(it.id)); break; }
     case 'wear': wearItem(el.dataset.id,el.dataset.slot); break;
     case 'close': closeSheet(); break;
     case 'gate': { if(Date.now()-holdOpenedAt<900) break; openGate(); break; }

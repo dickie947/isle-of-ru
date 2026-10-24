@@ -7,6 +7,7 @@ async function open(opts={}){
   const errs=[];page.on('console',m=>{if(m.type()==='error'&&!/ERR_FAILED|Failed to load/.test(m.text()))errs.push('console: '+m.text())});page.on('pageerror',e=>errs.push('pageerror: '+e.message));
   await page.route('**/*',r=>{const u=r.request().url();if(u.startsWith('file:'))r.continue();else r.abort()});
   if(opts.init)await page.addInitScript(opts.init);
+  if(opts.autoConfirm)await page.addInitScript(()=>{new MutationObserver(()=>{const y=document.querySelector('[data-cfm="yes"]');if(y)setTimeout(()=>y.click(),30)}).observe(document,{childList:true,subtree:true})});
   await page.goto('file:///home/claude/emberisle/test.html',{waitUntil:'domcontentloaded'});
   try{await page.waitForSelector('[data-act="splash-go"]',{timeout:15000});await page.click('[data-act="splash-go"]');await sleep(200)}catch(e){}
   return {b,ctx,page,errs};

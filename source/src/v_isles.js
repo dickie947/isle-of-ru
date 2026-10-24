@@ -81,6 +81,8 @@ function drawCat(c,pose,prop,K){
   c.fillStyle=K.base;c.beginPath();c.arc(31,29,11,0,6.3);c.fill();
   [[-1],[1]].forEach(([m])=>{c.fillStyle=K.base;c.beginPath();c.moveTo(31+m*10.5,24);c.lineTo(31+m*10,10);c.lineTo(31+m*2,19);c.closePath();c.fill();c.fillStyle=K.ear;c.beginPath();c.moveTo(31+m*9,22);c.lineTo(31+m*8.6,13.5);c.lineTo(31+m*3.4,19.5);c.closePath();c.fill()});
   c.strokeStyle=K.dark;c.lineWidth=1.6;[[-3],[0],[3]].forEach(([x])=>{c.beginPath();c.moveTo(31+x,19);c.lineTo(31+x,23.5);c.stroke()});
+  if(K.collar){c.strokeStyle='#d9342b';c.lineWidth=2.6;c.lineCap='round';c.beginPath();c.ellipse(31,39.5,8.6,3,0,0.2,2.95);c.stroke();c.fillStyle='#ffd23a';c.beginPath();c.arc(31,43.4,2.3,0,6.3);c.fill()}
+  if(K.hat){c.fillStyle='#2b1d3a';c.beginPath();c.ellipse(31,17.5,13,3.2,0,0,6.3);c.fill();c.fillStyle='#3a2a52';c.beginPath();c.moveTo(22.5,17.5);c.lineTo(33,1.5);c.lineTo(39.5,17.5);c.closePath();c.fill();c.fillStyle='#e8751a';c.fillRect(23.5,13,15,2.6)}
   if(stuck){[[-4.6],[4.6]].forEach(([x])=>{c.fillStyle='#fff';c.beginPath();c.ellipse(31+x,29,3.6,4.4,0,0,6.3);c.fill();c.fillStyle=K.eye;c.beginPath();c.arc(31+x,29.6,2.4,0,6.3);c.fill();c.fillStyle='#1d1d22';c.beginPath();c.arc(31+x,29.6,1.2,0,6.3);c.fill()});
     c.fillStyle='#4a2a2a';c.beginPath();c.ellipse(31,36,1.8,2.4,0,0,6.3);c.fill();
     c.fillStyle='#6fc3ee';c.beginPath();c.moveTo(43,20);c.quadraticCurveTo(46,25,43,27);c.quadraticCurveTo(40,25,43,20);c.fill();

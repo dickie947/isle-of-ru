@@ -17,7 +17,7 @@ const PLOTS={ /* where each shop item goes: x,y (tile coords), scale */
  campfire:{x:22.5,y:17.9,sc:.8,k:'decor'},lantern:{x:16.6,y:11.95,sc:.6,k:'decor'},banner:{x:21.7,y:13.6,sc:.6,k:'decor'},
  pines:{x:12.6,y:20.6,sc:.8,k:'decor'},jetty:{x:31.5,y:21.6,sc:.8,k:'decor'},tower:{x:36,y:9.95,sc:1,k:'decor'},
  garden:{x:16.4,y:16.6,sc:.8,k:'decor'},fountain:{x:19.5,y:16.2,sc:.9,k:'decor'},windmill:{x:6.6,y:15.5,sc:.9,k:'decor'},statue:{x:29.6,y:14.6,sc:.9,k:'decor'}};
-Object.assign(PLOTS,GREEN_PLOTS);
+Object.assign(PLOTS,GREEN_PLOTS,GREEN_DECOR);
 const GROVE=[[10.8,19.6],[12.2,19.2],[13.6,19.9],[11.6,21],[13,21.4],[14.4,21]];
 const STABLE_SPOTS=[[10.4,12.3],[12.7,12.3]];
 const own=id=>S.inv.decor.includes(id), built=id=>S.inv.built.includes(id);
@@ -76,7 +76,7 @@ function buildObjects(){
   if(own('fountain')){addObj(SPR.fountain,19.5,16.2,45,76,{sc:.9});block([[19,15]],"A little fountain. The water sparkles.")}else plot('fountain');
   if(own('windmill')){addObj(SPR.windmill,6.6,15.5,50,150,{sc:.9});block([[6,15]],"The windmill creaks round and round.")}else plot('windmill');
   { const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
-    if(done()&&hatched()&&sp&&okGround(Math.floor(sp.x),Math.floor(sp.y))){addObj(mi.rescued?SPR.millie.free:SPR.millie[sp.prop],sp.x,sp.y,32,60,{});block([[Math.floor(sp.x),Math.floor(sp.y-.3)]],null,'millie')} }
+    if(done()&&hatched()&&sp&&okGround(Math.floor(sp.x),Math.floor(sp.y))){addObj(mi.rescued?millieSprite('free',null):millieSprite('stuck',sp.prop),sp.x,sp.y,32,60,{});block([[Math.floor(sp.x),Math.floor(sp.y-.3)]],null,'millie')} }
   placeVillagers();
   todaysMounds().forEach(([i,j],n)=>{if(!(S.day.dug||[]).includes(n)){addObj(SPR.mound,i+.5,j+.8,20,22,{});block([[i,j]],null,'dig:'+n)}});
   if(eventActive('xmas')&&okGround(16,14)){addObj(SPR.xtree,16.5,14.7,35,102,{sc:.95,glow:[35,56],glowCol:'255,220,120',glowR:30});block([[16,14]],"A Christmas tree, sparkling with lights.")}
@@ -158,6 +158,7 @@ const overlayOpen=()=>{const o=$('#overlay');return !!(o&&o.children.length)};
 /* what happens when he walks into a building or onto a special tile */
 function runAct(a){
   if(BUILD_ACTS[a])return BUILD_ACTS[a]();
+  if(a.startsWith('hs:'))return hsFlag(+a.slice(3));
   if(a==='nest')return openNest();
   if(a==='stall')return openShop();
   if(a==='forge')return openForge();
@@ -167,7 +168,7 @@ function runAct(a){
   if(a.startsWith('vill:')){const v=VILLAGERS.find(x=>x.id===a.slice(5));if(v)talkVillager(v);return}
   if(a.startsWith('dig:')){digMound(+a.slice(4));return}
   if(a==='millie'){const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
-    if(mi.rescued){vsay(pick(["Millie purrs and rubs against your leg.","Millie is washing her paw and pretending nothing happened.","Millie stares at you, then at the fish stall. She wants a fish.","Millie is eyeing the lantern. This will end badly."]),[{label:'Stroke her',fn:()=>Audio_.fx('pop')}]);return}
+    if(mi.rescued){vsay(pick(["Millie purrs and rubs against your leg.","Millie is washing her paw and pretending nothing happened.","Millie stares at you, then at the fish stall. She wants a fish.","Millie is eyeing the lantern. This will end badly."]),[{label:'Stroke her',fn:()=>Audio_.fx('pop')}].concat(S.day.trained&&!(S.day.bld&&S.day.bld.hide)?[{label:'Play hide and seek',fn:()=>travelTo('green')}]:[]));return}
     vsay(sp.text,[{label:'Help her',fn:()=>rescueMillie()},{label:'Not yet'}]);return}
   if(a==='school')return askDoor();
   if(a==='dash'){const r=dashLockedReason();if(r)vsay('The Dragon Dash gate. '+r);else vsay('Dragon Dash: ten quick ones you already know. Ready to race?',[{label:"Let's race",fn:()=>showDashIntro()},{label:'Not now'}]);return}
@@ -472,7 +473,7 @@ function preload(){
   buildWalk();
   VS.painting=(async()=>{
     BASE=await paintGround(p=>{VS.loadP=p;const b=$('#vbari');if(b)b.style.width=Math.round(p*100)+'%'});
-    makeSprites();makeSprites2();makeSprites3();makeSprites4();BASES.home=BASE;WS.home=WATERSPOTS.slice();scatter();VS.ready=true;
+    makeSprites();makeSprites2();makeSprites3();makeSprites4();makeSprites5();BASES.home=BASE;WS.home=WATERSPOTS.slice();scatter();VS.ready=true;
   })();
   return VS.painting;
 }

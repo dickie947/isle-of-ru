@@ -1,6 +1,6 @@
 const {open,ready,create,sleep}=require('./th.js');
 (async()=>{
-  const {b,page,errs}=await open();
+  const {b,page,errs}=await open({autoConfirm:true});
   await page.waitForFunction(()=>window.EmberIsle);
   await create(page);
   const dl=()=>page.evaluate(()=>{const d=document.getElementById('vdlg');return d&&!d.hidden?d.innerText.replace(/\n/g,' | '):null});
@@ -15,7 +15,7 @@ const {open,ready,create,sleep}=require('./th.js');
   for(const id of ['foodstore','coop','bath','library','bakery','workshop','arena']){
     await page.evaluate(i=>{EmberIsle.act('shop')},id);
     await page.evaluate(()=>EmberIsle.act('shoptab',{k:'build'}));
-    await page.evaluate(i=>EmberIsle.act('buy',{id:i}),id);
+    await page.evaluate(i=>EmberIsle.act('buy',{id:i}),id);await sleep(250);
     await page.evaluate(()=>EmberIsle.act('close'));
   }
   console.log('built',await page.evaluate(()=>JSON.stringify(EmberIsle.state().inv.built)));

@@ -1,6 +1,6 @@
 const {open,ready,create,trainAll,sleep}=require('./th.js');
 (async()=>{
- const {b,page,errs}=await open();
+ const {b,page,errs}=await open({autoConfirm:true});
  const shot=n=>page.screenshot({path:process.env.S+'/pshots/'+n+'.png'});
  const st=()=>page.evaluate(()=>{const S=EmberIsle.state();return{emb:S.embers,built:S.inv.built,extra:S.extra.map(e=>[e.name,e.hatched]),gear:S.dragon.gear,owned:S.inv.wear||S.inv.owned}});
  await create(page);

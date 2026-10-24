@@ -14,10 +14,13 @@ const GREEN=Object.assign({id:'green',name:'Village Green',blurb:'The green is w
   segs:[[22,22.5,22,13.5,1],[22,13.5,9,13.5,.8],[22,13.5,36,13.5,.8],[9.5,13.5,9.5,10.8,.7],[17,13.5,17,10.8,.7],[25.5,13.5,25.5,10.8,.7],[33.5,13.5,33.5,10.8,.7],[9.5,13.5,9.5,18.8,.7],[27.5,13.5,27.5,19.2,.7],[35.5,13.5,35.5,18.6,.7]],plaza:[22,13.5,3,2]}),
  {spawn:[22,21],clear:[[6,6,13,12],[13.5,6,20.5,12],[21,6,30,12],[30.5,6,37.5,12],[5.5,15.5,13,21],[24,16,31,21.5],[32.5,14.5,39,21],[18,12,27,17]],stones:[],
   build(){
-    const plotOf=(id)=>{const p=GREEN_PLOTS[id],nm=(CATALOG.build.find(x=>x.id===id)||{}).name||id;addObj(SPR.plot,p.x,p.y,50,64,{sc:p.sc});block([[Math.floor(p.x),Math.floor(p.y-.3)]],null,'plot:'+id)};
+    const plotOf=(id)=>{const p=PLOTS[id]||GREEN_PLOTS[id]||GREEN_DECOR[id];addObj(SPR.plot,p.x,p.y,50,64,{sc:p.sc});block([[Math.floor(p.x),Math.floor(p.y-.3)]],null,'plot:'+id)};
     Object.keys(GREEN_PLOTS).forEach(id=>{const p=GREEN_PLOTS[id];
       if(built(id)){addObj(SPR[p.spr],p.x,p.y,p.ax,p.ay,{sc:p.sc,smoke:(id==='bakery'||id==='workshop')?[id==='bakery'?72:92,6]:null});block(p.tiles,null,id)}else plotOf(id)});
-    if(built('coop')){[[33.6,20.6,0],[37.4,20.9,1],[34.8,21.7,2]].forEach(([x,y,v])=>addObj(SPR.hen[v],x,y,13,24,{}))}
+    if(built('coop')){HEN_SPOTS.forEach(([x,y],v)=>{addObj(henSprite(v),x,y,13,24,{});block([[Math.floor(x),Math.floor(y-.3)]],`${HEN_NAMES[v]} the hen clucks at you.`)})}
+    Object.keys(GREEN_DECOR).forEach(id=>{const p=GREEN_DECOR[id];if(own(id)){addObj(SPR[id],p.x,p.y,p.ax,p.ay,{sc:p.sc});block([[Math.floor(p.x),Math.floor(p.y-.3)]],p.note)}else plotOf(id)});
+    addObj(SPR.sign,20.6,18.6,30,64,{});block([[20,18]],null,'hsboard');
+    const hs=S.day.hs;if(hs&&!hs.found)hs.flags.forEach((f,i)=>{addObj(SPR.hsflag[f.n],f.x,f.y,20,78,{});block([[Math.floor(f.x),Math.floor(f.y-.3)]],null,'hs:'+i)});
     const cr=S.inv.crafted||[];
     if(cr.includes('bench')){addObj(SPR.bench,GREEN_SPOTS.bench[0],GREEN_SPOTS.bench[1],25,26,{});block([[Math.floor(GREEN_SPOTS.bench[0]),Math.floor(GREEN_SPOTS.bench[1]-.3)]],"A neat bench from the workshop. It is a good spot to sit and think.")}
     if(cr.includes('birdhouse')){addObj(SPR.birdhouse,GREEN_SPOTS.birdhouse[0],GREEN_SPOTS.birdhouse[1],18,64,{});block([[Math.floor(GREEN_SPOTS.birdhouse[0]),Math.floor(GREEN_SPOTS.birdhouse[1]-.3)]],"A birdhouse. Something small is chirping inside.")}
@@ -116,8 +119,8 @@ const BUILD_ACTS={
     done:()=>{dayB().bakery=n+1;reward(2,'bun');vsay(`A warm honey bun comes out of the oven. (+2 embers, +1 bun.) ${D} would love it. Find it in the nest under Treats.`)}});
    if(!ok)vtoast('Nothing to bake right now.',2000)}},{label:'Not now'}])},
  coop(){const n=dayB().coop||0;
-  if(n>=2){vsay(`${HEN_NAMES.join(', ')} have no more eggs today. They are very proud of themselves.`);return}
-  vsay(`${HEN_NAMES[0]}, ${HEN_NAMES[1]} and ${HEN_NAMES[2]} are clucking. ${n?'There are more eggs in the straw.':'Are there eggs this morning?'}`,[{label:'Check the nests',fn:()=>{
+  if(n>=2){vsay(`${HEN_NAMES.slice(0,-1).join(', ')} and ${HEN_NAMES[HEN_NAMES.length-1]} have no more eggs today. They are very proud of themselves.`);return}
+  vsay(`${HEN_NAMES.slice(0,-1).join(', ')} and ${HEN_NAMES[HEN_NAMES.length-1]} are clucking. ${n?'There are more eggs in the straw.':'Are there eggs this morning?'}`,[{label:'Check the nests',fn:()=>{
    const ok=shardQuestion(0,0,{q:wordProb(pick(poolFor(['group','double','add10','add20']))),title:`Egg count ${n+1} of 2`,bonus:0,intro:'Count the eggs. Pick the answer.',ok:'All counted!',fail:'You collected them anyway.',okLabel:'Collect',skipLabel:'Later',
     done:()=>{dayB().coop=n+1;reward(2,'egg');vsay(`You gather a warm egg. (+2 embers, +1 egg.) ${pick(HEN_NAMES)} clucks as if she did it all herself.`)}});
    if(!ok)vtoast('No eggs right now.',2000)}},{label:'Not now'}])},
@@ -133,3 +136,72 @@ const BUILD_ACTS={
   vsay('The library smells of old paper. Today there is a new page on the shelf. Read it?',[{label:'Read',fn:()=>chain('Story puzzle',2,poolFor(['twostep','add20','sub20','missing','bonds']),()=>{
     dayB().library=1;const page=LORE[L.read%LORE.length];L.read++;reward(3);vsay(`Page ${L.read}: ${page} (+3 embers.)`)})},{label:'Not now'}])}
 };
+
+/* ===== Update 1: autumn and Halloween things, four hens, hide and seek ===== */
+const GREEN_DECOR={pumpkinpatch:{x:13.6,y:15.9,sc:1,k:'decor',ax:46,ay:44,note:'Round orange pumpkins. One of them is grinning.'},
+ jacklantern:{x:19.6,y:11.9,sc:1,k:'decor',ax:22,ay:48,note:'A glowing jack-o-lantern. It flickers in the dark.'},
+ batbanner:{x:30.4,y:12.2,sc:1,k:'decor',ax:40,ay:72,note:'A banner of little paper bats. They flap in the wind.'},
+ cauldron:{x:29.6,y:16.6,sc:1,k:'decor',ax:30,ay:46,note:'A bubbling cauldron. It smells of honey and slightly of socks.'},
+ spooktree:{x:38.6,y:13.4,sc:1,k:'decor',ax:46,ay:118,note:'A twisty old tree with a sleepy owl. Hoo goes there?'}};
+HEN_NAMES.length=0;HEN_NAMES.push('Skullcrusher','Hookfang','Channel','Floppsie');
+const HEN_COLS=['#fff','#b8743a','#3a3230','#9aa0aa'];
+const HEN_SPOTS=[[33.4,20.5],[37.3,20.8],[34.9,21.7],[31.9,21.3]];
+const SPCACHE={};
+function drawHen(c,col,v,bow,hat){shadowBlob(c,13,23,8,3,.3);c.fillStyle=col;c.beginPath();c.ellipse(12,15,8,6.4,0,0,6.3);c.fill();c.beginPath();c.moveTo(5,13);c.lineTo(1,8);c.lineTo(7,12);c.closePath();c.fill();c.beginPath();c.arc(18,9,4.4,0,6.3);c.fill();
+  c.fillStyle='#d9342b';c.beginPath();c.arc(17,4.6,1.8,0,6.3);c.arc(19.6,5,1.6,0,6.3);c.fill();c.fillStyle='#f0a030';c.beginPath();c.moveTo(22,9);c.lineTo(26,10.4);c.lineTo(22,11.6);c.closePath();c.fill();c.fillStyle='#111';c.beginPath();c.arc(19.4,8.4,.9,0,6.3);c.fill();
+  c.strokeStyle='#f0a030';c.lineWidth=1.2;c.beginPath();c.moveTo(11,20);c.lineTo(11,24);c.moveTo(15,20);c.lineTo(15,24);c.stroke();if(v===0){c.strokeStyle='rgba(0,0,0,.12)';c.beginPath();c.ellipse(12,15,8,6.4,0,0,6.3);c.stroke()}
+  if(bow){c.fillStyle='#ff6fa5';c.beginPath();c.moveTo(14.4,12);c.lineTo(10.8,9.8);c.lineTo(10.8,14.2);c.closePath();c.moveTo(14.4,12);c.lineTo(18,9.8);c.lineTo(18,14.2);c.closePath();c.fill();c.fillStyle='#d93b7a';c.beginPath();c.arc(14.4,12,1.5,0,6.3);c.fill()}
+  if(hat){c.fillStyle='#ee7a1c';c.beginPath();c.ellipse(17.6,3.6,4.6,3.2,0,0,6.3);c.fill();c.strokeStyle='#b9560c';c.lineWidth=.8;c.beginPath();c.moveTo(17.6,.6);c.lineTo(17.6,6.4);c.stroke();c.fillStyle='#3f7a3a';c.fillRect(17,-.8,1.6,2)}}
+function henSprite(v){const b=own('henbows')?1:0,h=own('henhats')?1:0,k='hen'+v+b+h;return SPCACHE[k]||(SPCACHE[k]=mk(26,26,c=>drawHen(c,HEN_COLS[v],v,b,h)))}
+function millieSprite(pose,prop){const col=own('milliecollar')?1:0,hat=own('milliehat')?1:0,k='m'+pose+prop+col+hat;
+  return SPCACHE[k]||(SPCACHE[k]=mk(64,66,c=>drawCat(c,pose,prop,Object.assign({},MILLIE_COAT,{collar:col,hat}))))}
+function makeSprites5(){
+  SPR.pumpkinpatch=mk(92,58,c=>{shadowBlob(c,46,48,40,8,.34);[[22,34,13,'#ee7a1c'],[48,40,15,'#f08a24'],[70,34,12,'#e86a14'],[36,26,9,'#f39a3a']].forEach(([x,y,r,col])=>{c.fillStyle=col;c.beginPath();c.ellipse(x,y,r,r*.8,0,0,6.3);c.fill();c.strokeStyle='rgba(130,50,0,.45)';c.lineWidth=1.2;[-.4,0,.4].forEach(d=>{c.beginPath();c.ellipse(x+d*r,y,r*.45,r*.78,0,0,6.3);c.stroke()});c.fillStyle='#3f7a3a';c.fillRect(x-1.6,y-r*.8-4,3.2,5)});
+    c.strokeStyle='#4f8a3a';c.lineWidth=2;c.beginPath();c.moveTo(30,22);c.quadraticCurveTo(46,12,64,22);c.stroke()});
+  SPR.jacklantern=mk(44,56,c=>{shadowBlob(c,22,50,16,5,.34);c.fillStyle='#ee7a1c';c.beginPath();c.ellipse(22,32,17,15,0,0,6.3);c.fill();c.strokeStyle='rgba(130,50,0,.4)';c.lineWidth=1.2;[-.5,0,.5].forEach(d=>{c.beginPath();c.ellipse(22+d*15,32,7,14,0,0,6.3);c.stroke()});
+    c.fillStyle='#ffe27a';c.beginPath();c.moveTo(12,26);c.lineTo(18,26);c.lineTo(15,32);c.closePath();c.moveTo(26,26);c.lineTo(32,26);c.lineTo(29,32);c.closePath();c.fill();c.beginPath();c.moveTo(12,37);c.quadraticCurveTo(22,46,32,37);c.lineTo(29,36);c.lineTo(26,39);c.lineTo(22,36);c.lineTo(18,39);c.lineTo(15,36);c.closePath();c.fill();c.fillStyle='#3f7a3a';c.fillRect(20,12,4,6)});
+  SPR.batbanner=mk(80,80,c=>{shadowBlob(c,40,76,20,4,.3);c.fillStyle='#6b4524';c.fillRect(8,6,4,70);c.fillRect(68,6,4,70);c.strokeStyle='#4a3020';c.lineWidth=2;c.beginPath();c.moveTo(10,12);c.quadraticCurveTo(40,30,70,12);c.stroke();
+    [[22,22],[40,28],[58,22]].forEach(([x,y])=>{c.fillStyle='#2a2438';c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x-10,y-8,x-14,y+2);c.quadraticCurveTo(x-8,y+1,x-5,y+7);c.quadraticCurveTo(x-2,y+3,x,y+7);c.quadraticCurveTo(x+2,y+3,x+5,y+7);c.quadraticCurveTo(x+8,y+1,x+14,y+2);c.quadraticCurveTo(x+10,y-8,x,y);c.fill();c.fillStyle='#ffd23a';c.fillRect(x-4,y,2,2);c.fillRect(x+2,y,2,2)})});
+  SPR.cauldron=mk(60,56,c=>{shadowBlob(c,30,50,22,5,.34);c.fillStyle='#2a2a30';c.beginPath();c.ellipse(30,34,22,17,0,0,6.3);c.fill();c.fillStyle='#3c3c46';c.beginPath();c.ellipse(30,24,22,7,0,0,6.3);c.fill();c.fillStyle='#7be07a';c.beginPath();c.ellipse(30,24,18,5,0,0,6.3);c.fill();
+    c.fillStyle='rgba(180,255,170,.8)';[[22,18,3],[32,14,4],[40,19,2.4]].forEach(([x,y,r])=>{c.beginPath();c.arc(x,y,r,0,6.3);c.fill()});c.fillStyle='#4a3020';c.fillRect(14,46,5,6);c.fillRect(40,46,5,6)});
+  SPR.spooktree=mk(92,126,c=>{shadowBlob(c,46,116,30,7,.4);c.fillStyle='#4a3626';c.beginPath();c.moveTo(36,116);c.quadraticCurveTo(40,80,34,56);c.lineTo(58,56);c.quadraticCurveTo(52,80,58,116);c.closePath();c.fill();
+    c.strokeStyle='#4a3626';c.lineCap='round';c.lineWidth=7;[[40,62,14,34],[54,60,78,32],[46,50,46,22]].forEach(([x,y,x2,y2])=>{c.beginPath();c.moveTo(x,y);c.quadraticCurveTo((x+x2)/2+6,(y+y2)/2,x2,y2);c.stroke()});
+    c.fillStyle='#3a2c1f';c.beginPath();c.arc(46,26,24,0,6.3);c.arc(24,40,16,0,6.3);c.arc(68,40,16,0,6.3);c.fill();
+    c.fillStyle='#ffd23a';c.beginPath();c.ellipse(42,70,4,5,0,0,6.3);c.ellipse(52,70,4,5,0,0,6.3);c.fill();c.fillStyle='#111';c.beginPath();c.arc(42,70,1.6,0,6.3);c.arc(52,70,1.6,0,6.3);c.fill();c.fillStyle='#111';c.beginPath();c.ellipse(47,82,4,6,0,0,6.3);c.fill();
+    c.fillStyle='#b8a384';c.beginPath();c.ellipse(70,50,6,8,0,0,6.3);c.fill();c.fillStyle='#ffd23a';c.beginPath();c.arc(68,48,2,0,6.3);c.arc(73,48,2,0,6.3);c.fill();c.fillStyle='#111';c.beginPath();c.arc(68,48,.9,0,6.3);c.arc(73,48,.9,0,6.3);c.fill()});
+  SPR.milliecollar=mk(48,40,c=>{c.strokeStyle='#d9342b';c.lineWidth=5;c.lineCap='round';c.beginPath();c.ellipse(24,16,16,8,0,0.15,3);c.stroke();c.fillStyle='#ffd23a';c.strokeStyle='#a87a10';c.lineWidth=1.4;c.beginPath();c.arc(24,27,5,0,6.3);c.fill();c.stroke();c.fillStyle='#a87a10';c.fillRect(23,26,2,5)});
+  SPR.milliehat=mk(48,48,c=>{c.fillStyle='#2b1d3a';c.beginPath();c.ellipse(24,36,20,5,0,0,6.3);c.fill();c.fillStyle='#3a2a52';c.beginPath();c.moveTo(12,36);c.lineTo(26,4);c.lineTo(36,36);c.closePath();c.fill();c.fillStyle='#e8751a';c.fillRect(13,29,22,4);c.fillStyle='#ffd23a';c.fillRect(21,28,6,6)});
+  SPR.henbows=mk(48,40,c=>{c.fillStyle='#ff6fa5';c.beginPath();c.moveTo(24,20);c.lineTo(6,8);c.lineTo(6,32);c.closePath();c.moveTo(24,20);c.lineTo(42,8);c.lineTo(42,32);c.closePath();c.fill();c.fillStyle='#d93b7a';c.beginPath();c.arc(24,20,5.5,0,6.3);c.fill()});
+  SPR.henhats=mk(44,44,c=>{c.fillStyle='#ee7a1c';c.beginPath();c.ellipse(22,26,17,13,0,0,6.3);c.fill();c.strokeStyle='#b9560c';c.lineWidth=1.4;c.beginPath();c.moveTo(22,13);c.lineTo(22,39);c.moveTo(14,15);c.quadraticCurveTo(10,26,14,37);c.moveTo(30,15);c.quadraticCurveTo(34,26,30,37);c.stroke();c.fillStyle='#3f7a3a';c.fillRect(20,6,4,8)});
+  SPR.hsflag=[];for(let n=0;n<=10;n++)SPR.hsflag[n]=mk(40,84,c=>{shadowBlob(c,20,78,10,3,.3);c.fillStyle='#6b4524';c.fillRect(8,6,4,72);c.fillStyle='#e8751a';c.beginPath();c.moveTo(12,8);c.lineTo(38,16);c.lineTo(12,34);c.closePath();c.fill();c.strokeStyle='#8a3a08';c.lineWidth=1.2;c.stroke();c.fillStyle='#fff';c.font='bold 15px sans-serif';c.textAlign='center';c.fillText(String(n),21,25)});
+}
+
+/* hide and seek: clue from the maths, numbered flags on the Green */
+const HS_SPOTS=[[12.5,14.6],[16.9,17.2],[19.2,21],[26.6,20.9],[31,15.5],[33.2,13.3]];
+function hsClue(){const k=new Set(feedKinds());const opts=[];
+  const a=RR(1,6),b=RR(1,10-a);opts.push({text:`${b} more than ${a}`,ans:a+b});
+  const p=RR(1,8);opts.push({text:`the partner of ${p} that makes 10`,ans:10-p});
+  if(k.has('sub20')||k.has('missing')){const x=RR(2,9);opts.push({text:`10 take away ${x}`,ans:10-x})}
+  if(k.has('double')){const d=RR(1,5);opts.push({text:`double ${d}`,ans:d*2})}
+  if(k.has('half')){const h=RR(1,5);opts.push({text:`half of ${h*2}`,ans:h})}
+  const o=pick(opts);return o}
+function hsToday(){return S.day.hs}
+function hsStart(){
+  const o=hsClue();const nums=[o.ans];while(nums.length<HS_SPOTS.length){const n=RR(1,10);if(!nums.includes(n))nums.push(n)}
+  const sh=shuffle(nums);S.day.hs={text:o.text,ans:o.ans,flags:HS_SPOTS.map((p,i)=>({n:sh[i],x:p[0],y:p[1]})),tries:0,found:false};saveState();buildObjects()}
+const HS_FINDS=["A sheet with two eyeholes wobbles out. It is Millie, dressed as a ghost! She says nothing, but she is very proud.","Behind the flag sits Millie, wearing a pumpkin on her head. She has no idea how it got there.","Millie leaps out in a cloud of leaves. She is wearing a tiny cape and looks extremely pleased with herself."];
+function hsClueSay(){const h=hsToday();vsay(`Millie is hiding behind the flag that is ${h.text}. Work out the number, then find that flag on the Village Green.`)}
+function hsBoard(){
+  if(!S.day.trained){vsay("This is the hide and seek board. Millie hides after today's practice is done. Come back then!");return}
+  if(dayB().hide){vsay("Millie has been found today. She is already planning a better hiding spot for tomorrow.");return}
+  if(!hsToday())hsStart();
+  hsClueSay()}
+function hsFlag(i){
+  const h=hsToday();if(!h||h.found)return;const f=h.flags[i];if(!f)return;
+  if(f.n===h.ans){h.found=true;dayB().hide=1;S.day.hs=null;
+    S.log.push({t:Date.now(),id:'word',ok:true,clean:h.tries===0,hints:0,att:h.tries,ms:0,tool:'none',kind:'word'});reward(4);buildObjects();hud();
+    vsay(`${pick(HS_FINDS)} (+4 embers.)`,[{label:'Good cat',fn:()=>setTimeout(()=>tellJoke(),200)}]);return}
+  h.tries++;saveState();Audio_.fx('soft');
+  if(h.tries>=3){vsay(`That is flag ${f.n}. Millie is not here. The clue is "${h.text}", which makes ${h.ans}. Look for flag ${h.ans}.`)}
+  else vsay(`That is flag ${f.n}. Millie is not behind this one. Read the clue again: ${h.text}.`,[{label:'Hear the clue',fn:()=>hsClueSay()},{label:'OK'}])}
+BUILD_ACTS.hsboard=hsBoard;

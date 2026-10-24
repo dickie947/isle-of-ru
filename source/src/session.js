@@ -62,7 +62,7 @@ function eqHTML(q,answer,has){
 function fbHTML(kind,html,icon){return `<div class="fb ${kind}" role="status" aria-live="polite">${icon?ic(icon,26):''}<div>${html}</div></div>`;}
 
 /* ---- start ---- */
-const EXTRA_CAP=30;   /* most embers extra practice can earn in a day: keeps it calm, not a grind */
+const EXTRA_CAP=90;   /* most embers extra practice can earn in a day: keeps it calm, not a grind */
 function extraLeft(){ return Math.max(0,EXTRA_CAP-(S.day.extra||0)); }
 function startTraining(bonus){
   rollDay(); Audio_.ensure();

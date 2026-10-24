@@ -171,7 +171,16 @@ const CATALOG={
     {id:'garden',name:'Flower garden',cost:90,note:'Bees love it.',spr:1},
     {id:'fountain',name:'Stone fountain',cost:140,note:'Splashy and sparkly.',spr:1},
     {id:'windmill',name:'Windmill',cost:200,note:'Its sails turn in the breeze.',spr:1},
-    {id:'statue',name:'Dragon statue',cost:280,note:'A hero carved in stone.',spr:1}
+    {id:'statue',name:'Dragon statue',cost:280,note:'A hero carved in stone.',spr:1},
+    {id:'pumpkinpatch',name:'Pumpkin patch',cost:35,note:'Autumn pumpkins. Goes on the Village Green.',spr:1},
+    {id:'batbanner',name:'Bat banner',cost:40,note:'Paper bats on a string. Goes on the Village Green.',spr:1},
+    {id:'jacklantern',name:'Jack-o-lantern',cost:45,note:'Glows when it gets dark. Goes on the Village Green.',spr:1},
+    {id:'cauldron',name:'Bubbling cauldron',cost:60,note:'Green and bubbly. Goes on the Village Green.',spr:1},
+    {id:'spooktree',name:'Spooky tree',cost:110,note:'Twisty, with a sleepy owl. Goes on the Village Green.',spr:1},
+    {id:'milliecollar',name:'Millie bell collar',cost:30,note:'A red collar with a tinkly bell for Millie.',spr:1},
+    {id:'milliehat',name:'Millie witch hat',cost:45,note:'A pointy hat for Millie. She will pretend she hates it.',spr:1},
+    {id:'henbows',name:'Hen bows',cost:35,note:'Pink bows for the hens at the coop.',spr:1},
+    {id:'henhats',name:'Hen pumpkin hats',cost:45,note:'Tiny pumpkin hats for the hens at the coop.',spr:1}
   ],
   acc:[
     {id:'scarf',name:'Cosy scarf',cost:45,note:'Red and warm.',slot:'neck'},
