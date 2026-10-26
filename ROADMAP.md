@@ -5,7 +5,7 @@ Eight weekly updates from 23 October 2026. Each has one new mini-game for after 
 | Update | Friday | Mini-game | Also in this update |
 | --- | --- | --- | --- |
 | 1 | 30 Oct (live 24 Oct; 1.1 hotfix (hide and seek board) built 24 Oct) | Hide and seek: Millie or a baby dragon hides each day, number clues. Halloween-themed | "Are you sure?" on every ember purchase; extra-practice cap 30 to 90; real hen names (Skullcrusher, Hookfang, Channel, Floppsie) and a fourth hen; check other screens for unreadable buttons; autumn and Halloween items |
-| 2 | 6 Nov | Treasure map digging: grid clues | Drop 2 maths begins; retention work (calm mixed check-up every couple of weeks, word problems and mini-games feed the number facts, weekly retention summary for parents, spaced repetition for each new question type) |
+| 2 | 6 Nov | Treasure map digging: grid clues | Drop 2 maths begins; music variation step 1 (the tune changes each time round); hide and seek flag tap area fix; retention work (calm mixed check-up every couple of weeks, word problems and mini-games feed the number facts, weekly retention summary for parents, spaced repetition for each new question type) |
 | 3 | 13 Nov | Fishing at the jetty | Dragon fishing trips; more Drop 2 maths; first Drop 2 villagers and shop items |
 | 4 | 20 Nov | Garden and farm | Drop 2 island and number-door puzzle |
 | 5 | 27 Nov | Dragon races | Drop 2 finished; eggs and new dragon species |
@@ -26,4 +26,4 @@ A trained dragon is sent from the jetty and comes back the next real day with 3 
 - Real hen names: given, to be added in Update 1.
 - Refunds or undo for accidental purchases: backlog.
 - Hide and seek flags: tap area is too small, took many taps around the base of the flag to register. Fix in Update 2 (bigger hit area, ideally the whole flag and cloth). Check other small tap targets on the Village Green at the same time.
-- Music: more varied, less repetitive. Scope for a weekly update: more tracks or longer non-looping pieces, different moods per place (home island, Village Green, other isles, practice screen), and a gentle shuffle so the same tune does not repeat back to back. Keep it calm and quiet during practice. Not yet scheduled; to be placed when planning the next update.
+- Music: the same tune loops (confirmed by Richard). The game has one built-in piece (D Dorian, A and B sections), so a shuffle alone would not help. Step 1, in Update 2: make the existing piece vary each time round (alternating section order, different keys, small melody variations, changing instruments, a rest bar now and then), so no two passes sound the same. Step 2, later (placed when planning, likely Updates 3 to 5): new tunes, with different moods for the home island, the Village Green, the other isles and the practice screen. Keep it calm and quiet during practice.
