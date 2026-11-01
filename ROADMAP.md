@@ -86,6 +86,7 @@ Gaps found: these need adding to the plan, because nothing in Drops 2 and 3 cove
 - A number-line "hop" tool for adding and subtracting in tens then ones. Introduce it in weeks 5 and 6 for ordinary sums so it is already familiar when the clock timeline uses the same tool.
 - Short, calm practice with days, months and ordering events (rung 1), lightly across weeks 5 and 6.
 - Kilometres and units for speed (rung 8), introduced after centimetres in week 8 and money and length in week 10.
+- Decision 1 Nov: keep the rungs in teaching order. Rung 4 (five-minute reading) could open earlier than rung 3 (about day 49 against day 60) but waits for rung 3.
 - The plan after week 12 (about practice day 84, mid-January if played daily) is empty. Time rungs 4 to 8 become Drop 4, alongside fluency review. Richard is happy for the roadmap to run to March and beyond as long as it helps. Drop 4 to be planned from real progress data once the children reach week 10.
 
 ## Time strand: reading and using time (requested 1 Nov; starts Update 6, 4 Dec, continues into January)
