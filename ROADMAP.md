@@ -5,7 +5,7 @@ Eight weekly updates from 23 October 2026. Each has one new mini-game for after 
 | Update | Friday | Mini-game | Also in this update |
 | --- | --- | --- | --- |
 | 1 | 30 Oct (live 24 Oct; 1.1 hotfix (hide and seek board) built 24 Oct) | Hide and seek: Millie or a baby dragon hides each day, number clues. Halloween-themed | "Are you sure?" on every ember purchase; extra-practice cap 30 to 90; real hen names (Skullcrusher, Hookfang, Channel, Floppsie) and a fourth hen; check other screens for unreadable buttons; autumn and Halloween items |
-| 2 | 6 Nov | Treasure map digging: grid clues | Daily play allowance (25 min) and pass-the-iPad screen; two-key family chest; hide and seek flag tap fix; music variation step 1; Drop 2 maths begins (first batch) with spaced repetition for each new question type |
+| 2 | 6 Nov | Treasure map digging: grid clues | Daily play allowance (25 min) and pass-the-iPad screen; two-key family chest; hide and seek flag tap fix; dad jokes rewrite (31 jokes); music variation step 1; Drop 2 maths begins (first batch) with spaced repetition for each new question type |
 | 3 | 13 Nov | Fishing at the jetty | Weekly shared build begins; gift swaps; dragon fishing trips; more Drop 2 maths; calm check-up mode and weekly parents' summary (or Update 4 if Update 3 is heavy); first Drop 2 villagers and shop items |
 | 4 | 20 Nov | Garden and farm | Drop 2 island and number-door puzzle |
 | 5 | 27 Nov | Dragon races | Drop 2 finished; eggs and new dragon species |
@@ -106,6 +106,15 @@ Design rules for the strand:
 - Roughly one rung every two weeks, so about 16 weeks from 4 Dec (to late March 2027). Spaced repetition for every new question type, as for the rest of the maths.
 - Question formats: read the clock and pick the time; set the hands by dragging; match analogue and digital; timeline word problems.
 - Dependencies on Drops 2 and 3 are mapped in the table in the maths plan section above, with the gaps found.
+
+## Dad jokes rewrite (Update 2, agreed 1 Nov)
+Many of the 27 jokes did not make sense to the children. Replace with these 31, the 6 that worked plus 25 new. The fire-ithmetic joke was dropped because the children do not know the word arithmetic. More jokes to be added every few updates. The seen-list resets once, which is harmless.
+Kept: six afraid of seven (seven ate nine); the sad maths book (too many problems); the dragon's ladder to school (high school); dragons and hide and seek (smoke signals); Millie on the computer (keeping an eye on the mouse).
+New, dragons and Vikings: why did the dragon eat a candle (a light snack); what music do dragons like (heavy metal); what time is it when a dragon sits on your fence (time to get a new fence); why are dragons bad at fishing (they keep cooking the bait); how do Vikings send secret messages (by Norse code); why do dragons never feel the cold (they carry their own central heating); why did the dragon get full marks in every test (it was on fire).
+New, maths and time: what did zero say to eight (nice belt); why did the student wear glasses in maths (it improves di-vision); what did the calculator say (you can count on me); why was the clock hungry (it went back four seconds); why did the clock get told off (it kept tocking); what do you call a hen who counts her eggs (a mathema-chicken).
+New, bakery, farm and bees: why did the baker work so hard (he kneaded the dough); a bee that cannot make up its mind (a maybe); why did the hen join the band (she had the drumsticks); why do eggs not tell jokes (they would crack each other up).
+New, fish and snow: a fish with no eyes (a fsh); why are fish clever (they live in schools); a fish in a bow tie (sofishticated); a snowman in summer (a puddle); what do snowmen eat for breakfast (snowflakes).
+New, Millie: breakfast (mice Krispies); favourite colour (purr-ple); a pile of kittens (a meow-ntain); favourite subject (hiss-tory).
 
 ## Open items
 - Real hen names: given, to be added in Update 1.
