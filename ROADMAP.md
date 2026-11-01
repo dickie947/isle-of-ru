@@ -9,7 +9,7 @@ Eight weekly updates from 23 October 2026. Each has one new mini-game for after 
 | 3 | 13 Nov | Fishing at the jetty | Weekly shared build begins; gift swaps; dragon fishing trips; more Drop 2 maths; calm check-up mode and weekly parents' summary (or Update 4 if Update 3 is heavy); first Drop 2 villagers and shop items |
 | 4 | 20 Nov | Garden and farm | Drop 2 island and number-door puzzle |
 | 5 | 27 Nov | Dragon races | Drop 2 finished; eggs and new dragon species |
-| 6 | 4 Dec | Island shopkeeper | Drop 3 begins |
+| 6 | 4 Dec | Island shopkeeper | Drop 3 begins; time strand starts (rungs 1 and 2) |
 | 7 | 11 Dec | Build-a-den challenge | Drop 3 maths (more word problems) |
 | 8 | 18 Dec | Sibling riddles | Drop 3 finished; New Year content |
 
@@ -50,6 +50,24 @@ Planned content, 15 weekly projects so it runs without new work until the end of
 14. Great hall (15 Feb)
 15. Dragon festival stage (22 Feb)
 Each project has 3 to 4 visible stages as it fills, original art for every stage, and a shared reward. Check that the Update 3 workload (fishing, trips, Drop 2 maths) is realistic alongside this; the build framework can ship in Update 3 with the first 3 projects and the rest follow in later updates.
+
+## Time strand: reading and using time (requested 1 Nov; starts Update 6, 4 Dec, continues into January)
+Covers digital time, analogue clock reading, adding and subtracting times, and speed, distance and time. Built as a slow ladder from concrete to abstract for a child who finds abstract maths hard. Each rung opens only when the one before is secure (same secure-item rule as the number facts), so each child moves at their own pace, and the 7-year-old can stay on the early rungs.
+1. My day: times of day and the order of events (morning, afternoon, night; before and after; days of the week; hours in a day). No clock reading yet.
+2. The one-handed clock: hour hand only, o'clock, matched to digital (3:00). A clock tower on the Village Green that the children can set by dragging the hand.
+3. Half past, quarter past and quarter to. Links to the fraction work (half, quarter).
+4. The minute hand: counting round the clock in fives, then reading five-minute times, analogue to digital. Needs the 5 times table secure first.
+5. Reading to the minute; am and pm; the 24-hour digital clock.
+6. How long: counting on along a timeline in whole hours, then half hours, then minutes, using "bridge to the next hour" (the same idea as the make-ten bridge).
+7. Adding and subtracting times: start time plus how long, end time minus start; draggable timeline; no converting between hours and minutes by calculation until the timeline is secure.
+8. Speed, distance and time: concrete dragon flights ("Ember flies 10 km each hour"), first as repeated groups, then distance for whole hours, then "how long will it take". Only after the multiplication facts are secure.
+Design rules for the strand:
+- Same colours and shapes on every clock throughout (short hour hand, long minute hand), analogue and digital always shown side by side at first, never digital alone.
+- A set-the-clock tool the children can use at any time, like the other helper tools. Never timed, so answers are never rushed.
+- Use time inside the game, not just in questions: dragon fishing trips return at set times, shop opening times, the sunset ending, the clock tower.
+- Roughly one rung every two weeks, so about 16 weeks from 4 Dec (to late March 2027). Spaced repetition for every new question type, as for the rest of the maths.
+- Question formats: read the clock and pick the time; set the hands by dragging; match analogue and digital; timeline word problems.
+- Check the dependencies are in Drop 2 and 3: counting in fives and the 5 times table before rung 4, fractions before rung 3, multiplication before rung 8.
 
 ## Open items
 - Real hen names: given, to be added in Update 1.
