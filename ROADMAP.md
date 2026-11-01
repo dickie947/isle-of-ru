@@ -7,8 +7,8 @@ Eight weekly updates from 23 October 2026. Each has one new mini-game for after 
 | 1 | 30 Oct (live 24 Oct; 1.1 hotfix (hide and seek board) built 24 Oct) | Hide and seek: Millie or a baby dragon hides each day, number clues. Halloween-themed | "Are you sure?" on every ember purchase; extra-practice cap 30 to 90; real hen names (Skullcrusher, Hookfang, Channel, Floppsie) and a fourth hen; check other screens for unreadable buttons; autumn and Halloween items |
 | 2 | 6 Nov | Treasure map digging: grid clues | Daily play allowance (25 min) and pass-the-iPad screen; two-key family chest; hide and seek flag tap fix; dad jokes rewrite (31 jokes); music variation step 1; Drop 2 maths begins (first batch) with spaced repetition for each new question type |
 | 3 | 13 Nov | Fishing at the jetty | Weekly shared build begins; gift swaps; dragon fishing trips; more Drop 2 maths; calm check-up mode and weekly parents' summary (or Update 4 if Update 3 is heavy); first Drop 2 villagers and shop items |
-| 4 | 20 Nov | Garden and farm | Drop 2 island and number-door puzzle |
-| 5 | 27 Nov | Dragon races | Drop 2 finished; eggs and new dragon species |
+| 4 | 20 Nov | Garden and farm | Drop 2 island and number-door puzzle; island residents (Snowcap Isle) |
+| 5 | 27 Nov | Dragon races | Drop 2 finished; eggs and new dragon species; orders board and two-good storehouse (resource management step 1); first island residents |
 | 6 | 4 Dec | Island shopkeeper | Drop 3 begins; time strand starts (rungs 1 and 2) |
 | 7 | 11 Dec | Build-a-den challenge | Drop 3 maths (more word problems) |
 | 8 | 18 Dec | Sibling riddles | Drop 3 finished; New Year content |
@@ -115,6 +115,20 @@ New, maths and time: what did zero say to eight (nice belt); why did the student
 New, bakery, farm and bees: why did the baker work so hard (he kneaded the dough); a bee that cannot make up its mind (a maybe); why did the hen join the band (she had the drumsticks); why do eggs not tell jokes (they would crack each other up).
 New, fish and snow: a fish with no eyes (a fsh); why are fish clever (they live in schools); a fish in a bow tie (sofishticated); a snowman in summer (a puddle); what do snowmen eat for breakfast (snowflakes).
 New, Millie: breakfast (mice Krispies); favourite colour (purr-ple); a pile of kittens (a meow-ntain); favourite subject (hiss-tory).
+
+## Island residents (NPCs on every island; requested 1 Nov)
+Today the other islands have no villagers (the game clears them on arrival), so each island needs a small amount of new setup. Plan: one or two residents per island, tied to the island's theme, each with an intro, chat lines and a short quest whose maths matches the skills secure when the island opens. Examples: a penguin keeper on Snowcap Isle, a crab fisher on Sunstone Cove, a smith's lizard on Cinder Peak. Characters are cheap to draw with the existing look generator. Add one island's residents per update so no week gets heavy: Snowcap Isle in Update 4, then one more island per update. Each new island from Drop 2 and 3 (Mossy Hollow, Crystal Reef, Stormcrest, Aurora Isle) gets its resident when it is built.
+
+## Resource management with simple maths (requested 1 Nov; long term)
+Goal: bring word-style problems into a practical setting. Rules: nothing ever runs out, spoils or blocks the fun; wrong answers cost nothing; the daily part is short enough to sit inside the 25-minute allowance; quantities shown as pictures and counters, not paragraphs of text (reading is a second hurdle for Ruan); a "show me" button lays out the counters, and a hint comes after a couple of tries so the answer is not found by guessing.
+Step 1, Update 5 (27 Nov): an orders board at the market. Each day it shows 3 orders as pictures with counters (for example 4 fish and 3 eggs). Check the storehouse, work out "have 9, need 14, how many more?", collect the rest, hand in for embers. A two-good storehouse (fish and eggs), using add and subtract to 20 only.
+Later steps, matched to the maths plan:
+- Dragon pantry: "Ember eats 2 fish a day, we have 12, how many days?" (division; Drop 2). The dragon never goes hungry.
+- Bakery recipes that scale: doubling and times tables (Drop 2). The bakery already takes orders.
+- Garden rows: arrays and equal groups (Drop 2), with the Update 4 garden.
+- Dragon trips: "10 fish a trip, 25 fish, how many trips?" (division with remainder). Trip times and distances feed the time strand, rung 8.
+- Feast planning: "12 guests, 3 per table; half want fish" (sharing and fractions; Drop 3).
+Shared family storehouse (idea, to test small first): both children gather into one storehouse; the weekly shared build's materials come from completed orders; gift swaps can pass goods as well as decorations. Risk: ties several features together, so ship a small version first.
 
 ## Open items
 - Real hen names: given, to be added in Update 1.
