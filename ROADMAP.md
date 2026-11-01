@@ -51,6 +51,43 @@ Planned content, 15 weekly projects so it runs without new work until the end of
 15. Dragon festival stage (22 Feb)
 Each project has 3 to 4 visible stages as it fills, original art for every stage, and a shared reward. Check that the Update 3 workload (fishing, trips, Drop 2 maths) is realistic alongside this; the build framework can ship in Update 3 with the first 3 projects and the rest follow in later updates.
 
+## Maths plan: Drops 2 and 3 (moved here from the original 12-week plan on 1 Nov, so this file is the single source)
+A week means 7 practice days, not calendar days, so a missed day never makes anyone miss content. Weeks 1 to 4 (practice days 0 to 27, Drop 1) are built: add and subtract to 20, make ten, fact families, doubles and halves. The update dates above say when content is built; the children reach it by practice days, so content is built ahead of them. Moving on assumes about 70% of a skill is steady; if a child goes slower, a week just takes longer. Fluency and engagement, not an exam syllabus.
+
+| Week (practice days) | Skill focus | Example | Villager (on practice day) and quest maths |
+| --- | --- | --- | --- |
+| 5 (28-34) | Add and take away multiples of ten; 2-digit plus a ones digit | 30 + 20, 34 + 5 | Bjorn the diver (28): tens and ones. Solveig the shepherd (31): counting in tens |
+| 6 (35-41) | 2-digit plus 2-digit without regrouping; counting in 2s, 5s, 10s | 23 + 14; 5, 10, 15 | Ivar the smith's apprentice (35): doubling. Dagny the beekeeper (38): times 5 |
+| 7 (42-48) | Times tables 2, 5, 10, then 3 and 4, using arrays | 3 x 4 as three rows of four | Gunnar the postman (42): two-step routes. Estrid the potter (45): arrays |
+| 8 (49-55) | Mixed times tables; sharing as division | 12 / 3 = 4 | Halvard the sailor (49): length in centimetres. Runa the weaver (52): number patterns |
+| 9 (56-62) | Halves, quarters, thirds of shapes and numbers | Half of 14, a quarter of 8 | Torben the miller (56): times 4, sharing sacks. Liv the healer (59): halves and quarters |
+| 10 (63-69) | Word problems: two-step, money, length, weight | 3 bags of 4 gems, then 5 lost | Knut the lighthouse keeper (63): time, o'clock and half past. Maren the singer (66): times 3 |
+| 11 (70-76) | 2-digit plus a ones digit across ten; rounding to the nearest ten; number patterns | 47 + 8; 63 is nearest to 60 | Eirik the shipwright (70): plank lengths, adding sides. Sunniva the gardener (73): fractions of a garden |
+| 12 (77-83) | Review and fluency check, spaced out | A mix of all earlier skills | Oskar the stargazer (77): number patterns to 100. Thora the storyteller (80): mixed word problems, opens the festival |
+
+Islands, dragons, skills and shop items for Drops 2 and 3 are still in the frozen Claude Docs copy of the old plan until we move them here.
+
+### What the time strand needs from Drops 2 and 3
+Each rung opens only when the child has reached the practice day AND the listed skills are secure.
+
+| Time rung | Needs first | Where it is in the plan | Earliest practice day |
+| --- | --- | --- | --- |
+| 1 My day | Nothing new | Any time | Any time |
+| 2 Hour hand, o'clock | Reading and counting to 12 | Already known from Drop 1 | Any time |
+| 3 Half past, quarter past and to | Halves and quarters | Week 9 | about 60. Knut's quest (day 63) already covers o'clock and half past |
+| 4 Five-minute reading | Counting in 5s, 5 times table | Weeks 6 and 7 | about 49 |
+| 5 To the minute, am and pm, 24-hour | 2-digit numbers, tens and ones | Week 5 | about 56 |
+| 6 How long (timeline) | Counting on in jumps across ten, and across the hour | Weeks 5, 6 and 11, plus a gap (see below) | about 77 |
+| 7 Adding and subtracting times | Counting on in tens and ones | Weeks 5, 6 and 11 | about 84 |
+| 8 Speed, distance, time | Times tables 2, 3, 4, 5, 10; sharing as division; two-step problems | Weeks 7, 8 and 10 | about 84 |
+
+Gaps found: these need adding to the plan, because nothing in Drops 2 and 3 covers them.
+- Pairs that make 60 (for example 35 to 60 is 25), in fives and tens. Needed for "bridge to the next hour". Add to week 11, or earlier.
+- A number-line "hop" tool for adding and subtracting in tens then ones. Introduce it in weeks 5 and 6 for ordinary sums so it is already familiar when the clock timeline uses the same tool.
+- Short, calm practice with days, months and ordering events (rung 1), lightly across weeks 5 and 6.
+- Kilometres and units for speed (rung 8), introduced after centimetres in week 8 and money and length in week 10.
+- The plan after week 12 (about practice day 84, mid-January if played daily) is empty. Time rungs 4 to 8 become Drop 4, alongside fluency review. Richard is happy for the roadmap to run to March and beyond as long as it helps. Drop 4 to be planned from real progress data once the children reach week 10.
+
 ## Time strand: reading and using time (requested 1 Nov; starts Update 6, 4 Dec, continues into January)
 Covers digital time, analogue clock reading, adding and subtracting times, and speed, distance and time. Built as a slow ladder from concrete to abstract for a child who finds abstract maths hard. Each rung opens only when the one before is secure (same secure-item rule as the number facts), so each child moves at their own pace, and the 7-year-old can stay on the early rungs.
 1. My day: times of day and the order of events (morning, afternoon, night; before and after; days of the week; hours in a day). No clock reading yet.
@@ -67,7 +104,7 @@ Design rules for the strand:
 - Use time inside the game, not just in questions: dragon fishing trips return at set times, shop opening times, the sunset ending, the clock tower.
 - Roughly one rung every two weeks, so about 16 weeks from 4 Dec (to late March 2027). Spaced repetition for every new question type, as for the rest of the maths.
 - Question formats: read the clock and pick the time; set the hands by dragging; match analogue and digital; timeline word problems.
-- Check the dependencies are in Drop 2 and 3: counting in fives and the 5 times table before rung 4, fractions before rung 3, multiplication before rung 8.
+- Dependencies on Drops 2 and 3 are mapped in the table in the maths plan section above, with the gaps found.
 
 ## Open items
 - Real hen names: given, to be added in Update 1.
