@@ -213,3 +213,74 @@ class LineTool{
     this.note(m);
   }
 }
+
+/* ================= base-ten blocks: tall bars are tens, little cubes are ones ================= */
+class TensTool{
+  constructor(root,q,cb){this.root=root;this.q=q;this.cb=cb||{};this.root.addEventListener('click',e=>this.onClick(e));this.init();}
+  init(){
+    const T=this.q.tens; this.t=T; this.touched=false; this.busy=false; this.custom=null; this.removed=0; this.moved=0;
+    const mk=n=>{const arr=[]; for(let i=0;i<Math.floor(n/10);i++) arr.push({k:'ten',s:1}); for(let i=0;i<n%10;i++) arr.push({k:'one',s:1}); return arr;};
+    if(T.add){ this.A=mk(T.a); this.B=mk(T.b); }
+    else { this.A=mk(T.a); this.B=[]; }
+    this.target=T.b/(T.tensOnly?10:1);
+    this.draw();
+  }
+  reset(){this.init();}
+  setHighlight(){}
+  note(html){this.custom=html;this.updateNote();}
+  count(arr,k,st){return arr.filter(b=>b.k===k&&(st==null?b.s!==3:b.s===st)).length;}
+  blocksHTML(arr,f){
+    return arr.map((b,i)=>{
+      const cls=['blk',b.k]; if(b.s===3) cls.push('off'); if(b.s===2) cls.push('added');
+      const tappable=this.canTap(f,b);
+      let inner=''; if(b.k==='ten') for(let c=0;c<10;c++) inner+='<i></i>';
+      return `<button class="${cls.join(' ')}" data-f="${f}" data-i="${i}" ${tappable?'':'tabindex="-1" '}aria-label="${b.k==='ten'?'ten':'one'}">${inner}</button>`;
+    }).join('');
+  }
+  canTap(f,b){
+    const T=this.t; if(b.s===3) return false;
+    if(T.add) return f==='B'&&b.s===1;
+    return b.k===(T.tensOnly?'ten':'one')&&b.s===1;
+  }
+  draw(){
+    const T=this.t;
+    let h='<div class="tens-wrap">';
+    h+=`<div class="tens-grp"><div class="tf-cap">${T.add?'First group':'Start with'}</div><div class="tens-box">${this.blocksHTML(this.A,'A')||'&nbsp;'}</div></div>`;
+    if(T.add) h+=`<div class="tens-grp"><div class="tf-cap">Second group</div><div class="tens-box">${this.blocksHTML(this.B,'B')||'<span class="tens-empty">All moved across</span>'}</div></div>`;
+    h+=`</div><div class="tens-key"><span><i class="blk ten mini"></i> = 10</span><span><i class="blk one mini"></i> = 1</span></div><div class="tool-note" data-note></div>`;
+    this.root.innerHTML=h; this.updateNote();
+  }
+  updateNote(){
+    const el=this.root.querySelector('[data-note]'); if(!el) return;
+    if(this.custom){ el.innerHTML=this.custom; return; }
+    const T=this.t, all=this.A.concat(this.B), tn=this.count(all,'ten'), on=this.count(all,'one');
+    if(T.add&&this.moved===0) el.innerHTML=T.tensOnly?'Tap the tall bars in the second group to move them across.':'Tap the little cubes in the second group to move them across.';
+    else if(!T.add&&this.removed===0) el.innerHTML=T.tensOnly?'Tap the tall bars to take them away.':'Tap little cubes to take them away.';
+    else el.innerHTML=`Now there are <b>${tn}</b> ${tn===1?'ten':'tens'} and <b>${on}</b> ${on===1?'one':'ones'}.`;
+  }
+  onClick(e){
+    const b=e.target.closest('.blk[data-f]'); if(!b||this.busy) return;
+    const arr=b.dataset.f==='A'?this.A:this.B, blk=arr[+b.dataset.i];
+    if(!this.canTap(b.dataset.f,blk)) return;
+    this.touched=true; this.cb.onTouch&&this.cb.onTouch(); this.custom=null;
+    if(this.t.add){ blk.s=2; this.A.push({k:blk.k,s:2}); this.B.splice(+b.dataset.i,1); this.moved++; Audio_.fx('pop'); }
+    else{
+      if(this.removed>=this.target){ this.note(`You have taken away enough. Look at what is left.`); return; }
+      blk.s=3; this.removed++; Audio_.fx('tap');
+    }
+    this.draw();
+  }
+  strategyUsed(){ return this.t.add?this.B.length===0:this.removed>=this.target; }
+  async demo(){
+    this.reset(); this.busy=true; await sleep(450);
+    const T=this.t, kind=T.tensOnly?'ten':'one';
+    if(T.add){
+      while(this.B.length){ const blk=this.B[0]; blk.s=2; this.A.push({k:blk.k,s:2}); this.B.shift(); this.moved++; this.draw(); Audio_.fx('pop'); await sleep(600); }
+      this.note(T.tensOnly?`<b>${T.a/10}</b> tens and <b>${T.b/10}</b> tens make <b>${(T.a+T.b)/10}</b> tens. That is <b>${T.a+T.b}</b>.`:`The tens stay. <b>${T.a%10} + ${T.b} = ${T.a%10+T.b}</b> ones. So <b>${T.a+T.b}</b>.`);
+    }else{
+      for(let k=0;k<this.target;k++){ const blk=this.A.find(x=>x.k===kind&&x.s===1); if(!blk) break; blk.s=3; this.removed++; this.draw(); Audio_.fx('tap'); await sleep(650); }
+      this.note(`<b>${T.a} − ${T.b}</b> leaves <b>${T.a-T.b}</b>.`);
+    }
+    this.busy=false;
+  }
+}

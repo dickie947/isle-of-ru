@@ -91,9 +91,12 @@ function heroDone(){
 }
 function whoHTML(inSheet){
   const profs=listProfiles(), free=freeSlot();
+  const st=Fam.starter();
   const cards=profs.map(p=>{
+    const asl=!!(p.s.allow&&p.s.allow.date===today()&&p.s.allow.asleep), first=st===p.key;
+    const flag=asl?'<span class="whoflag">Asleep until tomorrow</span>':first?'<span class="whoflag">Goes first today</span>':'';
     const h=p.s.hero||blankHero(), dn=p.s.dragon?p.s.dragon.name:'No dragon yet', days=(p.s.days||[]).length;
-    return `<button class="who-card" data-act="play" data-key="${p.key}" aria-label="Play as ${esc(p.name)}"><img alt="" src="${picHero(h,110,135,'d')}" width="110" height="135"><b>${esc(p.name)}</b><small>with ${esc(dn)}</small><small>${days} day${days===1?'':'s'} of practice</small>${p.active&&inSheet?'<span class="own">Playing now</span>':''}</button>`}).join('');
+    return `<button class="who-card" data-act="play" data-key="${p.key}" aria-label="Play as ${esc(p.name)}"><img alt="" src="${picHero(h,110,135,'d')}" width="110" height="135"><b>${esc(p.name)}</b><small>with ${esc(dn)}</small><small>${days} day${days===1?'':'s'} of practice</small>${p.active&&inSheet?'<span class="own">Playing now</span>':''}${flag}</button>`}).join('');
   const add=free?`<button class="who-card who-add" data-act="newplayer" data-key="${free}"><span class="plus">+</span><b>New player</b><small>Make a new character and dragon</small></button>`:'';
   return `<div class="whogrid">${cards}${add}</div>`;
 }
@@ -115,7 +118,7 @@ function playAs(key){
 function enterGame(){
   if(!S.hero||!S.hero.done){ heroMode='edit'; heroDraft=JSON.parse(JSON.stringify(S.hero||blankHero())); if(!heroDraft.look.style) heroDraft.look.style='short'; if(!heroDraft.look.build) heroDraft.look.build='boy'; renderHero(); }
   else if(!S.dragon){ draft=null; renderCreate(); }
-  else goHome();
+  else { if(Allow.guard()) return; goHome(); }
 }
 
 /* ---- the clothes shop ---- */
@@ -326,15 +329,16 @@ function swapDragon(k){
 }
 
 /* ---- grown-ups ---- */
-function itemLabel(it){ return it.kind==='bond'?`${it.a}+?`:it.kind==='add'||it.kind==='wadd'?`${it.x}+${it.y}`:it.kind==='tadd'?`${it.T}+${it.u}`:it.kind==='sub'?`${it.n}−${it.m}`:it.kind==='tsub'?`${it.c}−${it.u}`:it.kind==='wsub'?`${it.c}−?`:`fam ${it.x}+${it.y}`; }
+function itemLabel(it){ return it.kind==='bond'?`${it.a}+?`:it.kind==='add'||it.kind==='wadd'?`${it.x}+${it.y}`:it.kind==='tadd'?`${it.T}+${it.u}`:it.kind==='sub'?`${it.n}−${it.m}`:it.kind==='tsub'?`${it.c}−${it.u}`:it.kind==='xadd'?`${it.x}0+${it.y}0`:it.kind==='xsub'?`${it.c}0−${it.y}0`:it.kind==='oadd'?`ones ${it.o}+${it.u}`:it.kind==='osub'?`ones ${it.o+it.u}−${it.u}`:it.kind==='wsub'?`${it.c}−?`:`fam ${it.x}+${it.y}`; }
 function median(a){ if(!a.length) return null; const s=a.slice().sort((x,y)=>x-y), m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
 function fmtS(ms){ if(ms==null) return '–'; const s=Math.round(ms/1000); return s<90?`${s}s`:`${Math.round(s/60)} min`; }
 function faceWord(v){return v===3?'good':v===2?'okay':v===1?'worried':'no answer';}
 
 /* ---- grown-ups gate: hold the lock for a second, or answer a grown-up sum ---- */
-let GATE={a:0,b:0,ans:0};
-function openGate(){
-  const a=pick([13,14,16,17,18,19]), b=pick([6,7,8,9]); GATE={a,b,ans:a*b};
+let GATE={a:0,b:0,ans:0,after:null};
+function openGate(after){
+  GATE.after=typeof after==='function'?after:null; const keep=GATE.after;
+  const a=pick([13,14,16,17,18,19]), b=pick([6,7,8,9]); GATE={a,b,ans:a*b,after:keep};
   openSheet(`<div class="row spread"><h2>Grown-ups</h2><button class="btn btn-ghost btn-sm" data-act="close">${ic('close',18)} Close</button></div>
     <p class="sub">This part is for adults. Answer this sum to open it. (Or press and hold the lock button for a couple of seconds.)</p>
     <div class="center"><div style="font-size:2rem;font-weight:700;margin:6px 0">${a} &times; ${b} = ?</div>
@@ -380,6 +384,7 @@ function openGrownups(tab){
     <div class="setrow"><span>Music (off by default, school notes noise can distract)</span><button class="btn btn-sm" data-act="gset" data-k="music" aria-pressed="${S.settings.music}">${S.settings.music?'On':'Off'}</button></div>
     <div class="setrow"><span>Island (bridge, flying, shards) opens without practice first. To switch or add a player, tap the name at the top left of the island</span><button class="btn btn-sm" data-act="gset" data-k="exploreAny" aria-pressed="${S.settings.exploreAny}">${S.settings.exploreAny?'On':'Off'}</button></div>
     <div class="setrow"><span>Volume</span><input type="range" min="0" max="100" value="${Math.round(S.settings.vol*100)}" data-set="vol" aria-label="Volume"></div>
+    <div class="setrow"><span>Daily play time. The island turns to sunset for the last 5 minutes, then the dragon goes to bed. Practice is never cut off</span>${sel('allowMin',[[0,'No limit'],[15,'15 minutes'],[20,'20 minutes'],[25,'25 minutes'],[30,'30 minutes'],[45,'45 minutes'],[60,'60 minutes']],S.settings.allowMin==null?25:S.settings.allowMin)}</div>
     <div class="setrow"><span>Questions in a training session</span>${sel('sessionMax',[[8,'8 (short)'],[10,'10'],[12,'12']],S.settings.sessionMax)}</div>
     <div class="setrow"><span>New facts per day</span>${sel('newPerDay',[[2,'2'],[3,'3'],[4,'4']],S.settings.newPerDay)}</div>
     <div class="setrow"><span>Dragon Dash clock</span>${sel('dashMode',[['calm','Never offer a clock'],['choice','Let the child choose a gentle clock']],S.settings.dashMode)}</div>
@@ -466,7 +471,10 @@ document.addEventListener('click',e=>{
     case 'wear': wearItem(el.dataset.id,el.dataset.slot); break;
     case 'close': closeSheet(); break;
     case 'gate': { if(Date.now()-holdOpenedAt<900) break; openGate(); break; }
-    case 'gate-go': { const v=($('#gans').value||'').trim(); if(+v===GATE.ans){ openGrownups(); } else { toast('Not quite. Here is a new one.'); openGate(); } break; }
+    case 'gate-go': { const v=($('#gans').value||'').trim(); if(+v===GATE.ans){ const f=GATE.after; GATE.after=null; if(f) f(); else openGrownups(); } else { toast('Not quite. Here is a new one.'); openGate(GATE.after); } break; }
+    case 'goodnight': Allow.renderPass(); break;
+    case 'sleep-more': Allow.moreTime(); break;
+    case 'addtime': Allow.addTime(+el.dataset.m); break;
     case 'face': SESS.faceStart=+el.dataset.v||null; beginPlan(); break;
     case 'endface': { const v=+el.dataset.v; if(SESS&&SESS.rec){SESS.rec.faceEnd=v; saveState();} $$('#endfaces .face').forEach(b=>b.style.borderColor=b===el?'var(--tide)':''); Audio_.fx('tap'); break; }
     case 'hatch': S.dragon.hatched=true; saveState(); Audio_.fx('hatch'); setTimeout(()=>renderEnd('hatched'),reduceMotion()?50:900); break;
@@ -521,8 +529,8 @@ document.addEventListener('keyup',e=>{ if(screen==='village') Village.onKeyUp(e)
 
 /* ---- boot ---- */
 S=loadState(); rollDay();
-window.EmberIsle={Village,act:(a,d={})=>{const el=document.createElement('button');el.dataset.act=a;Object.assign(el.dataset,d);document.body.appendChild(el);el.click();el.remove();},state:()=>S,setToday:d=>{TODAY_OVERRIDE=d;rollDay();},save:saveState,ITEM,SKILLS,buildPlan,dueItems,applyResult,makeQ,Q:()=>Q,SESS:()=>SESS,DASH:()=>DASH,goHome,openGrownups,fresh:()=>{S=freshState();draft=null;}};
-Village.preload();
+window.EmberIsle={Village,Allow,Fam,act:(a,d={})=>{const el=document.createElement('button');el.dataset.act=a;Object.assign(el.dataset,d);document.body.appendChild(el);el.click();el.remove();},state:()=>S,setToday:d=>{TODAY_OVERRIDE=d;rollDay();},save:saveState,ITEM,SKILLS,buildPlan,dueItems,applyResult,makeQ,Q:()=>Q,SESS:()=>SESS,DASH:()=>DASH,goHome,openGrownups,fresh:()=>{S=freshState();draft=null;}};
+Village.preload(); Allow.start();
 { const profs=listProfiles();
   if(!profs.length){ SAVE_KEY=SLOTS[0]; showSplash(null,()=>startNewPlayer(SLOTS[0])); }
   else if(profs.length===1){ S=loadState(profs[0].key); rollDay(); showSplash(S.hero&&S.hero.done?S.hero.name:null,()=>enterGame()); }

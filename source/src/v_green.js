@@ -17,14 +17,14 @@ const GREEN=Object.assign({id:'green',name:'Village Green',blurb:'The green is w
     const plotOf=(id)=>{const p=PLOTS[id]||GREEN_PLOTS[id]||GREEN_DECOR[id];addObj(SPR.plot,p.x,p.y,50,64,{sc:p.sc});block([[Math.floor(p.x),Math.floor(p.y-.3)]],null,'plot:'+id)};
     Object.keys(GREEN_PLOTS).forEach(id=>{const p=GREEN_PLOTS[id];
       if(built(id)){addObj(SPR[p.spr],p.x,p.y,p.ax,p.ay,{sc:p.sc,smoke:(id==='bakery'||id==='workshop')?[id==='bakery'?72:92,6]:null});block(p.tiles,null,id)}else plotOf(id)});
-    if(built('coop')){HEN_SPOTS.forEach(([x,y],v)=>{addObj(henSprite(v),x,y,13,24,{});block([[Math.floor(x),Math.floor(y-.3)]],`${HEN_NAMES[v]} the hen clucks at you.`)})}
+    if(built('coop')){HEN_SPOTS.forEach(([x,y],v)=>{addObj(henSprite(v),x,y,13,24,{});block([[Math.floor(x),Math.floor(y-.3)]],`${HEN_NAMES[v]} the hen clucks at you.`);hitArea(Math.floor(x),Math.floor(y-.3),[[0,-1],[-1,0],[1,0]])})}
     Object.keys(GREEN_DECOR).forEach(id=>{const p=GREEN_DECOR[id];if(own(id)){addObj(SPR[id],p.x,p.y,p.ax,p.ay,{sc:p.sc});block([[Math.floor(p.x),Math.floor(p.y-.3)]],p.note)}else plotOf(id)});
-    addObj(SPR.hsboard,20.6,18.6,38,82,{});block([[20,18]],null,'hsboard');if(!dayB().hide)addObj(SPR.hsq,20.6,18.62,15,100,{bob:1});
-    const hs=S.day.hs;if(hs&&!hs.found)hs.flags.forEach((f,i)=>{addObj(SPR.hsflag[f.n],f.x,f.y,20,78,{});block([[Math.floor(f.x),Math.floor(f.y-.3)]],null,'hs:'+i)});
+    addObj(SPR.hsboard,20.6,18.6,38,82,{});block([[20,18]],null,'hsboard');hitArea(20,18,[[0,-1],[0,-2],[-1,0],[1,0],[-1,-1],[1,-1],[-1,-2],[1,-2],[0,1]]);if(!dayB().hide)addObj(SPR.hsq,20.6,18.62,15,100,{bob:1});
+    const hs=S.day.hs;if(hs&&!hs.found)hs.flags.forEach((f,i)=>{addObj(SPR.hsflag[f.n],f.x,f.y,20,78,{});{const fi=Math.floor(f.x),fj=Math.floor(f.y-.3);block([[fi,fj]],null,'hs:'+i);hitArea(fi,fj,[[0,-1],[0,-2],[-1,0],[1,0],[-1,-1],[1,-1],[-1,-2],[1,-2],[0,1]])}});
     const cr=S.inv.crafted||[];
-    if(cr.includes('bench')){addObj(SPR.bench,GREEN_SPOTS.bench[0],GREEN_SPOTS.bench[1],25,26,{});block([[Math.floor(GREEN_SPOTS.bench[0]),Math.floor(GREEN_SPOTS.bench[1]-.3)]],"A neat bench from the workshop. It is a good spot to sit and think.")}
-    if(cr.includes('birdhouse')){addObj(SPR.birdhouse,GREEN_SPOTS.birdhouse[0],GREEN_SPOTS.birdhouse[1],18,64,{});block([[Math.floor(GREEN_SPOTS.birdhouse[0]),Math.floor(GREEN_SPOTS.birdhouse[1]-.3)]],"A birdhouse. Something small is chirping inside.")}
-    if(cr.includes('flowercart')){addObj(SPR.flowercart,GREEN_SPOTS.flowercart[0],GREEN_SPOTS.flowercart[1],30,40,{});block([[Math.floor(GREEN_SPOTS.flowercart[0]),Math.floor(GREEN_SPOTS.flowercart[1]-.3)]],"A cart of flowers. The bees agree it was a good idea.")}
+    if(cr.includes('bench')){addObj(SPR.bench,GREEN_SPOTS.bench[0],GREEN_SPOTS.bench[1],25,26,{});block([[Math.floor(GREEN_SPOTS.bench[0]),Math.floor(GREEN_SPOTS.bench[1]-.3)]],"A neat bench from the workshop. It is a good spot to sit and think.");hitArea(Math.floor(GREEN_SPOTS.bench[0]),Math.floor(GREEN_SPOTS.bench[1]-.3),[[0,-1],[-1,0],[1,0],[-1,-1],[1,-1]])}
+    if(cr.includes('birdhouse')){addObj(SPR.birdhouse,GREEN_SPOTS.birdhouse[0],GREEN_SPOTS.birdhouse[1],18,64,{});block([[Math.floor(GREEN_SPOTS.birdhouse[0]),Math.floor(GREEN_SPOTS.birdhouse[1]-.3)]],"A birdhouse. Something small is chirping inside.");hitArea(Math.floor(GREEN_SPOTS.birdhouse[0]),Math.floor(GREEN_SPOTS.birdhouse[1]-.3),[[0,-1],[0,-2],[-1,0],[1,0]])}
+    if(cr.includes('flowercart')){addObj(SPR.flowercart,GREEN_SPOTS.flowercart[0],GREEN_SPOTS.flowercart[1],30,40,{});block([[Math.floor(GREEN_SPOTS.flowercart[0]),Math.floor(GREEN_SPOTS.flowercart[1]-.3)]],"A cart of flowers. The bees agree it was a good idea.");hitArea(Math.floor(GREEN_SPOTS.flowercart[0]),Math.floor(GREEN_SPOTS.flowercart[1]-.3),[[0,-1],[-1,0],[1,0],[0,1]])}
   }});
 ISLES.unshift(GREEN);
 
@@ -160,6 +160,12 @@ function makeSprites5(){
     c.fillStyle=lg(c,6,8,70,48,['#f0a24a','#d9782a']);c.beginPath();c.moveTo(8,12);c.lineTo(68,12);c.lineTo(68,46);c.lineTo(8,46);c.closePath();c.fill();
     c.strokeStyle='#5a3920';c.lineWidth=3;c.strokeRect(8,12,60,34);c.strokeStyle='#fff3d6';c.lineWidth=2;c.strokeRect(12,16,52,26);
     c.fillStyle='#3a2416';c.beginPath();c.ellipse(38,34,8,6.5,0,0,6.3);c.fill();[[27,24,3],[34,20,3.2],[42,20,3.2],[49,24,3]].forEach(([x,y,r])=>{c.beginPath();c.ellipse(x,y,r,r*1.15,0,0,6.3);c.fill()})});
+  SPR.famchest=[0,1,2,3].map(n=>mk(60,52,(c)=>{shadowBlob(c,30,46,24,6,.3);
+    c.fillStyle='#8a5a2e';c.strokeStyle='#2b1d10';c.lineWidth=2.4;c.beginPath();c.rect(6,20,48,24);c.fill();c.stroke();
+    c.fillStyle='#a8723a';c.beginPath();c.moveTo(6,22);c.quadraticCurveTo(30,2,54,22);c.lineTo(54,26);c.lineTo(6,26);c.closePath();c.fill();c.stroke();
+    c.fillStyle='#d9a441';c.fillRect(6,24,48,5);c.strokeRect(6,24,48,5);
+    if(n===3){c.fillStyle='#ffe58a';c.beginPath();c.ellipse(30,24,20,9,0,0,6.3);c.fill();for(let k=0;k<5;k++){c.fillStyle='#fff6c8';c.beginPath();c.arc(14+k*8,18+(k%2)*3,2.2,0,6.3);c.fill()}}
+    else [0,1].forEach(i=>{c.fillStyle=i<n?'#7fe08a':'#4a3a20';c.strokeStyle='#2b1d10';c.lineWidth=1.6;c.beginPath();c.arc(20+i*20,34,4.6,0,6.3);c.fill();c.stroke();if(i<n){c.fillStyle='rgba(127,224,138,.35)';c.beginPath();c.arc(20+i*20,34,8,0,6.3);c.fill()}})}));
   SPR.hsq=mk(30,34,(c)=>{c.fillStyle='#fff3d6';c.strokeStyle='#5a3920';c.lineWidth=2.5;c.beginPath();c.arc(15,15,12,0,6.3);c.fill();c.stroke();
     c.fillStyle='#d9782a';c.font='bold 20px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('?',15,16)});
   SPR.pumpkinpatch=mk(92,58,c=>{shadowBlob(c,46,48,40,8,.34);[[22,34,13,'#ee7a1c'],[48,40,15,'#f08a24'],[70,34,12,'#e86a14'],[36,26,9,'#f39a3a']].forEach(([x,y,r,col])=>{c.fillStyle=col;c.beginPath();c.ellipse(x,y,r,r*.8,0,0,6.3);c.fill();c.strokeStyle='rgba(130,50,0,.45)';c.lineWidth=1.2;[-.4,0,.4].forEach(d=>{c.beginPath();c.ellipse(x+d*r,y,r*.45,r*.78,0,0,6.3);c.stroke()});c.fillStyle='#3f7a3a';c.fillRect(x-1.6,y-r*.8-4,3.2,5)});
@@ -198,10 +204,29 @@ function hsStart(){
 const HS_FINDS=["A sheet with two eyeholes wobbles out. It is Millie, dressed as a ghost! She says nothing, but she is very proud.","Behind the flag sits Millie, wearing a pumpkin on her head. She has no idea how it got there.","Millie leaps out in a cloud of leaves. She is wearing a tiny cape and looks extremely pleased with herself."];
 function hsClueSay(){const h=hsToday();vsay(`Millie is hiding behind the flag that is ${h.text}. Work out the number, then find that flag on the Village Green.`)}
 function hsBoard(){
-  if(!S.day.trained){vsay("This is the hide and seek board. Millie hides after today's practice is done. Come back then!");return}
-  if(dayB().hide){vsay("Millie has been found today. She is already planning a better hiding spot for tomorrow.");return}
+  const dig=S.day.trained?[{label:dayB().dig?'Treasure map (done today)':'Treasure map',fn:()=>digGame()}]:[];
+  if(!S.day.trained){vsay("This is the games board. Millie hides, and a treasure map appears, after today's practice is done. Come back then!");return}
+  if(dayB().hide){vsay("Millie has been found today. She is already planning a better hiding spot for tomorrow.",dig.concat([{label:'OK'}]));return}
   if(!hsToday())hsStart();
-  hsClueSay()}
+  const h=hsToday();vsay(`Millie is hiding behind the flag that is ${h.text}. Work out the number, then find that flag on the Village Green.`,dig.concat([{label:'OK'}]))}
+/* ---- treasure map: a 5 by 5 field of mounds, a clue says where to dig ---- */
+function digGame(){
+  if(dayB().dig){vsay("You already found today's treasure. The map has gone blank until tomorrow.");return}
+  let g=S.day.dig; if(!g){const sum=Math.random()<.5;const pt=()=>{const a=RR(1,5);if(!sum||a<2)return {v:a,t:''+a};const k=RR(1,a-1);return Math.random()<.5?{v:a,t:`${a-k}+${k}`}:{v:a,t:`${a+k}−${k}`}};
+    const c=pt(),r=pt();g=S.day.dig={c:c.v,r:r.v,ct:c.t,rt:r.t,tries:0,miss:[]};saveState()}
+  const D=S.dragon.name;
+  const draw=()=>{let h=`<h2>Treasure map</h2><p class="sub">Dig where the map says: <b>across ${g.ct}</b> and <b>down ${g.rt}</b>. You have 3 digs.</p><div class="dig" style="display:grid;grid-template-columns:34px repeat(5,1fr);gap:6px;max-width:420px;margin:10px auto"><span></span>`;
+    for(let c=1;c<=5;c++)h+=`<b style="text-align:center">${c}</b>`;
+    for(let r=1;r<=5;r++){h+=`<b style="align-self:center;text-align:center">${r}</b>`;for(let c=1;c<=5;c++){const m=g.miss.includes(r+','+c);h+=`<button class="btn" data-dig="${r},${c}" style="height:56px;font-size:1.6rem;padding:0" ${m?'disabled':''} aria-label="across ${c}, down ${r}">${m?'·':'⛰'}</button>`}}
+    h+=`</div><p class="sub" id="digmsg" style="min-height:2.4em">${g.msg||'Across is along the top. Down is the side.'}</p><div class="row" style="justify-content:flex-end"><button class="btn btn-ghost" data-act="close">Not now</button></div>`;
+    $('#overlay').innerHTML=`<div class="veil" data-veil><div class="sheet" role="dialog" aria-modal="true">${h}</div></div>`;
+    $('#overlay').querySelector('.sheet').addEventListener('click',e=>{const b=e.target.closest('[data-dig]');if(!b||b.disabled)return;const [r,c]=b.dataset.dig.split(',').map(Number);
+          if(r===g.r&&c===g.c){dayB().dig=1;S.day.dig=null;S.log.push({t:Date.now(),id:'dig',ok:true,clean:g.tries===0,hints:0,att:g.tries,ms:0,tool:'none',kind:'word'});reward(g.tries===0?5:3);saveState();
+            $('#overlay').innerHTML='';buildObjects();vsay(`${pick(["Clunk! A little chest, full of old gold coins.","You hit something hard. It is a buried bundle with a ribbon on it.","Out comes a rusty box. Inside, shining shells and one very old coin."])} ${D} sniffs it proudly. (+${g.tries===0?5:3} embers.)`);return}
+          g.tries++;g.miss.push(r+','+c);const d=Math.abs(r-g.r)+Math.abs(c-g.c);
+          g.msg=g.tries>=3?`Not found today. The treasure was across ${g.c}, down ${g.r}. Try again tomorrow. (+1 ember for trying.)`:(d<=1?'Very close! It is right next door.':d<=2?'Getting warmer.':'Cold. Try further away.');
+          Audio_.fx('soft');if(g.tries>=3){dayB().dig=1;S.day.dig=null;reward(1)}saveState();draw();});};
+  draw()}
 function hsFlag(i){
   const h=hsToday();if(!h||h.found)return;const f=h.flags[i];if(!f)return;
   if(f.n===h.ans){h.found=true;dayB().hide=1;S.day.hs=null;

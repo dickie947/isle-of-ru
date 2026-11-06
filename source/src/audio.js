@@ -85,22 +85,41 @@ const NORSE=(()=>{
     const c=A.ctx,g=c.createGain(),lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900; env(g,t,.9,dur,1.3,vol); lp.connect(g); g.connect(A.dest);
     for(const dt of [-5,5]){ const o=c.createOscillator(); o.type='triangle'; o.frequency.value=fr; o.detune.value=dt; o.connect(lp); o.start(t); o.stop(t+dur+1.5); }
   }
-  function drone(A,t,vol){
-    const c=A.ctx,g=c.createGain(); env(g,t,.8,BAR+.2,1.4,vol); g.connect(A.dest);
-    for(const [fr,ty,k] of [[73.42,'sine',1],[110,'sine',.7],[146.83,'triangle',.35]]){ const o=c.createOscillator(),m=c.createGain(); o.type=ty; o.frequency.value=fr; m.gain.value=k; o.connect(m); m.connect(g); o.start(t); o.stop(t+BAR+1.8); }
+  function drone(A,t,vol,m){
+    m=m||1; const c=A.ctx,g=c.createGain(); env(g,t,.8,BAR+.2,1.4,vol); g.connect(A.dest);
+    for(const [fr,ty,k] of [[73.42,'sine',1],[110,'sine',.7],[146.83,'triangle',.35]]){ const o=c.createOscillator(),mm=c.createGain(); o.type=ty; o.frequency.value=fr*m; mm.gain.value=k; o.connect(mm); mm.connect(g); o.start(t); o.stop(t+BAR+1.8); }
   }
   function drum(A,t,vol){
     const c=A.ctx,o=c.createOscillator(),g=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(130,t); o.frequency.exponentialRampToValueAtTime(58,t+.16); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+.3); o.connect(g); g.connect(A.dest); o.start(t); o.stop(t+.35);
     const n=c.createBufferSource(),bp=c.createBiquadFilter(),ng=c.createGain(); n.buffer=A.noise; bp.type='bandpass'; bp.frequency.value=220; bp.Q.value=.8; ng.gain.setValueAtTime(vol*.55,t); ng.gain.exponentialRampToValueAtTime(.0001,t+.12); n.connect(bp); bp.connect(ng); ng.connect(A.dest); n.start(t); n.stop(t+.15);
   }
+  /* the piece changes each time round (16 bars): key, which section comes first, who plays the tune, the harp pattern,
+     a pair of bars where the tune rests, and now and then a quiet round with no drum. The first round is always the original. */
+  const ARPS=[[0,1,2,1,2,1],[0,2,1,2,1,2],[0,1,2,2,1,0],[0,1,0,2,1,2]];
+  function planFor(A,cyc){
+    A.plans=A.plans||{}; if(A.plans[cyc]) return A.plans[cyc];
+    const pk=a=>a[Math.floor(Math.random()*a.length)];
+    if(cyc===0){ return A.plans[0]={shift:0,m:1,order:[0,1],lead:'whistle',arp:0,rest:null,quiet:false}; }
+    const prev=planFor(A,cyc-1); let shift; do{ shift=pk([0,0,-2,2,5,-5,3,-4]); }while(shift===prev.shift);
+    let order; do{ order=pk([[0,1],[1,0],[0,0],[1,1],[0,1]]); }while(order[0]===prev.order[0]&&order[1]===prev.order[1]);
+    let lead; do{ lead=pk(['whistle','whistle','fiddle','harp']); }while(lead===prev.lead&&lead!=='whistle');
+    let arp; do{ arp=Math.floor(Math.random()*ARPS.length); }while(arp===prev.arp);
+    const quiet=!prev.quiet&&Math.random()<.3, rs=pk([2,5,10,13]);
+    return A.plans[cyc]={shift,m:Math.pow(2,shift/12),order,lead,arp,rest:(quiet||Math.random()<.5)?[rs,rs+1]:null,quiet};
+  }
   function bar(A,t0,b){
-    const sec=Math.floor(b/8)%2, i=b%8, name=(sec?PROG_B:PROG_A)[i], ch=CH[name], intro=b<4, cyc=b%16;
-    drone(A,t0,.05);
+    const cyc=Math.floor(b/16), k=b%16, P=planFor(A,cyc), sec=P.order[Math.floor(k/8)], i=k%8, name=(sec?PROG_B:PROG_A)[i], ch=CH[name].map(x=>x*P.m), intro=b<4;
+    drone(A,t0,P.quiet?.04:.05,P.m);
     pad(A,t0,ch[0],BAR,.03); pad(A,t0,ch[1],BAR,.028); pad(A,t0,ch[2],BAR,.026);
-    const arp=[0,1,2,1,2,1]; for(let k=0;k<6;k++){ pluck(A,t0+k*E,ch[arp[k]]*2,(k===0?.07:.045)*(intro?.7:1)); }
-    if(cyc>=4){ drum(A,t0,.17); drum(A,t0+3*E,.11); if(sec){ drum(A,t0+2*E,.05); drum(A,t0+5*E,.05); } }
-    const mel=(sec?MEL_B:MEL_A)[i]; let t=t0;
-    for(const [n,d] of mel){ const dur=d*E; whistle(A,t,f(n),dur*.97,.075); if(sec||b>=8) fiddle(A,t,f(n-12),dur*.97,.032); t+=dur; }
+    const arp=ARPS[P.arp]; for(let n=0;n<6;n++){ pluck(A,t0+n*E,ch[arp[n]]*2,(n===0?.07:.045)*(intro?.7:1)); }
+    if(k>=4&&!P.quiet&&cyc>=0){ drum(A,t0,.17); drum(A,t0+3*E,.11); if(sec){ drum(A,t0+2*E,.05); drum(A,t0+5*E,.05); } }
+    if(P.rest&&(k===P.rest[0]||k===P.rest[1])) return;
+    const mel=(sec?MEL_B:MEL_A)[i]; let t=t0; const lead=P.quiet&&P.lead==='whistle'?'harp':P.lead;
+    for(const [n,d] of mel){ const dur=d*E, fr=f(n+P.shift);
+      if(lead==='fiddle'){ fiddle(A,t,fr,dur*.97,.05); whistle(A,t,fr*2,dur*.9,.012); }
+      else if(lead==='harp'){ pluck(A,t,fr,.09); if(d>=3) pluck(A,t+dur*.5,fr,.05); if(cyc>0||k>=8) fiddle(A,t,f(n+P.shift-12),dur*.97,.026); }
+      else { whistle(A,t,fr,dur*.97,.075); if(cyc>0||k>=8) fiddle(A,t,f(n+P.shift-12),dur*.97,.032); }
+      t+=dur; }
   }
   return {BAR,bar,noiseBuf,makeReverb};
 })();

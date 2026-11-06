@@ -4,6 +4,23 @@ let SESS=null, Q=null, DASH=null;
 
 function makeQ(it,opts={}){
   const D=S.dragon.name, th=pick(THINGS), q={it,kind:it.kind,ans:it.ans,th,id:it.id};
+  if(it.kind==='xadd'||it.kind==='xsub'||it.kind==='oadd'||it.kind==='osub'){
+    const add=it.kind==='xadd'||it.kind==='oadd', tens=it.kind==='xadd'||it.kind==='xsub';
+    let a,b,t=0;   /* a = start amount, b = amount joined or taken */
+    if(tens){ a=add?it.x*10:(it.x+it.y)*10; b=(add?it.y:it.y)*10; if(!add) b=it.y*10; if(add&&Math.random()<.5){ const z=a;a=b;b=z; } }
+    else{ const maxT=9; t=1+Math.floor(Math.random()*maxT); if(it.o+it.u>9) t=Math.min(t,8); a=add?t*10+it.o:t*10+it.o+it.u; b=it.u; }
+    q.kind='tens'; q.tens={add,a,b,tensOnly:tens}; q.land=add?a+b:a-b; q.ans=q.land;
+    q.eq=[{t:a},{op:add?'+':'−'},{t:b},{op:'='},{ans:1}];
+    const unit=tens?'tens':'ones';
+    q.story=add?`${esc(D)} found <b>${a}</b> ${th.many}, then <b>${b}</b> more. How many ${th.many} altogether?`:`${esc(D)} has <b>${a}</b> ${th.many}. <b>${b}</b> of them roll away. How many are left?`;
+    const na=tens?a/10:a, nb=tens?b/10:b;
+    q.nudge={counters:tens?(add?`Each tall bar is a ten. Tap the bars in the second group to move them across. Then count the tens.`:`Each tall bar is a ten. Tap ${b/10} bar${b/10>1?'s':''} to take ${b/10>1?'them':'it'} away. Count the bars that are left.`)
+                              :(add?`Leave the tens alone. Tap the little cubes in the second group to move them across. Then count.`:`Leave the tens alone. Tap ${b} little cube${b>1?'s':''} to take away. Then count what is left.`),line:''};
+    q.explain=tens?`${na} tens ${add?'and':'take away'} ${nb} ${nb>1?'tens':'ten'} ${add?'make':'leaves'} <b>${q.land/10} tens</b>. That is <b>${q.land}</b>.`
+                  :`The tens stay the same. Only the ones change: <b>${add?`${a%10} + ${b} = ${a%10+b}`:`${a%10} − ${b} = ${a%10-b}`}</b>. So the answer is <b>${q.land}</b>.`;
+    q.hintLine=tens?`Think of ${add?na+' + '+nb:na+' − '+nb} tens.`:`Look at the ones only.`;
+    return q;
+  }
   if(it.kind==='wadd'||it.kind==='tadd'){
     const teen=it.kind==='tadd', big=teen?it.T:it.x, small=teen?it.u:it.y, sum=big+small;
     const flip=Math.random()<.5, first=flip?small:big, second=flip?big:small;
@@ -111,7 +128,7 @@ function nextQuestion(){
   const entry=SESS.plan[SESS.idx]; SESS.idx++;
   const it=ITEM[entry.id]; const q=makeQ(it);
   const st=S.items[entry.id];
-  const sugg=(st&&st.seen>=2&&st.seen%2===0)?'line':'counters';
+  const sugg=(st&&st.seen>=2&&st.seen%2===0&&q.kind!=='tens')?'line':'counters';
   Q={entry,q,t0:Date.now(),lastAct:Date.now(),attempts:0,hints:0,guided:entry.role==='new',rapid:0,done:false,answer:'',hard:null,tool:'counters',sugg,
      touched:false,counters:null,line:null,toolsUsed:new Set(),demo:false,locked:false,gap:null};
   if(SESS.qShownAt==null) SESS.qShownAt=Date.now();
@@ -148,12 +165,13 @@ function renderQuestion(){
     </section>
    </div></div>`;
   const cb={onTouch:()=>{Q.touched=true;Q.lastAct=Date.now();}};
-  Q.counters=new CounterTool($('#tool-counters'),q,cb); Q.line=new LineTool($('#tool-line'),q,cb);
+  if(q.kind==='tens'){ Q.counters=new TensTool($('#tool-counters'),q,cb); Q.line=Q.counters; const tb=$('#tab-line'); if(tb) tb.style.display='none'; const tc=$('#tab-counters'); if(tc) tc.textContent='Blocks'; }
+  else{ Q.counters=new CounterTool($('#tool-counters'),q,cb); Q.line=new LineTool($('#tool-line'),q,cb); }
   if(Q.sugg==='line') switchTool('line',true);
   renderRight();
   if(Q.guided){ const t=Q.tool==='line'?Q.line:Q.counters; t.note(esc(q.nudge[Q.tool])); if(Q.tool==='counters') highlightTool(); else Q.line.setHighlight(); setFb('info',`New one! Let's try it together. ${esc(q.nudge[Q.tool])}`,'help'); }
 }
-function highlightTool(){ const q=Q.q; if(q.kind==='bond') Q.counters.setHighlight('A'); else if(q.kind==='add') Q.counters.setHighlight(q.teen?'B':'A'); else Q.counters.setHighlight(q.sub.n<=10?'A':'B'); }
+function highlightTool(){ const q=Q.q; if(q.kind==='tens') return; if(q.kind==='bond') Q.counters.setHighlight('A'); else if(q.kind==='add') Q.counters.setHighlight(q.teen?'B':'A'); else Q.counters.setHighlight(q.sub.n<=10?'A':'B'); }
 function setFb(kind,html,icon){ const el=$('#fb'); if(el) el.innerHTML=fbHTML(kind,html,icon); }
 function renderRight(){
   const el=$('#rightbottom'); if(!el) return;
@@ -215,7 +233,7 @@ function submitAnswer(){
 function answerRight(){
   Q.done=true; const q=Q.q, entry=Q.entry;
   const clean=Q.attempts===0&&Q.hints===0, strat=Q.counters.strategyUsed()||Q.line.strategyUsed();
-  const toolUsed=Q.counters.touched?'counters':Q.line.touched?'line':'none';
+  const toolUsed=Q.counters.touched?'counters':(Q.line.touched&&Q.line!==Q.counters)?'line':'none';
   const fast=clean&&!S.items[entry.id]&&!!(SKILLS.find(k=>k.id===q.it.skill)||{}).easy;
   const gap=applyResult(entry.id,{clean,kind:'train',fast});
   const ms=Date.now()-Q.t0;
@@ -230,7 +248,8 @@ function answerRight(){
   if(!clean&&entry.role!=='repeat'&&entry.role!=='rebuild'&&!entry.again){ SESS.plan.splice(Math.min(SESS.plan.length,SESS.idx+3),0,{id:entry.id,role:'repeat',again:true}); }
   /* feedback */
   let msg;
-  if(clean&&strat&&q.noBridge) msg=q.kind==='add'?'You worked it out step by step. Nice!':'You took them away and counted what was left. Nice!';
+  if(clean&&strat&&q.kind==='tens') msg=q.tens.add?'You joined the blocks and counted. Nice!':'You took them away and counted what was left. Nice!';
+  else if(clean&&strat&&q.noBridge) msg=q.kind==='add'?'You worked it out step by step. Nice!':'You took them away and counted what was left. Nice!';
   else if(clean&&strat) msg=q.kind==='sub'||q.kind==='fam'?'You stepped back to ten first. Smart strategy!':q.kind==='bond'?'You filled the tray to ten. Nice work!':'You made ten first, then added the rest. That is the trick!';
   else if(clean&&toolUsed!=='none') msg=`You checked it with the ${toolUsed==='line'?'number line':'counters'}. That is a good habit.`;
   else if(clean) msg='You just knew that one! Can you tell someone how?';
@@ -269,7 +288,7 @@ function finishSession(partial){
   if(!partial&&bonus&&SESS.total>=3){ bonusEmbers=Math.min(3,extraLeft()); S.day.extra=(S.day.extra||0)+bonusEmbers; S.embers+=bonusEmbers; SESS.earned+=bonusEmbers; rec.embers=SESS.earned; }
   if(!partial&&!bonus){
     bonusEmbers=5+(S.day.trained?0:0); S.embers+=bonusEmbers; SESS.earned+=bonusEmbers; rec.embers=SESS.earned;
-    S.day.trained=true; bumpStreak(); abilityTick();
+    S.day.trained=true; bumpStreak(); abilityTick(); SESS.chest=Fam.practiceDone();
     SESS.newborn=[]; S.extra.forEach(e=>{ if(!e.hatched){ e.hatched=true; e.since=S.days.length; SESS.newborn.push(e.name); } });
   }
   snapshot(); saveState();
@@ -295,6 +314,7 @@ function renderEnd(stage){
       <div class="stat"><b class="num">+${SESS.earned}</b><span>embers earned</span></div>
       ${SESS.bonus?'':`<div class="stat"><b class="num">${S.streak.cur}</b><span>day flame ${ic('flame',16)}</span></div>`}
     </div>
+    ${SESS.chest?`<p style="max-width:520px"><b>Family chest:</b> a key turned (+${SESS.chest.gain-(SESS.chest.opened?CHEST_BONUS:0)} embers).${SESS.chest.opened?` <b>The chest is open! +${CHEST_BONUS} bonus embers.</b>`:(SESS.chest.total>=2?` ${SESS.chest.keys} of ${SESS.chest.total} keys so far today.`:'')}</p>`:''}
     <div style="margin-top:6px"><p style="color:var(--ink2)">How was that?</p>
     <div class="faces" style="margin:6px 0" id="endfaces">
       <button class="face" data-act="endface" data-v="3" style="width:96px;padding:8px">${faceSVG('good')}Good</button>

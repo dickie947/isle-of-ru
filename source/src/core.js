@@ -24,7 +24,7 @@ const SCHEMA=3;   /* bump when the saved shape changes, and add a step to migrat
 let SAVE_LOCKED=false; /* true when the save came from a newer version of the app: never overwrite it */
 function freshState(){return {
   v:1, ver:SCHEMA, created:Date.now(), dragon:null, extra:[], hero:null,
-  settings:{sfx:true,music:false,vol:0.6,dashMode:'calm',clockOffered:false,exploreAny:false,sessionMax:10,newPerDay:3},
+  settings:{sfx:true,music:false,vol:0.6,dashMode:'calm',clockOffered:false,exploreAny:false,sessionMax:10,newPerDay:3,allowMin:25},
   embers:0, inv:{fish:0,berry:0,spice:0,decor:[],acc:[],wear:null,built:[],closet:[]},
   items:{}, sessions:[], log:[], days:[], streak:{cur:0,best:0,last:null},
   dash:{plays:[],best:0},
@@ -108,6 +108,11 @@ const ITEM={};
   /* teens plus ones, no crossing a ten: totals 14 to 20 */
   const tadds=[]; for(let T=12;T<=18;T++){ const o=T-10; for(let u=(T===18?2:3);u<=10-o;u++) tadds.push({id:`t:${T}+${u}`,kind:'tadd',T,u,o,ans:T+u}); }
   const tsubs=tadds.map(a=>({id:`u:${a.T}+${a.u}`,kind:'tsub',T:a.T,u:a.u,c:a.T+a.u,src:a.id,ans:a.T}));
+  /* Drop 2: tens, then tens-and-ones plus ones (no crossing a ten) */
+  const xadds=[]; for(let y=1;y<=4;y++) for(let x=y;x<=9-y;x++) xadds.push({id:`x:${x}0+${y}0`,kind:'xadd',x,y,ans:(x+y)*10});
+  const xsubs=xadds.map(a=>({id:`z:${a.x}0+${a.y}0`,kind:'xsub',x:a.x,y:a.y,c:a.x+a.y,src:a.id,ans:a.y*10}));
+  const oadds=[]; for(let u=1;u<=4;u++) for(let o=1;o<=9-u;o++) oadds.push({id:`o:${o}+${u}`,kind:'oadd',o,u,ans:o+u});
+  const osubs=oadds.map(a=>({id:`p:${a.o}+${a.u}`,kind:'osub',o:a.o,u:a.u,src:a.id,ans:a.o}));
   SKILLS.push({id:'bonds',name:'Pairs that make ten',blurb:'How many more to fill a ten-frame.',items:bonds});
   SKILLS.push({id:'w10add',easy:true,name:'Adding within ten',blurb:'Join small groups, e.g. 3 + 4.',items:wadds});
   SKILLS.push({id:'w10sub',easy:true,name:'Taking away within ten',blurb:'Use an adding fact to take away, e.g. 7 − 3.',items:wsubs});
@@ -116,6 +121,10 @@ const ITEM={};
   SKILLS.push({id:'family',name:'Fact families',blurb:'Use an adding fact to find the matching take-away.',items:fams});
   SKILLS.push({id:'teenadd',easy:true,name:'Teens plus ones',blurb:'A ten and some ones, e.g. 13 + 4, up to 20.',items:tadds});
   SKILLS.push({id:'teensub',easy:true,name:'Teens take away ones',blurb:'Take ones from a teen number, e.g. 17 − 3.',items:tsubs});
+  SKILLS.push({id:'tensadd',easy:true,name:'Adding tens',blurb:'Tens are just like ones, e.g. 30 + 20.',items:xadds});
+  SKILLS.push({id:'tenssub',easy:true,name:'Taking away tens',blurb:'Use an adding tens fact to take away, e.g. 50 − 20.',items:xsubs});
+  SKILLS.push({id:'onesadd',easy:true,name:'Tens and ones plus ones',blurb:'Only the ones change, e.g. 34 + 5.',items:oadds});
+  SKILLS.push({id:'onessub',easy:true,name:'Tens and ones take away ones',blurb:'Only the ones change, e.g. 38 − 5.',items:osubs});
   for(const sk of SKILLS) for(const it of sk.items){it.skill=sk.id; ITEM[it.id]=it;}
 })();
 const ALL_ITEMS=SKILLS.flatMap(s=>s.items);

@@ -403,6 +403,39 @@ button.hero-dragon{display:block;background:none;border:0}
 .splash-title{font-family:Georgia,'Times New Roman',serif;font-size:clamp(44px,12vw,84px);margin:0;letter-spacing:.02em;color:#ffe9b8;text-shadow:0 3px 0 #6b3a1a,0 8px 24px rgba(0,0,0,.4)}
 .splash-text{font-size:clamp(16px,4.2vw,20px);line-height:1.5;margin:0;color:#f6ead2}
 .vq-eq.long{font-size:clamp(17px,4.6vw,21px);line-height:1.4;font-weight:600}
+
+/* ---- bedtime: the play allowance, the sunset arc, the sleep and pass-the-iPad screens ---- */
+.vsun{display:inline-flex;align-items:center;padding:2px 8px;background:rgba(20,48,64,.62)!important;border:2px solid rgba(255,255,255,.35)!important;color:#fff!important}.vsun[hidden]{display:none}
+.sleep{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;overflow:auto;background:linear-gradient(180deg,#14213d 0%,#2a3a66 55%,#4a4a7c 100%);color:#fff!important;text-align:center}
+.sleep *{color:#fff}
+.sleep .stars{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(2px 2px at 12% 18%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 28% 62%,#fff 60%,transparent),radial-gradient(2px 2px at 44% 12%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 63% 34%,#fff 60%,transparent),radial-gradient(2px 2px at 78% 16%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 88% 52%,#fff 60%,transparent),radial-gradient(2px 2px at 8% 80%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 52% 84%,#fff 60%,transparent),radial-gradient(2px 2px at 92% 86%,#fff 60%,transparent);opacity:.8}
+.sleep .moonbig{position:absolute;top:7%;right:9%;width:min(16vw,96px);height:min(16vw,96px);border-radius:50%;background:transparent;box-shadow:inset -20px 6px 0 0 #f4efe0;filter:drop-shadow(0 0 16px rgba(255,244,210,.45))}
+.sleep-in{position:relative;z-index:2;display:grid;gap:12px;justify-items:center;max-width:560px;width:100%}
+.sleep-in h1{font-family:var(--font-title);font-size:clamp(1.6rem,5vw,2.4rem);margin:0;color:#fff!important}.sleep-in p{margin:0;font-size:1.2rem;color:#e9eefb!important}
+.sleep-dragon{position:relative;width:min(300px,64vw)}.sleep-dragon svg{width:100%;height:auto;filter:brightness(.82)}
+.sleep .btn,.sleep .btn-primary{background:#2c6a72!important;border-color:#22545b!important;color:#fff!important}
+.sleep-gu{background:transparent;border:2px solid rgba(255,255,255,.4);border-radius:12px;padding:.5em 1em;font:inherit;font-size:.95rem;cursor:pointer;color:#dfe6f7!important;margin-top:8px;min-height:44px}
+.sleep.pass .who-card{background:#f4efe0;border-color:#5a3920}.sleep.pass .who-card *{color:#2b1d10!important}
+.chestbox{display:flex;gap:14px;align-items:center;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);border-radius:16px;padding:12px 16px;text-align:left;margin-top:6px}
+.keyrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.key{display:inline-flex;align-items:center;gap:6px;font-size:.95rem;padding:3px 10px;border-radius:999px;background:rgba(0,0,0,.25)}.key i{width:12px;height:12px;border-radius:50%;background:#6a6a7a;display:inline-block}.key.on i{background:#7fe08a;box-shadow:0 0 8px #7fe08a}
+.whoflag{display:inline-block;margin-top:2px;font-size:.85rem;font-weight:600;color:var(--moss)}.whobanner{background:var(--surface);border:3px solid var(--wood);border-radius:14px;padding:8px 16px;margin:6px 0;font-weight:600;color:var(--ink)}
+</style>
+<style>
+.tens-wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:flex-end}
+.tens-grp{min-width:150px;flex:1 1 150px}
+.tens-box{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;padding:12px;min-height:150px;border-radius:16px;background:var(--surface2);border:3px solid var(--line)}
+.blk{border:0;padding:0;background:none;cursor:pointer;display:inline-grid;gap:2px;touch-action:manipulation}
+.blk.ten{grid-template-rows:repeat(10,1fr);width:32px;height:150px;padding:2px;background:color-mix(in srgb,var(--unit) 35%,transparent);border-radius:6px;border:2px solid var(--unit)}
+.blk.ten i{background:var(--unit);border-radius:2px;display:block}
+.blk.one{width:32px;height:32px;border-radius:6px;background:var(--unit);border:2px solid color-mix(in srgb,var(--unit) 70%,#000);align-self:flex-end}
+.blk.added{outline:3px solid var(--gold)}
+.blk.off{opacity:.25;filter:grayscale(1);cursor:default}
+.blk.off::after{content:"";}
+.blk:not([tabindex]):not(.off):active{transform:scale(.94)}
+.blk.mini{width:12px;height:12px;display:inline-block;vertical-align:middle;padding:0}
+.blk.ten.mini{height:22px}
+.tens-key{display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:.9rem;color:var(--muted)}
+.tens-empty{color:var(--muted);font-size:.9rem;align-self:center}
 </style>
 <div id="app"></div>
 <div id="overlay"></div>
@@ -546,20 +579,37 @@ function eggSVG(d,o={}){
 
 /* ---- dad jokes (shown after practice and after rescuing Millie) ---- */
 const JOKES=[
-["What is a dragon's favourite subject?","Fire-thmetic."],["Why was six afraid of seven?","Because seven eight nine."],
-["Why did the dragon get a job at the bakery?","It was great at toasting things."],["What do dragons use to count?","Their fire-gers."],
-["Why is the snowman so good at maths?","He keeps his cool."],["What did the egg say to the dragon?","\"You're hatching a plan!\""],
-["Why did the baker count his rolls twice?","He was doughbting his sums."],["How does a dragon count its gold?","One scale at a time."],
-["Why did the dragon take a ladder to school?","Because it was high school."],["Why do dragons never win at hide and seek?","They give themselves away with smoke signals."],
-["How do you make a dragon laugh?","Tell it a fire-cracker of a joke."],["What do you call a clever dragon?","A bright spark."],
-["Why was the cave great at multiplication?","Everything it said came back multiplied."],["Why did the bridge go to the doctor?","It had a crack in its span."],
-["Why are Nordic maths teachers so calm?","They know how to rune a class."],["Why was the maths book sad?","It had too many problems."],
-["What is a dragon's favourite meal?","Fish and flame-chips."],["Why did the fish swim away from the dragon?","It did not want to be a fire-side snack."],
-["What did the dragon say to the hard sum?","\"I'll burn through you!\""],["Why did the number 8 like the dragon's nest?","It looked like two eggs."],
-["Why did the ember feel important?","It was a bit of a hot shot."],["What do you call a dragon that never stops talking?","A chatter-flame."],
-["Why did the plank join the bridge?","It wanted to be part of the team that gets people across."],["What did the dragon get on its maths test?","A burning desire to do it again."],
-["Why did Millie sit on the computer?","To keep an eye on the mouse."],["What do you call a cat who loves maths?","A count-cat. No wait, a cat-culator."],
-["Why does Millie hate sums?","Too many paws-ibilities."]
+["Why was six afraid of seven?","Because seven ate nine."],
+["Why was the maths book sad?","It had too many problems."],
+["Why did the dragon take a ladder to school?","Because it was high school."],
+["Why do dragons never win at hide and seek?","They give themselves away with smoke signals."],
+["Why did Millie sit on the computer?","To keep an eye on the mouse."],
+["Why did the dragon eat a candle?","It wanted a light snack."],
+["What music do dragons like best?","Heavy metal."],
+["What time is it when a dragon sits on your fence?","Time to get a new fence."],
+["Why are dragons bad at fishing?","They keep cooking the bait."],
+["How do Vikings send secret messages?","By Norse code."],
+["Why do dragons never feel the cold?","They carry their own central heating."],
+["Why did the dragon get full marks in every test?","It was on fire!"],
+["What did zero say to eight?","\"Nice belt!\""],
+["Why did the student wear glasses in maths?","It improves di-vision."],
+["What did the calculator say to the student?","\"You can count on me.\""],
+["Why was the clock hungry?","It went back four seconds."],
+["Why did the clock get told off?","It kept tocking!"],
+["What do you call a hen who counts her eggs?","A mathema-chicken."],
+["Why did the baker work so hard?","He kneaded the dough."],
+["What do you call a bee that cannot make up its mind?","A maybe."],
+["Why did the hen join the band?","She had the drumsticks."],
+["Why do eggs never tell jokes?","They would crack each other up."],
+["What do you call a fish with no eyes?","A fsh."],
+["Why are fish so clever?","They live in schools."],
+["What do you call a fish wearing a bow tie?","Sofishticated."],
+["What do you call a snowman in summer?","A puddle."],
+["What do snowmen eat for breakfast?","Snowflakes."],
+["What does Millie eat for breakfast?","Mice Krispies."],
+["What is Millie's favourite colour?","Purr-ple."],
+["What do you call a pile of kittens?","A meow-ntain."],
+["What is Millie's favourite subject at school?","Hiss-tory."]
 ];
 
 /* ---- treats / decor / accessories catalogue ---- */
@@ -860,22 +910,41 @@ const NORSE=(()=>{
     const c=A.ctx,g=c.createGain(),lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900; env(g,t,.9,dur,1.3,vol); lp.connect(g); g.connect(A.dest);
     for(const dt of [-5,5]){ const o=c.createOscillator(); o.type='triangle'; o.frequency.value=fr; o.detune.value=dt; o.connect(lp); o.start(t); o.stop(t+dur+1.5); }
   }
-  function drone(A,t,vol){
-    const c=A.ctx,g=c.createGain(); env(g,t,.8,BAR+.2,1.4,vol); g.connect(A.dest);
-    for(const [fr,ty,k] of [[73.42,'sine',1],[110,'sine',.7],[146.83,'triangle',.35]]){ const o=c.createOscillator(),m=c.createGain(); o.type=ty; o.frequency.value=fr; m.gain.value=k; o.connect(m); m.connect(g); o.start(t); o.stop(t+BAR+1.8); }
+  function drone(A,t,vol,m){
+    m=m||1; const c=A.ctx,g=c.createGain(); env(g,t,.8,BAR+.2,1.4,vol); g.connect(A.dest);
+    for(const [fr,ty,k] of [[73.42,'sine',1],[110,'sine',.7],[146.83,'triangle',.35]]){ const o=c.createOscillator(),mm=c.createGain(); o.type=ty; o.frequency.value=fr*m; mm.gain.value=k; o.connect(mm); mm.connect(g); o.start(t); o.stop(t+BAR+1.8); }
   }
   function drum(A,t,vol){
     const c=A.ctx,o=c.createOscillator(),g=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(130,t); o.frequency.exponentialRampToValueAtTime(58,t+.16); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+.3); o.connect(g); g.connect(A.dest); o.start(t); o.stop(t+.35);
     const n=c.createBufferSource(),bp=c.createBiquadFilter(),ng=c.createGain(); n.buffer=A.noise; bp.type='bandpass'; bp.frequency.value=220; bp.Q.value=.8; ng.gain.setValueAtTime(vol*.55,t); ng.gain.exponentialRampToValueAtTime(.0001,t+.12); n.connect(bp); bp.connect(ng); ng.connect(A.dest); n.start(t); n.stop(t+.15);
   }
+  /* the piece changes each time round (16 bars): key, which section comes first, who plays the tune, the harp pattern,
+     a pair of bars where the tune rests, and now and then a quiet round with no drum. The first round is always the original. */
+  const ARPS=[[0,1,2,1,2,1],[0,2,1,2,1,2],[0,1,2,2,1,0],[0,1,0,2,1,2]];
+  function planFor(A,cyc){
+    A.plans=A.plans||{}; if(A.plans[cyc]) return A.plans[cyc];
+    const pk=a=>a[Math.floor(Math.random()*a.length)];
+    if(cyc===0){ return A.plans[0]={shift:0,m:1,order:[0,1],lead:'whistle',arp:0,rest:null,quiet:false}; }
+    const prev=planFor(A,cyc-1); let shift; do{ shift=pk([0,0,-2,2,5,-5,3,-4]); }while(shift===prev.shift);
+    let order; do{ order=pk([[0,1],[1,0],[0,0],[1,1],[0,1]]); }while(order[0]===prev.order[0]&&order[1]===prev.order[1]);
+    let lead; do{ lead=pk(['whistle','whistle','fiddle','harp']); }while(lead===prev.lead&&lead!=='whistle');
+    let arp; do{ arp=Math.floor(Math.random()*ARPS.length); }while(arp===prev.arp);
+    const quiet=!prev.quiet&&Math.random()<.3, rs=pk([2,5,10,13]);
+    return A.plans[cyc]={shift,m:Math.pow(2,shift/12),order,lead,arp,rest:(quiet||Math.random()<.5)?[rs,rs+1]:null,quiet};
+  }
   function bar(A,t0,b){
-    const sec=Math.floor(b/8)%2, i=b%8, name=(sec?PROG_B:PROG_A)[i], ch=CH[name], intro=b<4, cyc=b%16;
-    drone(A,t0,.05);
+    const cyc=Math.floor(b/16), k=b%16, P=planFor(A,cyc), sec=P.order[Math.floor(k/8)], i=k%8, name=(sec?PROG_B:PROG_A)[i], ch=CH[name].map(x=>x*P.m), intro=b<4;
+    drone(A,t0,P.quiet?.04:.05,P.m);
     pad(A,t0,ch[0],BAR,.03); pad(A,t0,ch[1],BAR,.028); pad(A,t0,ch[2],BAR,.026);
-    const arp=[0,1,2,1,2,1]; for(let k=0;k<6;k++){ pluck(A,t0+k*E,ch[arp[k]]*2,(k===0?.07:.045)*(intro?.7:1)); }
-    if(cyc>=4){ drum(A,t0,.17); drum(A,t0+3*E,.11); if(sec){ drum(A,t0+2*E,.05); drum(A,t0+5*E,.05); } }
-    const mel=(sec?MEL_B:MEL_A)[i]; let t=t0;
-    for(const [n,d] of mel){ const dur=d*E; whistle(A,t,f(n),dur*.97,.075); if(sec||b>=8) fiddle(A,t,f(n-12),dur*.97,.032); t+=dur; }
+    const arp=ARPS[P.arp]; for(let n=0;n<6;n++){ pluck(A,t0+n*E,ch[arp[n]]*2,(n===0?.07:.045)*(intro?.7:1)); }
+    if(k>=4&&!P.quiet&&cyc>=0){ drum(A,t0,.17); drum(A,t0+3*E,.11); if(sec){ drum(A,t0+2*E,.05); drum(A,t0+5*E,.05); } }
+    if(P.rest&&(k===P.rest[0]||k===P.rest[1])) return;
+    const mel=(sec?MEL_B:MEL_A)[i]; let t=t0; const lead=P.quiet&&P.lead==='whistle'?'harp':P.lead;
+    for(const [n,d] of mel){ const dur=d*E, fr=f(n+P.shift);
+      if(lead==='fiddle'){ fiddle(A,t,fr,dur*.97,.05); whistle(A,t,fr*2,dur*.9,.012); }
+      else if(lead==='harp'){ pluck(A,t,fr,.09); if(d>=3) pluck(A,t+dur*.5,fr,.05); if(cyc>0||k>=8) fiddle(A,t,f(n+P.shift-12),dur*.97,.026); }
+      else { whistle(A,t,fr,dur*.97,.075); if(cyc>0||k>=8) fiddle(A,t,f(n+P.shift-12),dur*.97,.032); }
+      t+=dur; }
   }
   return {BAR,bar,noiseBuf,makeReverb};
 })();
@@ -906,7 +975,7 @@ const SCHEMA=3;   /* bump when the saved shape changes, and add a step to migrat
 let SAVE_LOCKED=false; /* true when the save came from a newer version of the app: never overwrite it */
 function freshState(){return {
   v:1, ver:SCHEMA, created:Date.now(), dragon:null, extra:[], hero:null,
-  settings:{sfx:true,music:false,vol:0.6,dashMode:'calm',clockOffered:false,exploreAny:false,sessionMax:10,newPerDay:3},
+  settings:{sfx:true,music:false,vol:0.6,dashMode:'calm',clockOffered:false,exploreAny:false,sessionMax:10,newPerDay:3,allowMin:25},
   embers:0, inv:{fish:0,berry:0,spice:0,decor:[],acc:[],wear:null,built:[],closet:[]},
   items:{}, sessions:[], log:[], days:[], streak:{cur:0,best:0,last:null},
   dash:{plays:[],best:0},
@@ -990,6 +1059,11 @@ const ITEM={};
   /* teens plus ones, no crossing a ten: totals 14 to 20 */
   const tadds=[]; for(let T=12;T<=18;T++){ const o=T-10; for(let u=(T===18?2:3);u<=10-o;u++) tadds.push({id:`t:${T}+${u}`,kind:'tadd',T,u,o,ans:T+u}); }
   const tsubs=tadds.map(a=>({id:`u:${a.T}+${a.u}`,kind:'tsub',T:a.T,u:a.u,c:a.T+a.u,src:a.id,ans:a.T}));
+  /* Drop 2: tens, then tens-and-ones plus ones (no crossing a ten) */
+  const xadds=[]; for(let y=1;y<=4;y++) for(let x=y;x<=9-y;x++) xadds.push({id:`x:${x}0+${y}0`,kind:'xadd',x,y,ans:(x+y)*10});
+  const xsubs=xadds.map(a=>({id:`z:${a.x}0+${a.y}0`,kind:'xsub',x:a.x,y:a.y,c:a.x+a.y,src:a.id,ans:a.y*10}));
+  const oadds=[]; for(let u=1;u<=4;u++) for(let o=1;o<=9-u;o++) oadds.push({id:`o:${o}+${u}`,kind:'oadd',o,u,ans:o+u});
+  const osubs=oadds.map(a=>({id:`p:${a.o}+${a.u}`,kind:'osub',o:a.o,u:a.u,src:a.id,ans:a.o}));
   SKILLS.push({id:'bonds',name:'Pairs that make ten',blurb:'How many more to fill a ten-frame.',items:bonds});
   SKILLS.push({id:'w10add',easy:true,name:'Adding within ten',blurb:'Join small groups, e.g. 3 + 4.',items:wadds});
   SKILLS.push({id:'w10sub',easy:true,name:'Taking away within ten',blurb:'Use an adding fact to take away, e.g. 7 − 3.',items:wsubs});
@@ -998,6 +1072,10 @@ const ITEM={};
   SKILLS.push({id:'family',name:'Fact families',blurb:'Use an adding fact to find the matching take-away.',items:fams});
   SKILLS.push({id:'teenadd',easy:true,name:'Teens plus ones',blurb:'A ten and some ones, e.g. 13 + 4, up to 20.',items:tadds});
   SKILLS.push({id:'teensub',easy:true,name:'Teens take away ones',blurb:'Take ones from a teen number, e.g. 17 − 3.',items:tsubs});
+  SKILLS.push({id:'tensadd',easy:true,name:'Adding tens',blurb:'Tens are just like ones, e.g. 30 + 20.',items:xadds});
+  SKILLS.push({id:'tenssub',easy:true,name:'Taking away tens',blurb:'Use an adding tens fact to take away, e.g. 50 − 20.',items:xsubs});
+  SKILLS.push({id:'onesadd',easy:true,name:'Tens and ones plus ones',blurb:'Only the ones change, e.g. 34 + 5.',items:oadds});
+  SKILLS.push({id:'onessub',easy:true,name:'Tens and ones take away ones',blurb:'Only the ones change, e.g. 38 − 5.',items:osubs});
   for(const sk of SKILLS) for(const it of sk.items){it.skill=sk.id; ITEM[it.id]=it;}
 })();
 const ALL_ITEMS=SKILLS.flatMap(s=>s.items);
@@ -1315,12 +1393,100 @@ class LineTool{
   }
 }
 
+/* ================= base-ten blocks: tall bars are tens, little cubes are ones ================= */
+class TensTool{
+  constructor(root,q,cb){this.root=root;this.q=q;this.cb=cb||{};this.root.addEventListener('click',e=>this.onClick(e));this.init();}
+  init(){
+    const T=this.q.tens; this.t=T; this.touched=false; this.busy=false; this.custom=null; this.removed=0; this.moved=0;
+    const mk=n=>{const arr=[]; for(let i=0;i<Math.floor(n/10);i++) arr.push({k:'ten',s:1}); for(let i=0;i<n%10;i++) arr.push({k:'one',s:1}); return arr;};
+    if(T.add){ this.A=mk(T.a); this.B=mk(T.b); }
+    else { this.A=mk(T.a); this.B=[]; }
+    this.target=T.b/(T.tensOnly?10:1);
+    this.draw();
+  }
+  reset(){this.init();}
+  setHighlight(){}
+  note(html){this.custom=html;this.updateNote();}
+  count(arr,k,st){return arr.filter(b=>b.k===k&&(st==null?b.s!==3:b.s===st)).length;}
+  blocksHTML(arr,f){
+    return arr.map((b,i)=>{
+      const cls=['blk',b.k]; if(b.s===3) cls.push('off'); if(b.s===2) cls.push('added');
+      const tappable=this.canTap(f,b);
+      let inner=''; if(b.k==='ten') for(let c=0;c<10;c++) inner+='<i></i>';
+      return `<button class="${cls.join(' ')}" data-f="${f}" data-i="${i}" ${tappable?'':'tabindex="-1" '}aria-label="${b.k==='ten'?'ten':'one'}">${inner}</button>`;
+    }).join('');
+  }
+  canTap(f,b){
+    const T=this.t; if(b.s===3) return false;
+    if(T.add) return f==='B'&&b.s===1;
+    return b.k===(T.tensOnly?'ten':'one')&&b.s===1;
+  }
+  draw(){
+    const T=this.t;
+    let h='<div class="tens-wrap">';
+    h+=`<div class="tens-grp"><div class="tf-cap">${T.add?'First group':'Start with'}</div><div class="tens-box">${this.blocksHTML(this.A,'A')||'&nbsp;'}</div></div>`;
+    if(T.add) h+=`<div class="tens-grp"><div class="tf-cap">Second group</div><div class="tens-box">${this.blocksHTML(this.B,'B')||'<span class="tens-empty">All moved across</span>'}</div></div>`;
+    h+=`</div><div class="tens-key"><span><i class="blk ten mini"></i> = 10</span><span><i class="blk one mini"></i> = 1</span></div><div class="tool-note" data-note></div>`;
+    this.root.innerHTML=h; this.updateNote();
+  }
+  updateNote(){
+    const el=this.root.querySelector('[data-note]'); if(!el) return;
+    if(this.custom){ el.innerHTML=this.custom; return; }
+    const T=this.t, all=this.A.concat(this.B), tn=this.count(all,'ten'), on=this.count(all,'one');
+    if(T.add&&this.moved===0) el.innerHTML=T.tensOnly?'Tap the tall bars in the second group to move them across.':'Tap the little cubes in the second group to move them across.';
+    else if(!T.add&&this.removed===0) el.innerHTML=T.tensOnly?'Tap the tall bars to take them away.':'Tap little cubes to take them away.';
+    else el.innerHTML=`Now there are <b>${tn}</b> ${tn===1?'ten':'tens'} and <b>${on}</b> ${on===1?'one':'ones'}.`;
+  }
+  onClick(e){
+    const b=e.target.closest('.blk[data-f]'); if(!b||this.busy) return;
+    const arr=b.dataset.f==='A'?this.A:this.B, blk=arr[+b.dataset.i];
+    if(!this.canTap(b.dataset.f,blk)) return;
+    this.touched=true; this.cb.onTouch&&this.cb.onTouch(); this.custom=null;
+    if(this.t.add){ blk.s=2; this.A.push({k:blk.k,s:2}); this.B.splice(+b.dataset.i,1); this.moved++; Audio_.fx('pop'); }
+    else{
+      if(this.removed>=this.target){ this.note(`You have taken away enough. Look at what is left.`); return; }
+      blk.s=3; this.removed++; Audio_.fx('tap');
+    }
+    this.draw();
+  }
+  strategyUsed(){ return this.t.add?this.B.length===0:this.removed>=this.target; }
+  async demo(){
+    this.reset(); this.busy=true; await sleep(450);
+    const T=this.t, kind=T.tensOnly?'ten':'one';
+    if(T.add){
+      while(this.B.length){ const blk=this.B[0]; blk.s=2; this.A.push({k:blk.k,s:2}); this.B.shift(); this.moved++; this.draw(); Audio_.fx('pop'); await sleep(600); }
+      this.note(T.tensOnly?`<b>${T.a/10}</b> tens and <b>${T.b/10}</b> tens make <b>${(T.a+T.b)/10}</b> tens. That is <b>${T.a+T.b}</b>.`:`The tens stay. <b>${T.a%10} + ${T.b} = ${T.a%10+T.b}</b> ones. So <b>${T.a+T.b}</b>.`);
+    }else{
+      for(let k=0;k<this.target;k++){ const blk=this.A.find(x=>x.k===kind&&x.s===1); if(!blk) break; blk.s=3; this.removed++; this.draw(); Audio_.fx('tap'); await sleep(650); }
+      this.note(`<b>${T.a} − ${T.b}</b> leaves <b>${T.a-T.b}</b>.`);
+    }
+    this.busy=false;
+  }
+}
+
 /* ================= training session + Dragon Dash ================= */
 const THINGS=[{many:'fish'},{many:'berries'},{many:'gems'},{many:'eggs'},{many:'shells'}];
 let SESS=null, Q=null, DASH=null;
 
 function makeQ(it,opts={}){
   const D=S.dragon.name, th=pick(THINGS), q={it,kind:it.kind,ans:it.ans,th,id:it.id};
+  if(it.kind==='xadd'||it.kind==='xsub'||it.kind==='oadd'||it.kind==='osub'){
+    const add=it.kind==='xadd'||it.kind==='oadd', tens=it.kind==='xadd'||it.kind==='xsub';
+    let a,b,t=0;   /* a = start amount, b = amount joined or taken */
+    if(tens){ a=add?it.x*10:(it.x+it.y)*10; b=(add?it.y:it.y)*10; if(!add) b=it.y*10; if(add&&Math.random()<.5){ const z=a;a=b;b=z; } }
+    else{ const maxT=9; t=1+Math.floor(Math.random()*maxT); if(it.o+it.u>9) t=Math.min(t,8); a=add?t*10+it.o:t*10+it.o+it.u; b=it.u; }
+    q.kind='tens'; q.tens={add,a,b,tensOnly:tens}; q.land=add?a+b:a-b; q.ans=q.land;
+    q.eq=[{t:a},{op:add?'+':'−'},{t:b},{op:'='},{ans:1}];
+    const unit=tens?'tens':'ones';
+    q.story=add?`${esc(D)} found <b>${a}</b> ${th.many}, then <b>${b}</b> more. How many ${th.many} altogether?`:`${esc(D)} has <b>${a}</b> ${th.many}. <b>${b}</b> of them roll away. How many are left?`;
+    const na=tens?a/10:a, nb=tens?b/10:b;
+    q.nudge={counters:tens?(add?`Each tall bar is a ten. Tap the bars in the second group to move them across. Then count the tens.`:`Each tall bar is a ten. Tap ${b/10} bar${b/10>1?'s':''} to take ${b/10>1?'them':'it'} away. Count the bars that are left.`)
+                              :(add?`Leave the tens alone. Tap the little cubes in the second group to move them across. Then count.`:`Leave the tens alone. Tap ${b} little cube${b>1?'s':''} to take away. Then count what is left.`),line:''};
+    q.explain=tens?`${na} tens ${add?'and':'take away'} ${nb} ${nb>1?'tens':'ten'} ${add?'make':'leaves'} <b>${q.land/10} tens</b>. That is <b>${q.land}</b>.`
+                  :`The tens stay the same. Only the ones change: <b>${add?`${a%10} + ${b} = ${a%10+b}`:`${a%10} − ${b} = ${a%10-b}`}</b>. So the answer is <b>${q.land}</b>.`;
+    q.hintLine=tens?`Think of ${add?na+' + '+nb:na+' − '+nb} tens.`:`Look at the ones only.`;
+    return q;
+  }
   if(it.kind==='wadd'||it.kind==='tadd'){
     const teen=it.kind==='tadd', big=teen?it.T:it.x, small=teen?it.u:it.y, sum=big+small;
     const flip=Math.random()<.5, first=flip?small:big, second=flip?big:small;
@@ -1428,7 +1594,7 @@ function nextQuestion(){
   const entry=SESS.plan[SESS.idx]; SESS.idx++;
   const it=ITEM[entry.id]; const q=makeQ(it);
   const st=S.items[entry.id];
-  const sugg=(st&&st.seen>=2&&st.seen%2===0)?'line':'counters';
+  const sugg=(st&&st.seen>=2&&st.seen%2===0&&q.kind!=='tens')?'line':'counters';
   Q={entry,q,t0:Date.now(),lastAct:Date.now(),attempts:0,hints:0,guided:entry.role==='new',rapid:0,done:false,answer:'',hard:null,tool:'counters',sugg,
      touched:false,counters:null,line:null,toolsUsed:new Set(),demo:false,locked:false,gap:null};
   if(SESS.qShownAt==null) SESS.qShownAt=Date.now();
@@ -1465,12 +1631,13 @@ function renderQuestion(){
     </section>
    </div></div>`;
   const cb={onTouch:()=>{Q.touched=true;Q.lastAct=Date.now();}};
-  Q.counters=new CounterTool($('#tool-counters'),q,cb); Q.line=new LineTool($('#tool-line'),q,cb);
+  if(q.kind==='tens'){ Q.counters=new TensTool($('#tool-counters'),q,cb); Q.line=Q.counters; const tb=$('#tab-line'); if(tb) tb.style.display='none'; const tc=$('#tab-counters'); if(tc) tc.textContent='Blocks'; }
+  else{ Q.counters=new CounterTool($('#tool-counters'),q,cb); Q.line=new LineTool($('#tool-line'),q,cb); }
   if(Q.sugg==='line') switchTool('line',true);
   renderRight();
   if(Q.guided){ const t=Q.tool==='line'?Q.line:Q.counters; t.note(esc(q.nudge[Q.tool])); if(Q.tool==='counters') highlightTool(); else Q.line.setHighlight(); setFb('info',`New one! Let's try it together. ${esc(q.nudge[Q.tool])}`,'help'); }
 }
-function highlightTool(){ const q=Q.q; if(q.kind==='bond') Q.counters.setHighlight('A'); else if(q.kind==='add') Q.counters.setHighlight(q.teen?'B':'A'); else Q.counters.setHighlight(q.sub.n<=10?'A':'B'); }
+function highlightTool(){ const q=Q.q; if(q.kind==='tens') return; if(q.kind==='bond') Q.counters.setHighlight('A'); else if(q.kind==='add') Q.counters.setHighlight(q.teen?'B':'A'); else Q.counters.setHighlight(q.sub.n<=10?'A':'B'); }
 function setFb(kind,html,icon){ const el=$('#fb'); if(el) el.innerHTML=fbHTML(kind,html,icon); }
 function renderRight(){
   const el=$('#rightbottom'); if(!el) return;
@@ -1532,7 +1699,7 @@ function submitAnswer(){
 function answerRight(){
   Q.done=true; const q=Q.q, entry=Q.entry;
   const clean=Q.attempts===0&&Q.hints===0, strat=Q.counters.strategyUsed()||Q.line.strategyUsed();
-  const toolUsed=Q.counters.touched?'counters':Q.line.touched?'line':'none';
+  const toolUsed=Q.counters.touched?'counters':(Q.line.touched&&Q.line!==Q.counters)?'line':'none';
   const fast=clean&&!S.items[entry.id]&&!!(SKILLS.find(k=>k.id===q.it.skill)||{}).easy;
   const gap=applyResult(entry.id,{clean,kind:'train',fast});
   const ms=Date.now()-Q.t0;
@@ -1547,7 +1714,8 @@ function answerRight(){
   if(!clean&&entry.role!=='repeat'&&entry.role!=='rebuild'&&!entry.again){ SESS.plan.splice(Math.min(SESS.plan.length,SESS.idx+3),0,{id:entry.id,role:'repeat',again:true}); }
   /* feedback */
   let msg;
-  if(clean&&strat&&q.noBridge) msg=q.kind==='add'?'You worked it out step by step. Nice!':'You took them away and counted what was left. Nice!';
+  if(clean&&strat&&q.kind==='tens') msg=q.tens.add?'You joined the blocks and counted. Nice!':'You took them away and counted what was left. Nice!';
+  else if(clean&&strat&&q.noBridge) msg=q.kind==='add'?'You worked it out step by step. Nice!':'You took them away and counted what was left. Nice!';
   else if(clean&&strat) msg=q.kind==='sub'||q.kind==='fam'?'You stepped back to ten first. Smart strategy!':q.kind==='bond'?'You filled the tray to ten. Nice work!':'You made ten first, then added the rest. That is the trick!';
   else if(clean&&toolUsed!=='none') msg=`You checked it with the ${toolUsed==='line'?'number line':'counters'}. That is a good habit.`;
   else if(clean) msg='You just knew that one! Can you tell someone how?';
@@ -1586,7 +1754,7 @@ function finishSession(partial){
   if(!partial&&bonus&&SESS.total>=3){ bonusEmbers=Math.min(3,extraLeft()); S.day.extra=(S.day.extra||0)+bonusEmbers; S.embers+=bonusEmbers; SESS.earned+=bonusEmbers; rec.embers=SESS.earned; }
   if(!partial&&!bonus){
     bonusEmbers=5+(S.day.trained?0:0); S.embers+=bonusEmbers; SESS.earned+=bonusEmbers; rec.embers=SESS.earned;
-    S.day.trained=true; bumpStreak(); abilityTick();
+    S.day.trained=true; bumpStreak(); abilityTick(); SESS.chest=Fam.practiceDone();
     SESS.newborn=[]; S.extra.forEach(e=>{ if(!e.hatched){ e.hatched=true; e.since=S.days.length; SESS.newborn.push(e.name); } });
   }
   snapshot(); saveState();
@@ -1612,6 +1780,7 @@ function renderEnd(stage){
       <div class="stat"><b class="num">+${SESS.earned}</b><span>embers earned</span></div>
       ${SESS.bonus?'':`<div class="stat"><b class="num">${S.streak.cur}</b><span>day flame ${ic('flame',16)}</span></div>`}
     </div>
+    ${SESS.chest?`<p style="max-width:520px"><b>Family chest:</b> a key turned (+${SESS.chest.gain-(SESS.chest.opened?CHEST_BONUS:0)} embers).${SESS.chest.opened?` <b>The chest is open! +${CHEST_BONUS} bonus embers.</b>`:(SESS.chest.total>=2?` ${SESS.chest.keys} of ${SESS.chest.total} keys so far today.`:'')}</p>`:''}
     <div style="margin-top:6px"><p style="color:var(--ink2)">How was that?</p>
     <div class="faces" style="margin:6px 0" id="endfaces">
       <button class="face" data-act="endface" data-v="3" style="width:96px;padding:8px">${faceSVG('good')}Good</button>
@@ -1800,6 +1969,181 @@ function eventActive(id){
   return a<=b?(v>=a&&v<=b):(v>=a||v<=b);
 }
 const eventsNow=()=>EVENTS.filter(e=>eventActive(e.id));
+
+/* ================= play allowance, bedtime sunset, pass-the-iPad and the family chest =================
+   Each child has a daily play allowance (grown-ups set it, 25 minutes by default). Only active play counts.
+   The last five minutes turn the island to sunset, the dragon yawns, then goes to bed. Nothing is ever cut off:
+   a puzzle or a practice session always finishes first. The family chest lives in one small shared record
+   (not inside either child's save), so one child's game never writes into the other's. */
+const FAM_KEY='isleOfRu.family';
+const CHEST_BASE=4, CHEST_BONUS=10;
+const Fam={
+  get(){
+    let f={}; try{ f=JSON.parse(localStorage.getItem(FAM_KEY))||{}; }catch(e){}
+    f.last=f.last||{}; f.names=f.names||{}; f.pending=f.pending||{};
+    if(f.date!==today()){
+      if(f.date) f.prevFirst=f.first||null;
+      f.date=today(); f.done={}; f.first=null; f.opened=false; f.starter=null;
+      this.put(f);
+    }
+    f.done=f.done||{}; return f;
+  },
+  put(f){ try{ localStorage.setItem(FAM_KEY,JSON.stringify(f)); }catch(e){} },
+  /* children who practised in the last 14 days, in slot order */
+  members(f){ return SLOTS.filter(k=>f.last[k]&&daysBetween(f.last[k],today())<=14); },
+  noteStart(){ if(!S||!S.hero) return; const f=this.get(); if(!f.first){ f.first=SAVE_KEY; this.put(f); } },
+  /* who goes first today: the child who went second yesterday */
+  starter(){
+    const f=this.get(); if(f.first) return null;
+    const m=this.members(f); if(m.length<2) return null;
+    if(f.starter) return f.starter;
+    let next=m[0]; if(f.prevFirst&&m.includes(f.prevFirst)) next=m[(m.indexOf(f.prevFirst)+1)%m.length];
+    f.starter=next; this.put(f); return next;
+  },
+  /* called once when today's practice is finished */
+  practiceDone(){
+    if(!S||!S.dragon) return null;
+    const f=this.get(), k=SAVE_KEY; if(f.done[k]) return null;
+    f.done[k]=true; f.last[k]=today(); f.names[k]=(S.hero&&S.hero.name)||S.dragon.name;
+    if(listProfiles().length<2){ this.put(f); return null; }   /* a chest needs a family: nothing happens with one player */
+    let gain=CHEST_BASE, opened=false; const m=this.members(f);
+    if(m.length>=2&&m.every(x=>f.done[x])&&!f.opened){
+      f.opened=true; opened=true; gain+=CHEST_BONUS;
+      m.forEach(x=>{ if(x!==k) f.pending[x]=(f.pending[x]||0)+CHEST_BONUS; });
+    }
+    this.put(f); S.embers+=gain;
+    return {gain,opened,keys:m.filter(x=>f.done[x]).length,total:m.length};
+  },
+  /* embers waiting from a chest that opened after this child had finished */
+  claim(){
+    const f=this.get(), p=f.pending[SAVE_KEY]||0; if(!p) return 0;
+    delete f.pending[SAVE_KEY]; this.put(f); S.embers+=p; saveState(); return p;
+  },
+  /* the state of today's chest for display: one row per child */
+  chest(){
+    const f=this.get(), m=this.members(f);
+    return {opened:!!f.opened,rows:m.map(k=>({key:k,name:f.names[k]||'Player',done:!!f.done[k]})),count:m.filter(x=>f.done[x]).length,total:m.length};
+  }
+};
+
+const Allow=(function(){
+  let lastInput=Date.now(), lastTick=Date.now(), saveN=0, overrunSince=0, nudged=false, started=false;
+  const A=()=>{
+    if(!S) return null;
+    if(!S.allow||S.allow.date!==today()) S.allow={date:today(),used:0,extra:0,asleep:false,yawn:false};
+    return S.allow;
+  };
+  const mins=()=>(S&&S.settings&&S.settings.allowMin!=null)?+S.settings.allowMin:25;
+  const limit=()=>mins()>0?mins()*60+((A()||{}).extra||0):Infinity;
+  const remain=()=>{ const a=A(); return a?limit()-a.used:Infinity; };
+  const active=()=>!!(S&&S.hero&&S.hero.done&&S.dragon);
+  /* 0 = bright day, 1 = night: the last five minutes slide from one to the other */
+  function dusk(){
+    if(!active()) return 0; const a=A(); if(a.asleep) return 1;
+    const r=remain(); if(!isFinite(r)||r>300) return 0;
+    return Math.max(0,Math.min(1,(300-r)/300));
+  }
+  function frac(){ const a=A(); const l=limit(); return !a||!isFinite(l)?0:Math.max(0,Math.min(1,a.used/l)); }
+  /* the little sun-and-moon arc in the corner: no numbers on purpose */
+  function paint(){
+    const el=$('#vsun'); if(!el) return;
+    if(!active()||!isFinite(limit())){ el.hidden=true; return; }
+    el.hidden=false; const t=frac(), x=4+t*40, y=22-Math.sin(t*Math.PI)*17, moon=t>=.86;
+    const body=moon?`<circle cx="${x}" cy="${y}" r="5.5" fill="#f4efe0"/><circle cx="${x+2.4}" cy="${y-1.4}" r="4.6" fill="#173040"/>`:`<circle cx="${x}" cy="${y}" r="5.5" fill="#ffc94a"/><circle cx="${x}" cy="${y}" r="8" fill="#ffc94a" opacity=".25"/>`;
+    el.innerHTML=`<svg viewBox="0 0 48 28" width="48" height="28" aria-hidden="true"><path d="M4 22 Q24 -10 44 22" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2" stroke-dasharray="2 3" stroke-linecap="round"/>${body}</svg>`;
+    el.setAttribute('aria-label',t>=.86?'Nearly bedtime':'Play time today');
+  }
+  function bump(){ lastInput=Date.now(); }
+  function tick(){
+    const now=Date.now(), el=Math.min(3,(now-lastTick)/1000); lastTick=now;
+    if(!active()) return;
+    if(['who','splash','sleep','pass','hero','create'].includes(screen)) return;
+    if(document.visibilityState!=='visible') return;
+    if(now-lastInput>90000) return;
+    const a=A(); if(a.asleep) return;
+    a.used+=el; Fam.noteStart();
+    if(++saveN%10===0) saveState();
+    if(!isFinite(limit())) return;
+    paint();
+    const r=remain();
+    if(r<=180&&!a.yawn&&screen==='village'&&Village.idle()){ a.yawn=true; saveState(); Village.yawn(); }
+    if(r<=0){
+      if(!S.day.trained&&!S.settings.exploreAny){
+        if(!nudged&&screen==='village'&&Village.idle()){ nudged=true; Village.say(`It is getting late, and ${S.dragon.name} is sleepy. Let us do today's practice first, then it is bedtime.`); }
+        return;
+      }
+      if(!overrunSince) overrunSince=now;
+      const safe=screen==='village'&&Village.idle();
+      if(safe||(screen==='village'&&now-overrunSince>180000&&!Village.busy())) bedtime();
+    }else overrunSince=0;
+  }
+  function bedtime(){
+    const a=A(); if(a.asleep) return; a.asleep=true; overrunSince=0; saveState();
+    Audio_.fx('soft'); renderSleep();
+  }
+  /* true if this child is already in bed: used when a child opens the game again the same day */
+  function guard(){ if(!active()) return false; const a=A(); if(a.asleep&&isFinite(limit())){ renderSleep(); return true; } return false; }
+
+  function renderSleep(){
+    screen='sleep'; const D=esc(S.dragon.name), nm=esc((S.hero&&S.hero.name)||S.dragon.name);
+    const others=listProfiles().filter(p=>p.key!==SAVE_KEY);
+    $('#app').innerHTML=`<div class="sleep" role="main"><div class="stars" aria-hidden="true"></div>
+      <div class="moonbig" aria-hidden="true"></div>
+      <div class="sleep-in">
+        <div class="sleep-dragon">${dragonSVG(S.dragon,{mood:'sleepy',stage:dragonStage(),wear:S.dragon.gear,uid:'sleep'})}</div>
+        <h1>${D} is getting sleepy now</h1>
+        <p>Time for bed, ${nm}. See you again tomorrow!</p>
+        <div class="sleep-row"><button class="btn btn-primary btn-big" data-act="goodnight">${others.length?'Goodnight':'Goodnight'}</button></div>
+        <button class="sleep-gu" data-act="sleep-more">Grown-up: more time</button>
+      </div></div>`;
+  }
+  /* who plays next: whoever still has time today */
+  function hasTime(p){
+    const s=p.s, m=s.settings&&s.settings.allowMin!=null?+s.settings.allowMin:25;
+    if(!(s.hero&&s.hero.done&&s.dragon)) return true;
+    if(m<=0) return true;
+    const a=s.allow; if(!a||a.date!==today()) return true;
+    return !a.asleep&&a.used<m*60+(a.extra||0);
+  }
+  function renderPass(){
+    if(S&&S.hero) saveState();
+    screen='pass'; const profs=listProfiles(), ch=Fam.chest();
+    const next=profs.filter(p=>p.key!==SAVE_KEY&&hasTime(p)), cards=next.map(p=>{
+      const h=p.s.hero||blankHero(), dn=p.s.dragon?p.s.dragon.name:'No dragon yet';
+      return `<button class="who-card pass-card" data-act="play" data-key="${p.key}" aria-label="Play as ${esc(p.name)}"><img alt="" src="${picHero(h,130,160,'d')}" width="130" height="160"><b>${esc(p.name)}</b><small>with ${esc(dn)}</small></button>`; }).join('');
+    const keys=ch.total>=2?`<div class="chestbox"><div class="chest-ico" aria-hidden="true">${chestIcon(ch.count,ch.total)}</div><div><b>Family chest</b><br>${ch.opened?'It is open! Everyone gets a bonus.':`${ch.count} of ${ch.total} keys turned today.`}<div class="keyrow">${ch.rows.map(r=>`<span class="key ${r.done?'on':''}"><i></i>${esc(r.name)}</span>`).join('')}</div></div></div>`:'';
+    const title=next.length?(next.length===1?`Time for ${esc(next[0].name)}'s turn!`:'Whose turn is it?'):'Everyone has had a turn today';
+    const sub=next.length?'Pass the iPad over. Your progress is safe.':'See you all tomorrow. Sleep well!';
+    $('#app').innerHTML=`<div class="sleep pass" role="main"><div class="stars" aria-hidden="true"></div><div class="sleep-in" style="max-width:760px">
+      <h1>${title}</h1><p>${sub}</p>
+      ${cards?`<div class="whogrid" style="justify-content:center">${cards}</div>`:''}
+      ${keys}
+      <button class="sleep-gu" data-act="sleep-more">Grown-up: more time</button></div></div>`;
+  }
+  /* a small picture of the chest: keyholes light up as keys are turned */
+  function chestIcon(n,total){
+    const lock=i=>`<circle cx="${14+i*20}" cy="26" r="5" fill="${i<n?'#7fe08a':'#4a3a20'}" stroke="#2b1d10" stroke-width="1.6"/>`;
+    return `<svg viewBox="0 0 68 48" width="68" height="48"><rect x="4" y="12" width="60" height="32" rx="5" fill="#9b6a38" stroke="#2b1d10" stroke-width="2.4"/><path d="M4 22 Q34 4 64 22" fill="#b27d45" stroke="#2b1d10" stroke-width="2.4"/><rect x="4" y="22" width="60" height="5" fill="#d9a441" stroke="#2b1d10" stroke-width="1.6"/>${[0,1].map(lock).join('')}</svg>`;
+  }
+  /* grown-up sheet: add time, or wake the dragon for a while */
+  function moreTime(){
+    openGate(()=>{
+      openSheet(`<div class="row spread"><h2>Add play time</h2><button class="btn btn-ghost btn-sm" data-act="close">${ic('close',18)} Close</button></div>
+        <p class="sub">${esc(S.dragon.name)} has been playing for ${Math.round(A().used/60)} minutes today. How much more would you like to allow?</p>
+        <div class="row" style="flex-wrap:wrap;gap:8px"><button class="btn" data-act="addtime" data-m="5">5 more minutes</button><button class="btn" data-act="addtime" data-m="10">10 more minutes</button><button class="btn" data-act="addtime" data-m="15">15 more minutes</button><button class="btn" data-act="addtime" data-m="30">30 more minutes</button></div>`);
+    });
+  }
+  function addTime(m){
+    const a=A(); a.extra=(a.extra||0)+m*60; a.asleep=false; a.yawn=false; overrunSince=0; nudged=false; saveState(); closeSheet();
+    toast(`${m} more minutes. ${S.dragon.name} is awake again.`); goHome();
+  }
+  function start(){
+    if(started) return; started=true;
+    ['pointerdown','keydown','touchstart'].forEach(ev=>window.addEventListener(ev,bump,{passive:true,capture:true}));
+    setInterval(tick,1000);
+  }
+  return {start,dusk,paint,guard,renderPass,renderSleep,moreTime,addTime,bedtime,remain,limit,state:()=>A(),hasTime,chestIcon};
+})();
 
 const Village=(function(){
 /* ===== World: fields, painted ground, walk grid ===== */
@@ -2508,14 +2852,14 @@ const GREEN=Object.assign({id:'green',name:'Village Green',blurb:'The green is w
     const plotOf=(id)=>{const p=PLOTS[id]||GREEN_PLOTS[id]||GREEN_DECOR[id];addObj(SPR.plot,p.x,p.y,50,64,{sc:p.sc});block([[Math.floor(p.x),Math.floor(p.y-.3)]],null,'plot:'+id)};
     Object.keys(GREEN_PLOTS).forEach(id=>{const p=GREEN_PLOTS[id];
       if(built(id)){addObj(SPR[p.spr],p.x,p.y,p.ax,p.ay,{sc:p.sc,smoke:(id==='bakery'||id==='workshop')?[id==='bakery'?72:92,6]:null});block(p.tiles,null,id)}else plotOf(id)});
-    if(built('coop')){HEN_SPOTS.forEach(([x,y],v)=>{addObj(henSprite(v),x,y,13,24,{});block([[Math.floor(x),Math.floor(y-.3)]],`${HEN_NAMES[v]} the hen clucks at you.`)})}
+    if(built('coop')){HEN_SPOTS.forEach(([x,y],v)=>{addObj(henSprite(v),x,y,13,24,{});block([[Math.floor(x),Math.floor(y-.3)]],`${HEN_NAMES[v]} the hen clucks at you.`);hitArea(Math.floor(x),Math.floor(y-.3),[[0,-1],[-1,0],[1,0]])})}
     Object.keys(GREEN_DECOR).forEach(id=>{const p=GREEN_DECOR[id];if(own(id)){addObj(SPR[id],p.x,p.y,p.ax,p.ay,{sc:p.sc});block([[Math.floor(p.x),Math.floor(p.y-.3)]],p.note)}else plotOf(id)});
-    addObj(SPR.hsboard,20.6,18.6,38,82,{});block([[20,18]],null,'hsboard');if(!dayB().hide)addObj(SPR.hsq,20.6,18.62,15,100,{bob:1});
-    const hs=S.day.hs;if(hs&&!hs.found)hs.flags.forEach((f,i)=>{addObj(SPR.hsflag[f.n],f.x,f.y,20,78,{});block([[Math.floor(f.x),Math.floor(f.y-.3)]],null,'hs:'+i)});
+    addObj(SPR.hsboard,20.6,18.6,38,82,{});block([[20,18]],null,'hsboard');hitArea(20,18,[[0,-1],[0,-2],[-1,0],[1,0],[-1,-1],[1,-1],[-1,-2],[1,-2],[0,1]]);if(!dayB().hide)addObj(SPR.hsq,20.6,18.62,15,100,{bob:1});
+    const hs=S.day.hs;if(hs&&!hs.found)hs.flags.forEach((f,i)=>{addObj(SPR.hsflag[f.n],f.x,f.y,20,78,{});{const fi=Math.floor(f.x),fj=Math.floor(f.y-.3);block([[fi,fj]],null,'hs:'+i);hitArea(fi,fj,[[0,-1],[0,-2],[-1,0],[1,0],[-1,-1],[1,-1],[-1,-2],[1,-2],[0,1]])}});
     const cr=S.inv.crafted||[];
-    if(cr.includes('bench')){addObj(SPR.bench,GREEN_SPOTS.bench[0],GREEN_SPOTS.bench[1],25,26,{});block([[Math.floor(GREEN_SPOTS.bench[0]),Math.floor(GREEN_SPOTS.bench[1]-.3)]],"A neat bench from the workshop. It is a good spot to sit and think.")}
-    if(cr.includes('birdhouse')){addObj(SPR.birdhouse,GREEN_SPOTS.birdhouse[0],GREEN_SPOTS.birdhouse[1],18,64,{});block([[Math.floor(GREEN_SPOTS.birdhouse[0]),Math.floor(GREEN_SPOTS.birdhouse[1]-.3)]],"A birdhouse. Something small is chirping inside.")}
-    if(cr.includes('flowercart')){addObj(SPR.flowercart,GREEN_SPOTS.flowercart[0],GREEN_SPOTS.flowercart[1],30,40,{});block([[Math.floor(GREEN_SPOTS.flowercart[0]),Math.floor(GREEN_SPOTS.flowercart[1]-.3)]],"A cart of flowers. The bees agree it was a good idea.")}
+    if(cr.includes('bench')){addObj(SPR.bench,GREEN_SPOTS.bench[0],GREEN_SPOTS.bench[1],25,26,{});block([[Math.floor(GREEN_SPOTS.bench[0]),Math.floor(GREEN_SPOTS.bench[1]-.3)]],"A neat bench from the workshop. It is a good spot to sit and think.");hitArea(Math.floor(GREEN_SPOTS.bench[0]),Math.floor(GREEN_SPOTS.bench[1]-.3),[[0,-1],[-1,0],[1,0],[-1,-1],[1,-1]])}
+    if(cr.includes('birdhouse')){addObj(SPR.birdhouse,GREEN_SPOTS.birdhouse[0],GREEN_SPOTS.birdhouse[1],18,64,{});block([[Math.floor(GREEN_SPOTS.birdhouse[0]),Math.floor(GREEN_SPOTS.birdhouse[1]-.3)]],"A birdhouse. Something small is chirping inside.");hitArea(Math.floor(GREEN_SPOTS.birdhouse[0]),Math.floor(GREEN_SPOTS.birdhouse[1]-.3),[[0,-1],[0,-2],[-1,0],[1,0]])}
+    if(cr.includes('flowercart')){addObj(SPR.flowercart,GREEN_SPOTS.flowercart[0],GREEN_SPOTS.flowercart[1],30,40,{});block([[Math.floor(GREEN_SPOTS.flowercart[0]),Math.floor(GREEN_SPOTS.flowercart[1]-.3)]],"A cart of flowers. The bees agree it was a good idea.");hitArea(Math.floor(GREEN_SPOTS.flowercart[0]),Math.floor(GREEN_SPOTS.flowercart[1]-.3),[[0,-1],[-1,0],[1,0],[0,1]])}
   }});
 ISLES.unshift(GREEN);
 
@@ -2651,6 +2995,12 @@ function makeSprites5(){
     c.fillStyle=lg(c,6,8,70,48,['#f0a24a','#d9782a']);c.beginPath();c.moveTo(8,12);c.lineTo(68,12);c.lineTo(68,46);c.lineTo(8,46);c.closePath();c.fill();
     c.strokeStyle='#5a3920';c.lineWidth=3;c.strokeRect(8,12,60,34);c.strokeStyle='#fff3d6';c.lineWidth=2;c.strokeRect(12,16,52,26);
     c.fillStyle='#3a2416';c.beginPath();c.ellipse(38,34,8,6.5,0,0,6.3);c.fill();[[27,24,3],[34,20,3.2],[42,20,3.2],[49,24,3]].forEach(([x,y,r])=>{c.beginPath();c.ellipse(x,y,r,r*1.15,0,0,6.3);c.fill()})});
+  SPR.famchest=[0,1,2,3].map(n=>mk(60,52,(c)=>{shadowBlob(c,30,46,24,6,.3);
+    c.fillStyle='#8a5a2e';c.strokeStyle='#2b1d10';c.lineWidth=2.4;c.beginPath();c.rect(6,20,48,24);c.fill();c.stroke();
+    c.fillStyle='#a8723a';c.beginPath();c.moveTo(6,22);c.quadraticCurveTo(30,2,54,22);c.lineTo(54,26);c.lineTo(6,26);c.closePath();c.fill();c.stroke();
+    c.fillStyle='#d9a441';c.fillRect(6,24,48,5);c.strokeRect(6,24,48,5);
+    if(n===3){c.fillStyle='#ffe58a';c.beginPath();c.ellipse(30,24,20,9,0,0,6.3);c.fill();for(let k=0;k<5;k++){c.fillStyle='#fff6c8';c.beginPath();c.arc(14+k*8,18+(k%2)*3,2.2,0,6.3);c.fill()}}
+    else [0,1].forEach(i=>{c.fillStyle=i<n?'#7fe08a':'#4a3a20';c.strokeStyle='#2b1d10';c.lineWidth=1.6;c.beginPath();c.arc(20+i*20,34,4.6,0,6.3);c.fill();c.stroke();if(i<n){c.fillStyle='rgba(127,224,138,.35)';c.beginPath();c.arc(20+i*20,34,8,0,6.3);c.fill()}})}));
   SPR.hsq=mk(30,34,(c)=>{c.fillStyle='#fff3d6';c.strokeStyle='#5a3920';c.lineWidth=2.5;c.beginPath();c.arc(15,15,12,0,6.3);c.fill();c.stroke();
     c.fillStyle='#d9782a';c.font='bold 20px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('?',15,16)});
   SPR.pumpkinpatch=mk(92,58,c=>{shadowBlob(c,46,48,40,8,.34);[[22,34,13,'#ee7a1c'],[48,40,15,'#f08a24'],[70,34,12,'#e86a14'],[36,26,9,'#f39a3a']].forEach(([x,y,r,col])=>{c.fillStyle=col;c.beginPath();c.ellipse(x,y,r,r*.8,0,0,6.3);c.fill();c.strokeStyle='rgba(130,50,0,.45)';c.lineWidth=1.2;[-.4,0,.4].forEach(d=>{c.beginPath();c.ellipse(x+d*r,y,r*.45,r*.78,0,0,6.3);c.stroke()});c.fillStyle='#3f7a3a';c.fillRect(x-1.6,y-r*.8-4,3.2,5)});
@@ -2689,10 +3039,29 @@ function hsStart(){
 const HS_FINDS=["A sheet with two eyeholes wobbles out. It is Millie, dressed as a ghost! She says nothing, but she is very proud.","Behind the flag sits Millie, wearing a pumpkin on her head. She has no idea how it got there.","Millie leaps out in a cloud of leaves. She is wearing a tiny cape and looks extremely pleased with herself."];
 function hsClueSay(){const h=hsToday();vsay(`Millie is hiding behind the flag that is ${h.text}. Work out the number, then find that flag on the Village Green.`)}
 function hsBoard(){
-  if(!S.day.trained){vsay("This is the hide and seek board. Millie hides after today's practice is done. Come back then!");return}
-  if(dayB().hide){vsay("Millie has been found today. She is already planning a better hiding spot for tomorrow.");return}
+  const dig=S.day.trained?[{label:dayB().dig?'Treasure map (done today)':'Treasure map',fn:()=>digGame()}]:[];
+  if(!S.day.trained){vsay("This is the games board. Millie hides, and a treasure map appears, after today's practice is done. Come back then!");return}
+  if(dayB().hide){vsay("Millie has been found today. She is already planning a better hiding spot for tomorrow.",dig.concat([{label:'OK'}]));return}
   if(!hsToday())hsStart();
-  hsClueSay()}
+  const h=hsToday();vsay(`Millie is hiding behind the flag that is ${h.text}. Work out the number, then find that flag on the Village Green.`,dig.concat([{label:'OK'}]))}
+/* ---- treasure map: a 5 by 5 field of mounds, a clue says where to dig ---- */
+function digGame(){
+  if(dayB().dig){vsay("You already found today's treasure. The map has gone blank until tomorrow.");return}
+  let g=S.day.dig; if(!g){const sum=Math.random()<.5;const pt=()=>{const a=RR(1,5);if(!sum||a<2)return {v:a,t:''+a};const k=RR(1,a-1);return Math.random()<.5?{v:a,t:`${a-k}+${k}`}:{v:a,t:`${a+k}−${k}`}};
+    const c=pt(),r=pt();g=S.day.dig={c:c.v,r:r.v,ct:c.t,rt:r.t,tries:0,miss:[]};saveState()}
+  const D=S.dragon.name;
+  const draw=()=>{let h=`<h2>Treasure map</h2><p class="sub">Dig where the map says: <b>across ${g.ct}</b> and <b>down ${g.rt}</b>. You have 3 digs.</p><div class="dig" style="display:grid;grid-template-columns:34px repeat(5,1fr);gap:6px;max-width:420px;margin:10px auto"><span></span>`;
+    for(let c=1;c<=5;c++)h+=`<b style="text-align:center">${c}</b>`;
+    for(let r=1;r<=5;r++){h+=`<b style="align-self:center;text-align:center">${r}</b>`;for(let c=1;c<=5;c++){const m=g.miss.includes(r+','+c);h+=`<button class="btn" data-dig="${r},${c}" style="height:56px;font-size:1.6rem;padding:0" ${m?'disabled':''} aria-label="across ${c}, down ${r}">${m?'·':'⛰'}</button>`}}
+    h+=`</div><p class="sub" id="digmsg" style="min-height:2.4em">${g.msg||'Across is along the top. Down is the side.'}</p><div class="row" style="justify-content:flex-end"><button class="btn btn-ghost" data-act="close">Not now</button></div>`;
+    $('#overlay').innerHTML=`<div class="veil" data-veil><div class="sheet" role="dialog" aria-modal="true">${h}</div></div>`;
+    $('#overlay').querySelector('.sheet').addEventListener('click',e=>{const b=e.target.closest('[data-dig]');if(!b||b.disabled)return;const [r,c]=b.dataset.dig.split(',').map(Number);
+          if(r===g.r&&c===g.c){dayB().dig=1;S.day.dig=null;S.log.push({t:Date.now(),id:'dig',ok:true,clean:g.tries===0,hints:0,att:g.tries,ms:0,tool:'none',kind:'word'});reward(g.tries===0?5:3);saveState();
+            $('#overlay').innerHTML='';buildObjects();vsay(`${pick(["Clunk! A little chest, full of old gold coins.","You hit something hard. It is a buried bundle with a ribbon on it.","Out comes a rusty box. Inside, shining shells and one very old coin."])} ${D} sniffs it proudly. (+${g.tries===0?5:3} embers.)`);return}
+          g.tries++;g.miss.push(r+','+c);const d=Math.abs(r-g.r)+Math.abs(c-g.c);
+          g.msg=g.tries>=3?`Not found today. The treasure was across ${g.c}, down ${g.r}. Try again tomorrow. (+1 ember for trying.)`:(d<=1?'Very close! It is right next door.':d<=2?'Getting warmer.':'Cold. Try further away.');
+          Audio_.fx('soft');if(g.tries>=3){dayB().dig=1;S.day.dig=null;reward(1)}saveState();draw();});};
+  draw()}
 function hsFlag(i){
   const h=hsToday();if(!h||h.found)return;const f=h.flags[i];if(!f)return;
   if(f.n===h.ans){h.found=true;dayB().hide=1;S.day.hs=null;
@@ -3023,7 +3392,7 @@ function drawDragon(c,o){
 /* ===== Village: the island is the home screen. Walk to the school house, then explore. ===== */
 const VS={ready:false,painting:null,prevDone:null,pos:null,raf:0,hour:null,sparkle:0,bg:null,loadP:0,idle:[]};
 let BASE=null;
-const OBJ=[],blocked=[],notes=new Map(),acts=new Map(),trig=new Map(),TREES=[];
+const OBJ=[],blocked=[],notes=new Map(),acts=new Map(),trig=new Map(),TREES=[],redir=new Map();
 for(let j=0;j<H;j++)blocked.push(new Array(W).fill(false));
 const key=(i,j)=>i+','+j;
 function block(cells,note,act){cells.forEach(([i,j])=>{if(blocked[j]&&i>=0&&i<W){blocked[j][i]=true;if(note)notes.set(key(i,j),note);if(act)acts.set(key(i,j),act)}})}
@@ -3065,7 +3434,7 @@ function scatter(){
 
 /* ---------- build the live object list from what Ruan owns ---------- */
 function buildObjects(){
-  OBJ.length=0;notes.clear();acts.clear();trig.clear();
+  OBJ.length=0;notes.clear();acts.clear();trig.clear();redir.clear();
   for(let j=0;j<H;j++)blocked[j].fill(false);
   if(Z.home){
   dockCells.forEach(([i,j])=>{walk[j][i]=own('jetty')});
@@ -3100,6 +3469,9 @@ function buildObjects(){
   { const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
     if(done()&&hatched()&&sp&&okGround(Math.floor(sp.x),Math.floor(sp.y))){addObj(mi.rescued?millieSprite('free',null):millieSprite('stuck',sp.prop),sp.x,sp.y,32,60,{});block([[Math.floor(sp.x),Math.floor(sp.y-.3)]],null,'millie')} }
   placeVillagers();
+  { const ch=Fam.chest(),fx=20,fy=13; if(ch.total>=2&&okGround(fx,fy)){ const n=ch.opened?3:Math.min(2,ch.count); addObj(SPR.famchest[n],fx+.5,fy+.9,30,46,{});
+      const who=ch.rows.map(r=>`${r.name}: ${r.done?'key turned':'waiting'}`).join('. ');
+      block([[fx,fy]],ch.opened?`The family chest is open! ${who}. Everyone who played today gets a bonus.`:`The family chest has two locks. ${who}. When every key is turned, it opens for everyone.`); hitArea(fx,fy,[[-1,0],[1,0],[0,1],[0,-1]]) } }
   todaysMounds().forEach(([i,j],n)=>{if(!(S.day.dug||[]).includes(n)){addObj(SPR.mound,i+.5,j+.8,20,22,{});block([[i,j]],null,'dig:'+n)}});
   if(eventActive('xmas')&&okGround(16,14)){addObj(SPR.xtree,16.5,14.7,35,102,{sc:.95,glow:[35,56],glowCol:'255,220,120',glowR:30});block([[16,14]],"A Christmas tree, sparkling with lights.")}
   if(own('statue')){addObj(SPR.statue,29.6,14.6,40,110,{sc:.9});block([[29,14]],"A stone dragon, standing guard over the island.")}else plot('statue');
@@ -3211,8 +3583,11 @@ function finishStep(){
   else if(!G.doorAsked&&!G.modal&&G.mode==='ground'){G.doorAsked=true;P.queue=[];P.pending=null;runAct(trig.get(k))}
   collectAt(i,j);
 }
+/* extra tap area around an object: tapping these tiles counts as tapping the object's own tile */
+function hitArea(i,j,cells){cells.forEach(([a,b])=>{const x=i+a,y=j+b;if(x>=0&&x<W&&y>=0&&y<H&&!blocked[y][x]&&!redir.has(key(x,y)))redir.set(key(x,y),[i,j])})}
 function doTapTile(i,j){
   if(G.modal||overlayOpen()||G.mode==='rising'||G.mode==='landing'||!VS.ready)return;
+  if(!blocked[j]||!blocked[j][i]){const r=redir.get(key(i,j));if(r){i=r[0];j=r[1]}}
   P.queue=[];P.pending=null;const [ti,tj]=ptile();
   if(i===ti&&j===tj)return;
   if(flying()){P.queue=line(ti,tj,Math.max(1,Math.min(W-2,i)),Math.max(1,Math.min(H-2,j)));return}
@@ -3452,6 +3827,7 @@ function markup(){
       <div class="vchip" id="vquest"><i></i><span></span></div>
       <button class="vchip vbtn" id="vschool" data-act="vschool">Take me to the school house</button></div>
     <div class="vright">
+      <span class="pill vsun" id="vsun" hidden></span>
       <span class="pill num" id="vstreak" title="Days trained in a row">${ic('flame',18)} <b>0</b></span>
       <span class="pill gold num" id="vemb" title="Embers">${ic('ember',18)} <b>0</b></span>
       <button class="btn btn-icon btn-sm" data-act="sfx" id="vsfx" aria-label="Sound effects" style="background:var(--surface)"></button>
@@ -3469,6 +3845,7 @@ function markup(){
 }
 function hud(){
   if(!$('#vil')||!S.dragon)return;
+  if(typeof Allow!=='undefined')Allow.paint();
   const d=S.dragon,dn=done();
   const hn=(S.hero&&S.hero.name)||d.name;$('#vnm').textContent=hn;$('#vst').textContent=(S.hero&&S.hero.name?d.name+' · ':'')+(d.hatched?STAGE_NAMES[dragonStage()]:'Dragon egg');
   $('#vstreak b').textContent=S.streak.cur+' day'+(S.streak.cur===1?'':'s');$('#vemb b').textContent=S.embers;
@@ -3521,6 +3898,7 @@ async function show(){
   VS.last=0;VS.raf=requestAnimationFrame(frame);
   if(first&&!S.day.trained)vtoast('Walk to the school house. Arrow keys, or tap where you want to go.',4200);
   announceNew();
+  { const got=Fam.claim(); if(got){ hud(); setTimeout(()=>{ if(screen==='village'&&!G.modal) vsay(`The family chest opened! There is a bonus for you: +${got} embers.`) },900) } }
   if(S.day.trained&&!S.day.jokeShown&&!first){S.day.jokeShown=true;saveState();setTimeout(()=>{if(screen==='village'&&!G.modal&&!overlayOpen())tellJoke()},1800)}
 }
 function closeSheetSafe(){try{closeSheet()}catch(e){}}
@@ -3604,6 +3982,7 @@ function updateNpcs(dt){
 /* ---------- per-frame update ---------- */
 function update(dt){
   G.t+=dt;
+  if(typeof Allow!=='undefined'&&Allow.dusk()>.6&&G.mode==='ground'){VS.zT=(VS.zT||0)-dt;if(VS.zT<=0){VS.zT=1.7;parts.push({t:'zzz',x:Dg.x*T+8,y:Dg.y*T-30,vx:7,vy:-16,age:0,life:2.4})}}
   if(done()&&G.bridge<1)G.bridge=Math.min(1,G.bridge+dt/2.4);
   if(!done()&&G.bridge>0)G.bridge=Math.max(0,G.bridge-dt*2);
   if(G.mode==='rising'){
@@ -3682,8 +4061,10 @@ function drawShard(c,x,y,t,i){const b=Math.sin(t*2.4+i)*3,gl=.6+.4*Math.sin(t*4+
   c.fillStyle='#ffd88a';c.beginPath();c.moveTo(0,-11);c.lineTo(7,0);c.lineTo(0,2);c.closePath();c.fill();
   c.fillStyle='rgba(255,255,255,.7)';c.beginPath();c.moveTo(-3,-3);c.lineTo(-1,-6);c.lineTo(0,-2);c.closePath();c.fill();c.restore();
   c.fillStyle='rgba(15,35,30,.22)';c.beginPath();c.ellipse(x,y,6,2.2,0,0,6.3);c.fill()}
-function daylight(){const h=VS.hour!=null?VS.hour:(new Date().getHours()+new Date().getMinutes()/60);
+function clockNight(){const h=VS.hour!=null?VS.hour:(new Date().getHours()+new Date().getMinutes()/60);
   if(h>=20.5||h<5.5)return 1;if(h>=18)return (h-18)/2.5;if(h<7.5)return (7.5-h)/2;return 0}
+/* the real evening, or the bedtime sunset, whichever is darker */
+function daylight(){return Math.max(clockNight(),(typeof Allow!=='undefined'?Allow.dusk():0))}
 
 function frame(now){
   if(screen!=='village'){VS.raf=0;return}
@@ -3754,8 +4135,10 @@ function frame(now){
     else if(p.t==='ember'){c.fillStyle=`rgba(255,${150+a*80|0},60,${a})`;c.fillRect(p.x,p.y,1.8,1.8)}
     else if(p.t==='dust'){c.fillStyle=`rgba(220,200,160,${.5*a})`;c.beginPath();c.arc(p.x,p.y,3+p.age*8,0,6.3);c.fill()}
     else if(p.t==='wind'){c.strokeStyle=`rgba(255,255,255,${.5*a})`;c.lineWidth=1.4;c.beginPath();c.moveTo(p.x,p.y);c.lineTo(p.x-p.vx*.12,p.y-p.vy*.12);c.stroke()}
+    else if(p.t==='zzz'){c.fillStyle=`rgba(255,255,255,${.85*a})`;c.font=`bold ${12+p.age*7}px sans-serif`;c.fillText('z',p.x,p.y)}
     else if(p.t==='spark'){c.fillStyle=`rgba(255,230,150,${a})`;c.beginPath();c.arc(p.x,p.y,2.2*a+.6,0,6.3);c.fill()}}
   // evening tint, then the lights
+  {const dk=typeof Allow!=='undefined'?Allow.dusk():0;if(dk>0){const w=Math.sin(Math.min(1,dk*1.15)*Math.PI);c.save();c.setTransform(1,0,0,1,0,0);c.globalCompositeOperation='multiply';c.fillStyle=`rgb(255,${255-Math.round(70*w)},${255-Math.round(120*w)})`;c.fillRect(0,0,cv.width,cv.height);c.restore()}}
   if(night>0){c.save();c.setTransform(1,0,0,1,0,0);c.globalCompositeOperation='multiply';
     c.fillStyle=`rgb(${255-Math.round(90*night)},${255-Math.round(78*night)},${255-Math.round(36*night)})`;c.fillRect(0,0,cv.width,cv.height);c.restore()}
   c.globalCompositeOperation='lighter';
@@ -3770,7 +4153,10 @@ function frame(now){
   const vg=c.createRadialGradient(cw/2,ch/2,Math.min(cw,ch)*.45,cw/2,ch/2,Math.max(cw,ch)*.75);vg.addColorStop(0,'rgba(30,20,40,0)');vg.addColorStop(1,'rgba(30,20,40,.3)');c.fillStyle=vg;c.fillRect(0,0,cw,ch);
 }
 
-return {show,preload,refresh,reset,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
+const idle=()=>!!(VS.ready&&!G.modal&&!overlayOpen()&&G.mode==='ground'&&!P.moving&&!P.queue.length&&!typing&&!($('#vq')&&!$('#vq').hidden));
+const busy=()=>!!(overlayOpen()||($('#vq')&&!$('#vq').hidden));
+function yawn(){if(screen!=='village')return;vtoast(`${S.dragon.name} yawns and stretches. Getting sleepy...`,4200);Audio_.fx('soft');VS.zT=0}
+return {show,preload,refresh,reset,idle,busy,yawn,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
   state:{G,P,Dg,VS,OBJ,TREES,notes,acts,blocked,walk,cam,held},
   setHour:h=>{VS.hour=h},setPos:(x,y)=>{P.x=x+.5;P.y=y+.5;Dg.x=P.x-1;Dg.y=P.y;Dg.trail=[]},
   okGround,bfs,ptile,tapTile:doTapTile,say:vsay,shards:()=>VS.shards,collectAt,runAct,
@@ -3871,9 +4257,12 @@ function heroDone(){
 }
 function whoHTML(inSheet){
   const profs=listProfiles(), free=freeSlot();
+  const st=Fam.starter();
   const cards=profs.map(p=>{
+    const asl=!!(p.s.allow&&p.s.allow.date===today()&&p.s.allow.asleep), first=st===p.key;
+    const flag=asl?'<span class="whoflag">Asleep until tomorrow</span>':first?'<span class="whoflag">Goes first today</span>':'';
     const h=p.s.hero||blankHero(), dn=p.s.dragon?p.s.dragon.name:'No dragon yet', days=(p.s.days||[]).length;
-    return `<button class="who-card" data-act="play" data-key="${p.key}" aria-label="Play as ${esc(p.name)}"><img alt="" src="${picHero(h,110,135,'d')}" width="110" height="135"><b>${esc(p.name)}</b><small>with ${esc(dn)}</small><small>${days} day${days===1?'':'s'} of practice</small>${p.active&&inSheet?'<span class="own">Playing now</span>':''}</button>`}).join('');
+    return `<button class="who-card" data-act="play" data-key="${p.key}" aria-label="Play as ${esc(p.name)}"><img alt="" src="${picHero(h,110,135,'d')}" width="110" height="135"><b>${esc(p.name)}</b><small>with ${esc(dn)}</small><small>${days} day${days===1?'':'s'} of practice</small>${p.active&&inSheet?'<span class="own">Playing now</span>':''}${flag}</button>`}).join('');
   const add=free?`<button class="who-card who-add" data-act="newplayer" data-key="${free}"><span class="plus">+</span><b>New player</b><small>Make a new character and dragon</small></button>`:'';
   return `<div class="whogrid">${cards}${add}</div>`;
 }
@@ -3895,7 +4284,7 @@ function playAs(key){
 function enterGame(){
   if(!S.hero||!S.hero.done){ heroMode='edit'; heroDraft=JSON.parse(JSON.stringify(S.hero||blankHero())); if(!heroDraft.look.style) heroDraft.look.style='short'; if(!heroDraft.look.build) heroDraft.look.build='boy'; renderHero(); }
   else if(!S.dragon){ draft=null; renderCreate(); }
-  else goHome();
+  else { if(Allow.guard()) return; goHome(); }
 }
 
 /* ---- the clothes shop ---- */
@@ -4106,15 +4495,16 @@ function swapDragon(k){
 }
 
 /* ---- grown-ups ---- */
-function itemLabel(it){ return it.kind==='bond'?`${it.a}+?`:it.kind==='add'||it.kind==='wadd'?`${it.x}+${it.y}`:it.kind==='tadd'?`${it.T}+${it.u}`:it.kind==='sub'?`${it.n}−${it.m}`:it.kind==='tsub'?`${it.c}−${it.u}`:it.kind==='wsub'?`${it.c}−?`:`fam ${it.x}+${it.y}`; }
+function itemLabel(it){ return it.kind==='bond'?`${it.a}+?`:it.kind==='add'||it.kind==='wadd'?`${it.x}+${it.y}`:it.kind==='tadd'?`${it.T}+${it.u}`:it.kind==='sub'?`${it.n}−${it.m}`:it.kind==='tsub'?`${it.c}−${it.u}`:it.kind==='xadd'?`${it.x}0+${it.y}0`:it.kind==='xsub'?`${it.c}0−${it.y}0`:it.kind==='oadd'?`ones ${it.o}+${it.u}`:it.kind==='osub'?`ones ${it.o+it.u}−${it.u}`:it.kind==='wsub'?`${it.c}−?`:`fam ${it.x}+${it.y}`; }
 function median(a){ if(!a.length) return null; const s=a.slice().sort((x,y)=>x-y), m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
 function fmtS(ms){ if(ms==null) return '–'; const s=Math.round(ms/1000); return s<90?`${s}s`:`${Math.round(s/60)} min`; }
 function faceWord(v){return v===3?'good':v===2?'okay':v===1?'worried':'no answer';}
 
 /* ---- grown-ups gate: hold the lock for a second, or answer a grown-up sum ---- */
-let GATE={a:0,b:0,ans:0};
-function openGate(){
-  const a=pick([13,14,16,17,18,19]), b=pick([6,7,8,9]); GATE={a,b,ans:a*b};
+let GATE={a:0,b:0,ans:0,after:null};
+function openGate(after){
+  GATE.after=typeof after==='function'?after:null; const keep=GATE.after;
+  const a=pick([13,14,16,17,18,19]), b=pick([6,7,8,9]); GATE={a,b,ans:a*b,after:keep};
   openSheet(`<div class="row spread"><h2>Grown-ups</h2><button class="btn btn-ghost btn-sm" data-act="close">${ic('close',18)} Close</button></div>
     <p class="sub">This part is for adults. Answer this sum to open it. (Or press and hold the lock button for a couple of seconds.)</p>
     <div class="center"><div style="font-size:2rem;font-weight:700;margin:6px 0">${a} &times; ${b} = ?</div>
@@ -4160,6 +4550,7 @@ function openGrownups(tab){
     <div class="setrow"><span>Music (off by default, school notes noise can distract)</span><button class="btn btn-sm" data-act="gset" data-k="music" aria-pressed="${S.settings.music}">${S.settings.music?'On':'Off'}</button></div>
     <div class="setrow"><span>Island (bridge, flying, shards) opens without practice first. To switch or add a player, tap the name at the top left of the island</span><button class="btn btn-sm" data-act="gset" data-k="exploreAny" aria-pressed="${S.settings.exploreAny}">${S.settings.exploreAny?'On':'Off'}</button></div>
     <div class="setrow"><span>Volume</span><input type="range" min="0" max="100" value="${Math.round(S.settings.vol*100)}" data-set="vol" aria-label="Volume"></div>
+    <div class="setrow"><span>Daily play time. The island turns to sunset for the last 5 minutes, then the dragon goes to bed. Practice is never cut off</span>${sel('allowMin',[[0,'No limit'],[15,'15 minutes'],[20,'20 minutes'],[25,'25 minutes'],[30,'30 minutes'],[45,'45 minutes'],[60,'60 minutes']],S.settings.allowMin==null?25:S.settings.allowMin)}</div>
     <div class="setrow"><span>Questions in a training session</span>${sel('sessionMax',[[8,'8 (short)'],[10,'10'],[12,'12']],S.settings.sessionMax)}</div>
     <div class="setrow"><span>New facts per day</span>${sel('newPerDay',[[2,'2'],[3,'3'],[4,'4']],S.settings.newPerDay)}</div>
     <div class="setrow"><span>Dragon Dash clock</span>${sel('dashMode',[['calm','Never offer a clock'],['choice','Let the child choose a gentle clock']],S.settings.dashMode)}</div>
@@ -4246,7 +4637,10 @@ document.addEventListener('click',e=>{
     case 'wear': wearItem(el.dataset.id,el.dataset.slot); break;
     case 'close': closeSheet(); break;
     case 'gate': { if(Date.now()-holdOpenedAt<900) break; openGate(); break; }
-    case 'gate-go': { const v=($('#gans').value||'').trim(); if(+v===GATE.ans){ openGrownups(); } else { toast('Not quite. Here is a new one.'); openGate(); } break; }
+    case 'gate-go': { const v=($('#gans').value||'').trim(); if(+v===GATE.ans){ const f=GATE.after; GATE.after=null; if(f) f(); else openGrownups(); } else { toast('Not quite. Here is a new one.'); openGate(GATE.after); } break; }
+    case 'goodnight': Allow.renderPass(); break;
+    case 'sleep-more': Allow.moreTime(); break;
+    case 'addtime': Allow.addTime(+el.dataset.m); break;
     case 'face': SESS.faceStart=+el.dataset.v||null; beginPlan(); break;
     case 'endface': { const v=+el.dataset.v; if(SESS&&SESS.rec){SESS.rec.faceEnd=v; saveState();} $$('#endfaces .face').forEach(b=>b.style.borderColor=b===el?'var(--tide)':''); Audio_.fx('tap'); break; }
     case 'hatch': S.dragon.hatched=true; saveState(); Audio_.fx('hatch'); setTimeout(()=>renderEnd('hatched'),reduceMotion()?50:900); break;
@@ -4301,8 +4695,8 @@ document.addEventListener('keyup',e=>{ if(screen==='village') Village.onKeyUp(e)
 
 /* ---- boot ---- */
 S=loadState(); rollDay();
-window.EmberIsle={Village,act:(a,d={})=>{const el=document.createElement('button');el.dataset.act=a;Object.assign(el.dataset,d);document.body.appendChild(el);el.click();el.remove();},state:()=>S,setToday:d=>{TODAY_OVERRIDE=d;rollDay();},save:saveState,ITEM,SKILLS,buildPlan,dueItems,applyResult,makeQ,Q:()=>Q,SESS:()=>SESS,DASH:()=>DASH,goHome,openGrownups,fresh:()=>{S=freshState();draft=null;}};
-Village.preload();
+window.EmberIsle={Village,Allow,Fam,act:(a,d={})=>{const el=document.createElement('button');el.dataset.act=a;Object.assign(el.dataset,d);document.body.appendChild(el);el.click();el.remove();},state:()=>S,setToday:d=>{TODAY_OVERRIDE=d;rollDay();},save:saveState,ITEM,SKILLS,buildPlan,dueItems,applyResult,makeQ,Q:()=>Q,SESS:()=>SESS,DASH:()=>DASH,goHome,openGrownups,fresh:()=>{S=freshState();draft=null;}};
+Village.preload(); Allow.start();
 { const profs=listProfiles();
   if(!profs.length){ SAVE_KEY=SLOTS[0]; showSplash(null,()=>startNewPlayer(SLOTS[0])); }
   else if(profs.length===1){ S=loadState(profs[0].key); rollDay(); showSplash(S.hero&&S.hero.done?S.hero.name:null,()=>enterGame()); }

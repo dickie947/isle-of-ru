@@ -1,7 +1,7 @@
 /* ===== Village: the island is the home screen. Walk to the school house, then explore. ===== */
 const VS={ready:false,painting:null,prevDone:null,pos:null,raf:0,hour:null,sparkle:0,bg:null,loadP:0,idle:[]};
 let BASE=null;
-const OBJ=[],blocked=[],notes=new Map(),acts=new Map(),trig=new Map(),TREES=[];
+const OBJ=[],blocked=[],notes=new Map(),acts=new Map(),trig=new Map(),TREES=[],redir=new Map();
 for(let j=0;j<H;j++)blocked.push(new Array(W).fill(false));
 const key=(i,j)=>i+','+j;
 function block(cells,note,act){cells.forEach(([i,j])=>{if(blocked[j]&&i>=0&&i<W){blocked[j][i]=true;if(note)notes.set(key(i,j),note);if(act)acts.set(key(i,j),act)}})}
@@ -43,7 +43,7 @@ function scatter(){
 
 /* ---------- build the live object list from what Ruan owns ---------- */
 function buildObjects(){
-  OBJ.length=0;notes.clear();acts.clear();trig.clear();
+  OBJ.length=0;notes.clear();acts.clear();trig.clear();redir.clear();
   for(let j=0;j<H;j++)blocked[j].fill(false);
   if(Z.home){
   dockCells.forEach(([i,j])=>{walk[j][i]=own('jetty')});
@@ -78,6 +78,9 @@ function buildObjects(){
   { const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
     if(done()&&hatched()&&sp&&okGround(Math.floor(sp.x),Math.floor(sp.y))){addObj(mi.rescued?millieSprite('free',null):millieSprite('stuck',sp.prop),sp.x,sp.y,32,60,{});block([[Math.floor(sp.x),Math.floor(sp.y-.3)]],null,'millie')} }
   placeVillagers();
+  { const ch=Fam.chest(),fx=20,fy=13; if(ch.total>=2&&okGround(fx,fy)){ const n=ch.opened?3:Math.min(2,ch.count); addObj(SPR.famchest[n],fx+.5,fy+.9,30,46,{});
+      const who=ch.rows.map(r=>`${r.name}: ${r.done?'key turned':'waiting'}`).join('. ');
+      block([[fx,fy]],ch.opened?`The family chest is open! ${who}. Everyone who played today gets a bonus.`:`The family chest has two locks. ${who}. When every key is turned, it opens for everyone.`); hitArea(fx,fy,[[-1,0],[1,0],[0,1],[0,-1]]) } }
   todaysMounds().forEach(([i,j],n)=>{if(!(S.day.dug||[]).includes(n)){addObj(SPR.mound,i+.5,j+.8,20,22,{});block([[i,j]],null,'dig:'+n)}});
   if(eventActive('xmas')&&okGround(16,14)){addObj(SPR.xtree,16.5,14.7,35,102,{sc:.95,glow:[35,56],glowCol:'255,220,120',glowR:30});block([[16,14]],"A Christmas tree, sparkling with lights.")}
   if(own('statue')){addObj(SPR.statue,29.6,14.6,40,110,{sc:.9});block([[29,14]],"A stone dragon, standing guard over the island.")}else plot('statue');
@@ -189,8 +192,11 @@ function finishStep(){
   else if(!G.doorAsked&&!G.modal&&G.mode==='ground'){G.doorAsked=true;P.queue=[];P.pending=null;runAct(trig.get(k))}
   collectAt(i,j);
 }
+/* extra tap area around an object: tapping these tiles counts as tapping the object's own tile */
+function hitArea(i,j,cells){cells.forEach(([a,b])=>{const x=i+a,y=j+b;if(x>=0&&x<W&&y>=0&&y<H&&!blocked[y][x]&&!redir.has(key(x,y)))redir.set(key(x,y),[i,j])})}
 function doTapTile(i,j){
   if(G.modal||overlayOpen()||G.mode==='rising'||G.mode==='landing'||!VS.ready)return;
+  if(!blocked[j]||!blocked[j][i]){const r=redir.get(key(i,j));if(r){i=r[0];j=r[1]}}
   P.queue=[];P.pending=null;const [ti,tj]=ptile();
   if(i===ti&&j===tj)return;
   if(flying()){P.queue=line(ti,tj,Math.max(1,Math.min(W-2,i)),Math.max(1,Math.min(H-2,j)));return}
@@ -430,6 +436,7 @@ function markup(){
       <div class="vchip" id="vquest"><i></i><span></span></div>
       <button class="vchip vbtn" id="vschool" data-act="vschool">Take me to the school house</button></div>
     <div class="vright">
+      <span class="pill vsun" id="vsun" hidden></span>
       <span class="pill num" id="vstreak" title="Days trained in a row">${ic('flame',18)} <b>0</b></span>
       <span class="pill gold num" id="vemb" title="Embers">${ic('ember',18)} <b>0</b></span>
       <button class="btn btn-icon btn-sm" data-act="sfx" id="vsfx" aria-label="Sound effects" style="background:var(--surface)"></button>
@@ -447,6 +454,7 @@ function markup(){
 }
 function hud(){
   if(!$('#vil')||!S.dragon)return;
+  if(typeof Allow!=='undefined')Allow.paint();
   const d=S.dragon,dn=done();
   const hn=(S.hero&&S.hero.name)||d.name;$('#vnm').textContent=hn;$('#vst').textContent=(S.hero&&S.hero.name?d.name+' · ':'')+(d.hatched?STAGE_NAMES[dragonStage()]:'Dragon egg');
   $('#vstreak b').textContent=S.streak.cur+' day'+(S.streak.cur===1?'':'s');$('#vemb b').textContent=S.embers;
@@ -499,6 +507,7 @@ async function show(){
   VS.last=0;VS.raf=requestAnimationFrame(frame);
   if(first&&!S.day.trained)vtoast('Walk to the school house. Arrow keys, or tap where you want to go.',4200);
   announceNew();
+  { const got=Fam.claim(); if(got){ hud(); setTimeout(()=>{ if(screen==='village'&&!G.modal) vsay(`The family chest opened! There is a bonus for you: +${got} embers.`) },900) } }
   if(S.day.trained&&!S.day.jokeShown&&!first){S.day.jokeShown=true;saveState();setTimeout(()=>{if(screen==='village'&&!G.modal&&!overlayOpen())tellJoke()},1800)}
 }
 function closeSheetSafe(){try{closeSheet()}catch(e){}}
@@ -582,6 +591,7 @@ function updateNpcs(dt){
 /* ---------- per-frame update ---------- */
 function update(dt){
   G.t+=dt;
+  if(typeof Allow!=='undefined'&&Allow.dusk()>.6&&G.mode==='ground'){VS.zT=(VS.zT||0)-dt;if(VS.zT<=0){VS.zT=1.7;parts.push({t:'zzz',x:Dg.x*T+8,y:Dg.y*T-30,vx:7,vy:-16,age:0,life:2.4})}}
   if(done()&&G.bridge<1)G.bridge=Math.min(1,G.bridge+dt/2.4);
   if(!done()&&G.bridge>0)G.bridge=Math.max(0,G.bridge-dt*2);
   if(G.mode==='rising'){
@@ -660,8 +670,10 @@ function drawShard(c,x,y,t,i){const b=Math.sin(t*2.4+i)*3,gl=.6+.4*Math.sin(t*4+
   c.fillStyle='#ffd88a';c.beginPath();c.moveTo(0,-11);c.lineTo(7,0);c.lineTo(0,2);c.closePath();c.fill();
   c.fillStyle='rgba(255,255,255,.7)';c.beginPath();c.moveTo(-3,-3);c.lineTo(-1,-6);c.lineTo(0,-2);c.closePath();c.fill();c.restore();
   c.fillStyle='rgba(15,35,30,.22)';c.beginPath();c.ellipse(x,y,6,2.2,0,0,6.3);c.fill()}
-function daylight(){const h=VS.hour!=null?VS.hour:(new Date().getHours()+new Date().getMinutes()/60);
+function clockNight(){const h=VS.hour!=null?VS.hour:(new Date().getHours()+new Date().getMinutes()/60);
   if(h>=20.5||h<5.5)return 1;if(h>=18)return (h-18)/2.5;if(h<7.5)return (7.5-h)/2;return 0}
+/* the real evening, or the bedtime sunset, whichever is darker */
+function daylight(){return Math.max(clockNight(),(typeof Allow!=='undefined'?Allow.dusk():0))}
 
 function frame(now){
   if(screen!=='village'){VS.raf=0;return}
@@ -732,8 +744,10 @@ function frame(now){
     else if(p.t==='ember'){c.fillStyle=`rgba(255,${150+a*80|0},60,${a})`;c.fillRect(p.x,p.y,1.8,1.8)}
     else if(p.t==='dust'){c.fillStyle=`rgba(220,200,160,${.5*a})`;c.beginPath();c.arc(p.x,p.y,3+p.age*8,0,6.3);c.fill()}
     else if(p.t==='wind'){c.strokeStyle=`rgba(255,255,255,${.5*a})`;c.lineWidth=1.4;c.beginPath();c.moveTo(p.x,p.y);c.lineTo(p.x-p.vx*.12,p.y-p.vy*.12);c.stroke()}
+    else if(p.t==='zzz'){c.fillStyle=`rgba(255,255,255,${.85*a})`;c.font=`bold ${12+p.age*7}px sans-serif`;c.fillText('z',p.x,p.y)}
     else if(p.t==='spark'){c.fillStyle=`rgba(255,230,150,${a})`;c.beginPath();c.arc(p.x,p.y,2.2*a+.6,0,6.3);c.fill()}}
   // evening tint, then the lights
+  {const dk=typeof Allow!=='undefined'?Allow.dusk():0;if(dk>0){const w=Math.sin(Math.min(1,dk*1.15)*Math.PI);c.save();c.setTransform(1,0,0,1,0,0);c.globalCompositeOperation='multiply';c.fillStyle=`rgb(255,${255-Math.round(70*w)},${255-Math.round(120*w)})`;c.fillRect(0,0,cv.width,cv.height);c.restore()}}
   if(night>0){c.save();c.setTransform(1,0,0,1,0,0);c.globalCompositeOperation='multiply';
     c.fillStyle=`rgb(${255-Math.round(90*night)},${255-Math.round(78*night)},${255-Math.round(36*night)})`;c.fillRect(0,0,cv.width,cv.height);c.restore()}
   c.globalCompositeOperation='lighter';
@@ -748,7 +762,10 @@ function frame(now){
   const vg=c.createRadialGradient(cw/2,ch/2,Math.min(cw,ch)*.45,cw/2,ch/2,Math.max(cw,ch)*.75);vg.addColorStop(0,'rgba(30,20,40,0)');vg.addColorStop(1,'rgba(30,20,40,.3)');c.fillStyle=vg;c.fillRect(0,0,cw,ch);
 }
 
-return {show,preload,refresh,reset,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
+const idle=()=>!!(VS.ready&&!G.modal&&!overlayOpen()&&G.mode==='ground'&&!P.moving&&!P.queue.length&&!typing&&!($('#vq')&&!$('#vq').hidden));
+const busy=()=>!!(overlayOpen()||($('#vq')&&!$('#vq').hidden));
+function yawn(){if(screen!=='village')return;vtoast(`${S.dragon.name} yawns and stretches. Getting sleepy...`,4200);Audio_.fx('soft');VS.zT=0}
+return {show,preload,refresh,reset,idle,busy,yawn,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
   state:{G,P,Dg,VS,OBJ,TREES,notes,acts,blocked,walk,cam,held},
   setHour:h=>{VS.hour=h},setPos:(x,y)=>{P.x=x+.5;P.y=y+.5;Dg.x=P.x-1;Dg.y=P.y;Dg.trail=[]},
   okGround,bfs,ptile,tapTile:doTapTile,say:vsay,shards:()=>VS.shards,collectAt,runAct,
