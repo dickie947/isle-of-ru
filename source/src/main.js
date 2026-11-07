@@ -48,7 +48,7 @@ function showSplash(name,cb){
   const look={body:'#2a9d8f',wing:'#8e5bb5',eyes:'#2f6fd0',horn:'none',pattern:'none',tail:'club',name:''};
   const who=name?esc(name):'You';
   const text=name?`${who} has sailed to the Isle of Ru, an island full of dragons, secrets and surprises. Mend the bridge, hatch your own dragon, meet the villagers, and find out what is waiting beyond the sea.`:`An island full of dragons, secrets and surprises is waiting. Mend the bridge, hatch your own dragon, meet the villagers, and explore beyond the sea.`;
-  $('#app').innerHTML=`<div class="splash"><div class="splash-in"><div class="splash-dragon">${dragonSVG(look,{mood:'happy',stage:2,uid:'splash'})}</div><h1 class="splash-title">Isle of Ru</h1><p class="splash-text">${text}</p><button class="btn btn-ember btn-big" data-act="splash-go">Begin ${ic('next',24)}</button></div></div>`;
+  $('#app').innerHTML=`<div class="splash"><div class="splash-in"><div class="splash-dragon">${dragonSVG(look,{mood:'happy',stage:2,uid:'splash'})}</div><h1 class="splash-title">Isle of Ru</h1><p class="splash-text">${text}</p><button class="btn btn-ember btn-big" data-act="splash-go">Begin ${ic('next',24)}</button><p class="splash-ver">Version ${BUILD.v} · built ${BUILD.d}</p></div></div>`;
 }
 function startNewPlayer(key){
   SAVE_KEY=key; SAVE_LOCKED=false; S=freshState(); draft=null; createExtra=false; Village.reset();

@@ -3,7 +3,11 @@ d='/home/claude/emberisle/src/'
 head=open(d+'head.html').read()
 rd=lambda f:open(d+f).read()+'\n'
 vil='const Village=(function(){\n'+''.join(rd(f) for f in ['v_world.js','v_sprites.js','v_sprites2.js','v_isles.js','v_green.js','v_chars.js','village.js'])+'\n})();\n'
-js=''.join(rd(f) for f in ['art.js','audio.js','core.js','tools.js','session.js','content.js'])+vil+rd('main.js')
+js=''.join(rd(f) for f in ['art.js','audio.js','core.js','tools.js','session.js','content.js','allow.js'])+vil+rd('main.js')
+import datetime
+ver=open(d+'VERSION').read().strip(); now=datetime.datetime.now(datetime.timezone.utc)
+vjs="const BUILD={v:'%s',d:'%s'};\n"%(ver,now.strftime('%-d %b %Y, %H:%M UTC'))
+js=vjs+js
 body='<div id="app"></div>\n<div id="overlay"></div>\n'
 frag=head+body+'<script>\n(function(){\n\'use strict\';\n'+js+'\n})();\n</script>\n'
 open('/home/claude/emberisle/app.html','w').write(frag)

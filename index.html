@@ -437,11 +437,13 @@ button.hero-dragon{display:block;background:none;border:0}
 .tens-key{display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:.9rem;color:var(--muted)}
 .tens-empty{color:var(--muted);font-size:.9rem;align-self:center}
 </style>
+<style>.splash-ver{margin:10px 0 0;font-size:13px;opacity:.7;letter-spacing:.02em}</style>
 <div id="app"></div>
 <div id="overlay"></div>
 <script>
 (function(){
 'use strict';
+const BUILD={v:'2.0.1',d:'7 Nov 2026, 07:30 UTC'};
 /* ================= art: colours, icons, dragon, egg, island ================= */
 function hex2rgb(h){h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.substr(i,2),16));}
 function rgb2hex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');}
@@ -4214,7 +4216,7 @@ function showSplash(name,cb){
   const look={body:'#2a9d8f',wing:'#8e5bb5',eyes:'#2f6fd0',horn:'none',pattern:'none',tail:'club',name:''};
   const who=name?esc(name):'You';
   const text=name?`${who} has sailed to the Isle of Ru, an island full of dragons, secrets and surprises. Mend the bridge, hatch your own dragon, meet the villagers, and find out what is waiting beyond the sea.`:`An island full of dragons, secrets and surprises is waiting. Mend the bridge, hatch your own dragon, meet the villagers, and explore beyond the sea.`;
-  $('#app').innerHTML=`<div class="splash"><div class="splash-in"><div class="splash-dragon">${dragonSVG(look,{mood:'happy',stage:2,uid:'splash'})}</div><h1 class="splash-title">Isle of Ru</h1><p class="splash-text">${text}</p><button class="btn btn-ember btn-big" data-act="splash-go">Begin ${ic('next',24)}</button></div></div>`;
+  $('#app').innerHTML=`<div class="splash"><div class="splash-in"><div class="splash-dragon">${dragonSVG(look,{mood:'happy',stage:2,uid:'splash'})}</div><h1 class="splash-title">Isle of Ru</h1><p class="splash-text">${text}</p><button class="btn btn-ember btn-big" data-act="splash-go">Begin ${ic('next',24)}</button><p class="splash-ver">Version ${BUILD.v} · built ${BUILD.d}</p></div></div>`;
 }
 function startNewPlayer(key){
   SAVE_KEY=key; SAVE_LOCKED=false; S=freshState(); draft=null; createExtra=false; Village.reset();
