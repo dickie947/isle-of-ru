@@ -148,7 +148,7 @@ Rule: nothing the children buy or build should be text-only. Each item gets one 
 Note: there is no lighthouse in the game yet. The only lighthouse on the plan is the weekly shared build for the week of 16 Nov, so check how it fits with the Update 6 time strand when we get there.
 
 ## Viking helmets for Millie and the hens (requested 7 Nov, Update 3)
-Two new shop items beside the existing Millie and hen outfits: a mini Viking helmet for Millie and mini Viking helmets for the hens (horned or plain, to be settled with the art). Same wearing system as the collar, hat and bows, same price band (about 35 to 45 embers). Small reaction when worn, for example Millie looking very serious.
+Two new shop items beside the existing Millie and hen outfits: a mini Viking helmet for Millie and mini Viking helmets for the hens (horned, decided 7 Nov). Same wearing system as the collar, hat and bows, same price band (about 35 to 45 embers). Small reaction when worn, for example Millie looking very serious.
 
 ## Open items
 - Real hen names: given, to be added in Update 1.
