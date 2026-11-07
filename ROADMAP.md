@@ -6,7 +6,7 @@ Eight weekly updates from 23 October 2026. Each has one new mini-game for after 
 | --- | --- | --- | --- |
 | 1 | 30 Oct (live 24 Oct; 1.1 hotfix (hide and seek board) built 24 Oct) | Hide and seek: Millie or a baby dragon hides each day, number clues. Halloween-themed | "Are you sure?" on every ember purchase; extra-practice cap 30 to 90; real hen names (Skullcrusher, Hookfang, Channel, Floppsie) and a fourth hen; check other screens for unreadable buttons; autumn and Halloween items |
 | 2 | 6 Nov | Treasure map digging: grid clues | Daily play allowance (25 min) and pass-the-iPad screen; two-key family chest; hide and seek flag tap fix; dad jokes rewrite (31 jokes); music variation step 1; Drop 2 maths begins (first batch) with spaced repetition for each new question type |
-| 3 | 13 Nov | Fishing at the jetty | Weekly shared build begins; gift swaps; dragon fishing trips; more Drop 2 maths; calm check-up mode and weekly parents' summary (or Update 4 if Update 3 is heavy); first Drop 2 villagers and shop items |
+| 3 | 13 Nov | Fishing at the jetty | Weekly shared build begins; gift swaps; dragon fishing trips; more Drop 2 maths; calm check-up mode and weekly parents' summary (or Update 4 if Update 3 is heavy); first Drop 2 villagers and shop items; small uses for the text-only items (fountain, statue, campfire, dragon torch, banner); Viking helmets for Millie and the hens |
 | 4 | 20 Nov | Garden and farm | Drop 2 island and number-door puzzle; island residents (Snowcap Isle) |
 | 5 | 27 Nov | Dragon races | Drop 2 finished; eggs and new dragon species; orders board and two-good storehouse (resource management step 1); first island residents |
 | 6 | 4 Dec | Island shopkeeper | Drop 3 begins; time strand starts (rungs 1 and 2) |
@@ -130,6 +130,25 @@ Later steps, matched to the maths plan:
 - Dragon trips: "10 fish a trip, 25 fish, how many trips?" (division with remainder). Trip times and distances feed the time strand, rung 8.
 - Feast planning: "12 guests, 3 per table; half want fish" (sharing and fractions; Drop 3).
 Shared family storehouse (idea, to test small first): both children gather into one storehouse; the weekly shared build's materials come from completed orders; gift swaps can pass goods as well as decorations. Risk: ties several features together, so ship a small version first.
+
+## Every item and building has a use (requested 7 Nov)
+Rule: nothing the children buy or build should be text-only. Each item gets one calm interaction, with a payout of at most once a day per item, so tapping the same thing over and over cannot farm embers. Audit on 7 Nov: working already = school house, forge, stables, clothes shop, bakery, coop, dock and longship. Text only today = lookout tower, fountain, windmill, dragon statue, flower garden, campfire, dragon torch (the iron torch), banner, pines. Dress-up only = Halloween items, Millie and hen outfits (these get a small reaction).
+| Item | Planned use | When |
+|---|---|---|
+| Lookout tower | Climb up, see the open islands, count the boats | Update 3 |
+| Fountain | Toss in an ember and wish; a small daily surprise | Update 3 |
+| Dragon statue | The dragon copies the pose and says its streak out loud | Update 3 |
+| Campfire | Story time: a short Nordic tale or a joke | Update 3 |
+| Dragon torch | Tap to light it; glows more as the sunset arrives | Update 3 |
+| Banner | Choose its colours and emblem | Update 3 |
+| Jetty | Fishing (see the fishing section) | Update 3 |
+| Flower garden | Water it, then collect honey for the honey buns | Update 4 (garden and farm) |
+| Windmill | Grind grain into flour for the bakery (resource management step 1) | Update 5 |
+| Lighthouse (new building) | Light the beacon to guide boats in; opens the time strand with Knut the keeper | Update 6 (4 Dec) with the weekly shared build lighthouse |
+Note: there is no lighthouse in the game yet. The only lighthouse on the plan is the weekly shared build for the week of 16 Nov, so check how it fits with the Update 6 time strand when we get there.
+
+## Viking helmets for Millie and the hens (requested 7 Nov, Update 3)
+Two new shop items beside the existing Millie and hen outfits: a mini Viking helmet for Millie and mini Viking helmets for the hens (horned or plain, to be settled with the art). Same wearing system as the collar, hat and bows, same price band (about 35 to 45 embers). Small reaction when worn, for example Millie looking very serious.
 
 ## Open items
 - Real hen names: given, to be added in Update 1.
