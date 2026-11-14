@@ -329,7 +329,7 @@ function swapDragon(k){
 }
 
 /* ---- grown-ups ---- */
-function itemLabel(it){ return it.kind==='bond'?`${it.a}+?`:it.kind==='add'||it.kind==='wadd'?`${it.x}+${it.y}`:it.kind==='tadd'?`${it.T}+${it.u}`:it.kind==='sub'?`${it.n}−${it.m}`:it.kind==='tsub'?`${it.c}−${it.u}`:it.kind==='xadd'?`${it.x}0+${it.y}0`:it.kind==='xsub'?`${it.c}0−${it.y}0`:it.kind==='oadd'?`ones ${it.o}+${it.u}`:it.kind==='osub'?`ones ${it.o+it.u}−${it.u}`:it.kind==='wsub'?`${it.c}−?`:`fam ${it.x}+${it.y}`; }
+function itemLabel(it){ return it.kind==='bond'?`${it.a}+?`:it.kind==='add'||it.kind==='wadd'?`${it.x}+${it.y}`:it.kind==='tadd'?`${it.T}+${it.u}`:it.kind==='sub'?`${it.n}−${it.m}`:it.kind==='tsub'?`${it.c}−${it.u}`:it.kind==='dadd'?`2-digit +, ones ${it.o1}+${it.o2}`:it.kind==='dsub'?`2-digit −, ones ${it.o1}`:it.kind==='skip'?`count in ${it.st}s (${it.n})`:it.kind==='xadd'?`${it.x}0+${it.y}0`:it.kind==='xsub'?`${it.c}0−${it.y}0`:it.kind==='oadd'?`ones ${it.o}+${it.u}`:it.kind==='osub'?`ones ${it.o+it.u}−${it.u}`:it.kind==='wsub'?`${it.c}−?`:`fam ${it.x}+${it.y}`; }
 function median(a){ if(!a.length) return null; const s=a.slice().sort((x,y)=>x-y), m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
 function fmtS(ms){ if(ms==null) return '–'; const s=Math.round(ms/1000); return s<90?`${s}s`:`${Math.round(s/60)} min`; }
 function faceWord(v){return v===3?'good':v===2?'okay':v===1?'worried':'no answer';}

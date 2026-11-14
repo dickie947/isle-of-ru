@@ -4,6 +4,33 @@ let SESS=null, Q=null, DASH=null;
 
 function makeQ(it,opts={}){
   const D=S.dragon.name, th=pick(THINGS), q={it,kind:it.kind,ans:it.ans,th,id:it.id};
+  if(it.kind==='dadd'||it.kind==='dsub'){
+    const add=it.kind==='dadd';
+    const T1=add?RR(1,8):RR(2,9), T2=add?RR(1,9-T1):RR(1,T1-1);   /* tens digits, no regrouping and no negatives */
+    const sm=add?[it.o1,it.o2]:[it.o1,it.o2]; let o1=sm[0],o2=sm[1];
+    if(add){ if(Math.random()<.5){const z=o1;o1=o2;o2=z;} }
+    let a,b;
+    if(add){ a=T1*10+o1; b=T2*10+o2; }
+    else{ a=T1*10+o1+o2; b=T2*10+o2; }   /* ones: (o1+o2) - o2 = o1, never borrow */
+    q.kind='tens'; q.tens={add,a,b,tensOnly:false}; q.land=add?a+b:a-b; q.ans=q.land;
+    q.eq=[{t:a},{op:add?'+':'−'},{t:b},{op:'='},{ans:1}];
+    q.story=add?`${esc(D)} has <b>${a}</b> ${th.many}. A friend gives <b>${b}</b> more. How many ${th.many} now?`:`${esc(D)} has <b>${a}</b> ${th.many}. <b>${b}</b> of them ${b===1?'rolls':'roll'} away. How many are left?`;
+    q.nudge={counters:add?`Move the tall bars first, then the little cubes. Tap every block in the second group. Then count.`:`Take away the tall bars first, then the little cubes. Then count what is left.`,line:''};
+    q.explain=add?`Tens first: <b>${Math.floor(a/10)} + ${Math.floor(b/10)} = ${Math.floor(a/10)+Math.floor(b/10)}</b> tens. Ones next: <b>${a%10} + ${b%10} = ${a%10+b%10}</b>. Together: <b>${q.land}</b>.`
+                  :`Tens first: <b>${Math.floor(a/10)} − ${Math.floor(b/10)} = ${Math.floor(a/10)-Math.floor(b/10)}</b> tens. Ones next: <b>${a%10} − ${b%10} = ${a%10-b%10}</b>. Together: <b>${q.land}</b>.`;
+    q.hintLine=`Do the tens, then the ones.`;
+    return q;
+  }
+  if(it.kind==='skip'){
+    const st=it.st,n=it.n; const seq=[]; for(let i=1;i<n;i++) seq.push(st*i);
+    q.kind='skip'; q.skip={st,n,seq}; q.ans=st*n;
+    q.eq=[{t:seq.slice(-3).join(', ')+','},{ans:1}];
+    q.story=`${esc(D)} counts in ${st}s: <b>${seq.slice(-3).join(', ')}</b>, and then? What number comes next?`;
+    q.nudge={counters:`Each hop is +${st}. Tap the numbers one at a time and say them out loud.`,line:''};
+    q.explain=`Each step adds ${st}. <b>${seq[seq.length-1]} + ${st} = ${st*n}</b>.`;
+    q.hintLine=`Count on ${st} from ${seq[seq.length-1]}.`;
+    return q;
+  }
   if(it.kind==='xadd'||it.kind==='xsub'||it.kind==='oadd'||it.kind==='osub'){
     const add=it.kind==='xadd'||it.kind==='oadd', tens=it.kind==='xadd'||it.kind==='xsub';
     let a,b,t=0;   /* a = start amount, b = amount joined or taken */
@@ -12,7 +39,7 @@ function makeQ(it,opts={}){
     q.kind='tens'; q.tens={add,a,b,tensOnly:tens}; q.land=add?a+b:a-b; q.ans=q.land;
     q.eq=[{t:a},{op:add?'+':'−'},{t:b},{op:'='},{ans:1}];
     const unit=tens?'tens':'ones';
-    q.story=add?`${esc(D)} found <b>${a}</b> ${th.many}, then <b>${b}</b> more. How many ${th.many} altogether?`:`${esc(D)} has <b>${a}</b> ${th.many}. <b>${b}</b> of them roll away. How many are left?`;
+    q.story=add?`${esc(D)} found <b>${a}</b> ${th.many}, then <b>${b}</b> more. How many ${th.many} altogether?`:`${esc(D)} has <b>${a}</b> ${th.many}. <b>${b}</b> of them ${b===1?'rolls':'roll'} away. How many are left?`;
     const na=tens?a/10:a, nb=tens?b/10:b;
     q.nudge={counters:tens?(add?`Each tall bar is a ten. Tap the bars in the second group to move them across. Then count the tens.`:`Each tall bar is a ten. Tap ${b/10} bar${b/10>1?'s':''} to take ${b/10>1?'them':'it'} away. Count the bars that are left.`)
                               :(add?`Leave the tens alone. Tap the little cubes in the second group to move them across. Then count.`:`Leave the tens alone. Tap ${b} little cube${b>1?'s':''} to take away. Then count what is left.`),line:''};
@@ -128,7 +155,7 @@ function nextQuestion(){
   const entry=SESS.plan[SESS.idx]; SESS.idx++;
   const it=ITEM[entry.id]; const q=makeQ(it);
   const st=S.items[entry.id];
-  const sugg=(st&&st.seen>=2&&st.seen%2===0&&q.kind!=='tens')?'line':'counters';
+  const sugg=(st&&st.seen>=2&&st.seen%2===0&&q.kind!=='tens'&&q.kind!=='skip')?'line':'counters';
   Q={entry,q,t0:Date.now(),lastAct:Date.now(),attempts:0,hints:0,guided:entry.role==='new',rapid:0,done:false,answer:'',hard:null,tool:'counters',sugg,
      touched:false,counters:null,line:null,toolsUsed:new Set(),demo:false,locked:false,gap:null};
   if(SESS.qShownAt==null) SESS.qShownAt=Date.now();
@@ -165,13 +192,13 @@ function renderQuestion(){
     </section>
    </div></div>`;
   const cb={onTouch:()=>{Q.touched=true;Q.lastAct=Date.now();}};
-  if(q.kind==='tens'){ Q.counters=new TensTool($('#tool-counters'),q,cb); Q.line=Q.counters; const tb=$('#tab-line'); if(tb) tb.style.display='none'; const tc=$('#tab-counters'); if(tc) tc.textContent='Blocks'; }
+  if(q.kind==='tens'||q.kind==='skip'){ Q.counters=(q.kind==='skip'?new SkipTool($('#tool-counters'),q,cb):new TensTool($('#tool-counters'),q,cb)); Q.line=Q.counters; const tb=$('#tab-line'); if(tb) tb.style.display='none'; const tc=$('#tab-counters'); if(tc) tc.textContent=(q.kind==='skip'?'Hops':'Blocks'); } else if(0){ Q.counters=new TensTool($('#tool-counters'),q,cb); Q.line=Q.counters; const tb=$('#tab-line'); if(tb) tb.style.display='none'; const tc=$('#tab-counters'); if(tc) tc.textContent='Blocks'; }
   else{ Q.counters=new CounterTool($('#tool-counters'),q,cb); Q.line=new LineTool($('#tool-line'),q,cb); }
   if(Q.sugg==='line') switchTool('line',true);
   renderRight();
   if(Q.guided){ const t=Q.tool==='line'?Q.line:Q.counters; t.note(esc(q.nudge[Q.tool])); if(Q.tool==='counters') highlightTool(); else Q.line.setHighlight(); setFb('info',`New one! Let's try it together. ${esc(q.nudge[Q.tool])}`,'help'); }
 }
-function highlightTool(){ const q=Q.q; if(q.kind==='tens') return; if(q.kind==='bond') Q.counters.setHighlight('A'); else if(q.kind==='add') Q.counters.setHighlight(q.teen?'B':'A'); else Q.counters.setHighlight(q.sub.n<=10?'A':'B'); }
+function highlightTool(){ const q=Q.q; if(q.kind==='tens'||q.kind==='skip') return; if(q.kind==='bond') Q.counters.setHighlight('A'); else if(q.kind==='add') Q.counters.setHighlight(q.teen?'B':'A'); else Q.counters.setHighlight(q.sub.n<=10?'A':'B'); }
 function setFb(kind,html,icon){ const el=$('#fb'); if(el) el.innerHTML=fbHTML(kind,html,icon); }
 function renderRight(){
   const el=$('#rightbottom'); if(!el) return;
@@ -248,7 +275,8 @@ function answerRight(){
   if(!clean&&entry.role!=='repeat'&&entry.role!=='rebuild'&&!entry.again){ SESS.plan.splice(Math.min(SESS.plan.length,SESS.idx+3),0,{id:entry.id,role:'repeat',again:true}); }
   /* feedback */
   let msg;
-  if(clean&&strat&&q.kind==='tens') msg=q.tens.add?'You joined the blocks and counted. Nice!':'You took them away and counted what was left. Nice!';
+  if(clean&&strat&&q.kind==='skip') msg='You hopped along and counted on. Nice!';
+  else if(clean&&strat&&q.kind==='tens') msg=q.tens.add?'You joined the blocks and counted. Nice!':'You took them away and counted what was left. Nice!';
   else if(clean&&strat&&q.noBridge) msg=q.kind==='add'?'You worked it out step by step. Nice!':'You took them away and counted what was left. Nice!';
   else if(clean&&strat) msg=q.kind==='sub'||q.kind==='fam'?'You stepped back to ten first. Smart strategy!':q.kind==='bond'?'You filled the tray to ten. Nice work!':'You made ten first, then added the rest. That is the trick!';
   else if(clean&&toolUsed!=='none') msg=`You checked it with the ${toolUsed==='line'?'number line':'counters'}. That is a good habit.`;
@@ -288,7 +316,7 @@ function finishSession(partial){
   if(!partial&&bonus&&SESS.total>=3){ bonusEmbers=Math.min(3,extraLeft()); S.day.extra=(S.day.extra||0)+bonusEmbers; S.embers+=bonusEmbers; SESS.earned+=bonusEmbers; rec.embers=SESS.earned; }
   if(!partial&&!bonus){
     bonusEmbers=5+(S.day.trained?0:0); S.embers+=bonusEmbers; SESS.earned+=bonusEmbers; rec.embers=SESS.earned;
-    S.day.trained=true; bumpStreak(); abilityTick(); SESS.chest=Fam.practiceDone();
+    S.day.trained=true; bumpStreak(); abilityTick(); SESS.chest=Fam.practiceDone(); SESS.build=Fam.lastBuild||null;
     SESS.newborn=[]; S.extra.forEach(e=>{ if(!e.hatched){ e.hatched=true; e.since=S.days.length; SESS.newborn.push(e.name); } });
   }
   snapshot(); saveState();
@@ -315,6 +343,7 @@ function renderEnd(stage){
       ${SESS.bonus?'':`<div class="stat"><b class="num">${S.streak.cur}</b><span>day flame ${ic('flame',16)}</span></div>`}
     </div>
     ${SESS.chest?`<p style="max-width:520px"><b>Family chest:</b> a key turned (+${SESS.chest.gain-(SESS.chest.opened?CHEST_BONUS:0)} embers).${SESS.chest.opened?` <b>The chest is open! +${CHEST_BONUS} bonus embers.</b>`:(SESS.chest.total>=2?` ${SESS.chest.keys} of ${SESS.chest.total} keys so far today.`:'')}</p>`:''}
+    ${SESS.build?`<p style="max-width:520px"><b>Island project:</b> ${SESS.build.done?`the ${esc(SESS.build.name.toLowerCase())} is finished! <b>+${SESS.build.reward} embers.</b>`:`${SESS.build.stageUp?`the ${esc(SESS.build.name.toLowerCase())} grew another stage! `:`${esc(SESS.build.name)}: `}${SESS.build.n} of ${SESS.build.need} bricks.`}</p>`:''}
     <div style="margin-top:6px"><p style="color:var(--ink2)">How was that?</p>
     <div class="faces" style="margin:6px 0" id="endfaces">
       <button class="face" data-act="endface" data-v="3" style="width:96px;padding:8px">${faceSVG('good')}Good</button>

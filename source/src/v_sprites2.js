@@ -103,10 +103,11 @@ function makeSprites2(){
   });
 
   /* ---- banner on a tall pole ---- */
-  SPR.banner=mk(70,130,(c)=>{shadowBlob(c,22,122,14,5,.3);c.fillStyle='#6c4a2a';c.fillRect(20,12,5,110);c.fillStyle='#d9a441';c.beginPath();c.arc(22.5,10,4,0,6.3);c.fill();
-    c.fillStyle=lg(c,24,0,64,0,['#e8743b','#c9431d']);c.beginPath();c.moveTo(25,16);c.quadraticCurveTo(46,8,62,16);c.quadraticCurveTo(54,32,62,50);c.quadraticCurveTo(44,42,25,50);c.closePath();c.fill();
-    c.fillStyle='#ffd36b';for(let r=0;r<2;r++)for(let k=0;k<5;k++){c.beginPath();c.arc(32+k*5.4,26+r*8,1.7,0,6.3);c.fill()}});
-
+  function mkBanner(a,b,dots){return mk(70,130,(c)=>{shadowBlob(c,22,122,14,5,.3);c.fillStyle='#6c4a2a';c.fillRect(20,12,5,110);c.fillStyle='#d9a441';c.beginPath();c.arc(22.5,10,4,0,6.3);c.fill();
+    c.fillStyle=lg(c,24,0,64,0,[a,b]);c.beginPath();c.moveTo(25,16);c.quadraticCurveTo(46,8,62,16);c.quadraticCurveTo(54,32,62,50);c.quadraticCurveTo(44,42,25,50);c.closePath();c.fill();
+    c.fillStyle=dots;for(let r=0;r<2;r++)for(let k=0;k<5;k++){c.beginPath();c.arc(32+k*5.4,26+r*8,1.7,0,6.3);c.fill()}})}
+  SPR.banner=mkBanner('#e8743b','#c9431d','#ffd36b');
+  SPR.bannerVar=[SPR.banner,mkBanner('#4b8fd9','#2a5aa8','#e8f3ff'),mkBanner('#5fae5a','#2f7a3a','#f3ffe0'),mkBanner('#a366d9','#6b3aa8','#ffe8ff')];
   /* ---- Dragon Dash arch ---- */
   SPR.dashgate=mk(120,120,(c)=>{shadowBlob(c,60,110,50,8,.35);
     [[22],[98]].forEach(([x])=>{c.fillStyle=lg(c,x-5,0,x+5,0,['#8a5f36','#5a3b22']);c.fillRect(x-5,26,10,84);c.fillStyle='#d9a441';c.beginPath();c.arc(x,24,6,0,6.3);c.fill()});

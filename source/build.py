@@ -2,7 +2,7 @@ import re,sys
 d='/home/claude/emberisle/src/'
 head=open(d+'head.html').read()
 rd=lambda f:open(d+f).read()+'\n'
-vil='const Village=(function(){\n'+''.join(rd(f) for f in ['v_world.js','v_sprites.js','v_sprites2.js','v_isles.js','v_green.js','v_chars.js','village.js'])+'\n})();\n'
+vil='const Village=(function(){\n'+''.join(rd(f) for f in ['v_world.js','v_sprites.js','v_sprites2.js','v_isles.js','v_green.js','v_uses.js','v_build.js','v_chars.js','village.js'])+'\n})();\n'
 js=''.join(rd(f) for f in ['art.js','audio.js','core.js','tools.js','session.js','content.js','allow.js'])+vil+rd('main.js')
 import datetime
 ver=open(d+'VERSION').read().strip(); now=datetime.datetime.now(datetime.timezone.utc)

@@ -222,7 +222,7 @@ class TensTool{
     const mk=n=>{const arr=[]; for(let i=0;i<Math.floor(n/10);i++) arr.push({k:'ten',s:1}); for(let i=0;i<n%10;i++) arr.push({k:'one',s:1}); return arr;};
     if(T.add){ this.A=mk(T.a); this.B=mk(T.b); }
     else { this.A=mk(T.a); this.B=[]; }
-    this.target=T.b/(T.tensOnly?10:1);
+    this.quota={ten:Math.floor(T.b/10),one:T.b%10}; this.rem={ten:0,one:0};
     this.draw();
   }
   reset(){this.init();}
@@ -240,7 +240,7 @@ class TensTool{
   canTap(f,b){
     const T=this.t; if(b.s===3) return false;
     if(T.add) return f==='B'&&b.s===1;
-    return b.k===(T.tensOnly?'ten':'one')&&b.s===1;
+    return b.s===1&&this.rem[b.k]<this.quota[b.k];
   }
   draw(){
     const T=this.t;
@@ -254,8 +254,8 @@ class TensTool{
     const el=this.root.querySelector('[data-note]'); if(!el) return;
     if(this.custom){ el.innerHTML=this.custom; return; }
     const T=this.t, all=this.A.concat(this.B), tn=this.count(all,'ten'), on=this.count(all,'one');
-    if(T.add&&this.moved===0) el.innerHTML=T.tensOnly?'Tap the tall bars in the second group to move them across.':'Tap the little cubes in the second group to move them across.';
-    else if(!T.add&&this.removed===0) el.innerHTML=T.tensOnly?'Tap the tall bars to take them away.':'Tap little cubes to take them away.';
+    if(T.add&&this.moved===0) el.innerHTML=T.tensOnly?'Tap the tall bars in the second group to move them across.':(T.b>=10?'Tap the bars, then the cubes, in the second group to move them across.':'Tap the little cubes in the second group to move them across.');
+    else if(!T.add&&this.removed===0) el.innerHTML=T.tensOnly?'Tap the tall bars to take them away.':(T.b>=10?'Tap the bars, then the cubes, to take them away.':'Tap little cubes to take them away.');
     else el.innerHTML=`Now there are <b>${tn}</b> ${tn===1?'ten':'tens'} and <b>${on}</b> ${on===1?'one':'ones'}.`;
   }
   onClick(e){
@@ -265,12 +265,11 @@ class TensTool{
     this.touched=true; this.cb.onTouch&&this.cb.onTouch(); this.custom=null;
     if(this.t.add){ blk.s=2; this.A.push({k:blk.k,s:2}); this.B.splice(+b.dataset.i,1); this.moved++; Audio_.fx('pop'); }
     else{
-      if(this.removed>=this.target){ this.note(`You have taken away enough. Look at what is left.`); return; }
-      blk.s=3; this.removed++; Audio_.fx('tap');
+      blk.s=3; this.removed++; this.rem[blk.k]++; Audio_.fx('tap');
     }
     this.draw();
   }
-  strategyUsed(){ return this.t.add?this.B.length===0:this.removed>=this.target; }
+  strategyUsed(){ return this.t.add?this.B.length===0:(this.rem.ten>=this.quota.ten&&this.rem.one>=this.quota.one); }
   async demo(){
     this.reset(); this.busy=true; await sleep(450);
     const T=this.t, kind=T.tensOnly?'ten':'one';
@@ -278,9 +277,40 @@ class TensTool{
       while(this.B.length){ const blk=this.B[0]; blk.s=2; this.A.push({k:blk.k,s:2}); this.B.shift(); this.moved++; this.draw(); Audio_.fx('pop'); await sleep(600); }
       this.note(T.tensOnly?`<b>${T.a/10}</b> tens and <b>${T.b/10}</b> tens make <b>${(T.a+T.b)/10}</b> tens. That is <b>${T.a+T.b}</b>.`:`The tens stay. <b>${T.a%10} + ${T.b} = ${T.a%10+T.b}</b> ones. So <b>${T.a+T.b}</b>.`);
     }else{
-      for(let k=0;k<this.target;k++){ const blk=this.A.find(x=>x.k===kind&&x.s===1); if(!blk) break; blk.s=3; this.removed++; this.draw(); Audio_.fx('tap'); await sleep(650); }
+      for(const kk of ['ten','one']) for(let k=0;k<this.quota[kk];k++){ const blk=this.A.find(x=>x.k===kk&&x.s===1); if(!blk) break; blk.s=3; this.removed++; this.rem[kk]++; this.draw(); Audio_.fx('tap'); await sleep(650); }
       this.note(`<b>${T.a} − ${T.b}</b> leaves <b>${T.a-T.b}</b>.`);
     }
+    this.busy=false;
+  }
+}
+
+
+/* ================= counting in steps: a row of number tiles with hops ================= */
+class SkipTool{
+  constructor(root,q,cb){this.root=root;this.q=q;this.cb=cb||{};this.root.addEventListener('click',e=>this.onClick(e));this.init();}
+  init(){ this.sk=this.q.skip; this.touched=false; this.busy=false; this.lit=0; this.custom=null; this.draw(); }
+  reset(){this.init();}
+  setHighlight(){}
+  note(html){this.custom=html;this.updateNote();}
+  draw(){
+    const sk=this.sk, seq=sk.seq; let h='<div class="skip-row">';
+    seq.forEach((v,i)=>{
+      h+=`<button class="skip-tile${i<this.lit?' lit':''}" data-i="${i}">${v}</button>`;
+      h+=`<span class="skip-hop">+${sk.st}</span>`;
+    });
+    h+=`<span class="skip-tile q">?</span></div><div class="tool-note" data-note></div>`;
+    this.root.innerHTML=h; this.updateNote();
+  }
+  updateNote(){ const el=this.root.querySelector('[data-note]'); if(!el) return; el.innerHTML=this.custom||`Each hop is <b>+${this.sk.st}</b>. Tap the numbers and count along.`; }
+  onClick(e){
+    const b=e.target.closest('.skip-tile[data-i]'); if(!b||this.busy) return;
+    this.touched=true; this.cb.onTouch&&this.cb.onTouch(); this.custom=null; this.lit=Math.max(this.lit,+b.dataset.i+1); Audio_.fx('tap'); this.draw();
+  }
+  strategyUsed(){ return this.lit>=this.sk.seq.length; }
+  async demo(){
+    this.reset(); this.busy=true; await sleep(400);
+    for(let i=0;i<this.sk.seq.length;i++){ this.lit=i+1; this.draw(); Audio_.fx('tap'); await sleep(450); }
+    this.note(`The next hop is <b>+${this.sk.st}</b>. <b>${this.sk.seq[this.sk.seq.length-1]} + ${this.sk.st} = ${this.q.ans}</b>.`);
     this.busy=false;
   }
 }

@@ -438,12 +438,19 @@ button.hero-dragon{display:block;background:none;border:0}
 .tens-empty{color:var(--muted);font-size:.9rem;align-self:center}
 </style>
 <style>.splash-ver{margin:10px 0 0;font-size:13px;opacity:.7;letter-spacing:.02em}</style>
+<style>
+.skip-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;justify-content:center;padding:12px;border-radius:16px;background:var(--surface2);border:3px solid var(--line)}
+.skip-tile{min-width:52px;height:52px;border-radius:12px;border:3px solid var(--unit);background:var(--surface);font:inherit;font-weight:700;font-size:1.3rem;color:inherit;padding:0 8px;display:inline-grid;place-items:center;touch-action:manipulation}
+.skip-tile.lit{background:var(--unit);color:#fff}
+.skip-tile.q{border-style:dashed;cursor:default}
+.skip-hop{font-size:.85rem;color:var(--muted)}
+</style>
 <div id="app"></div>
 <div id="overlay"></div>
 <script>
 (function(){
 'use strict';
-const BUILD={v:'2.0.1',d:'7 Nov 2026, 07:30 UTC'};
+const BUILD={v:'2.1.0',d:'14 Nov 2026, 07:23 UTC'};
 /* ================= art: colours, icons, dragon, egg, island ================= */
 function hex2rgb(h){h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.substr(i,2),16));}
 function rgb2hex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');}
@@ -643,6 +650,8 @@ const CATALOG={
     {id:'milliecollar',name:'Millie bell collar',cost:30,note:'A red collar with a tinkly bell for Millie.',spr:1},
     {id:'milliehat',name:'Millie witch hat',cost:45,note:'A pointy hat for Millie. She will pretend she hates it.',spr:1},
     {id:'henbows',name:'Hen bows',cost:35,note:'Pink bows for the hens at the coop.',spr:1},
+    {id:'millievik',name:'Millie Viking helmet',cost:45,note:'A tiny horned helmet for Millie. Very fierce, very small.',spr:1},
+    {id:'henvik',name:'Hen Viking helmets',cost:45,note:'Tiny horned helmets for the hens. They march about like a shield wall.',spr:1},
     {id:'henhats',name:'Hen pumpkin hats',cost:45,note:'Tiny pumpkin hats for the hens at the coop.',spr:1}
   ],
   acc:[
@@ -1066,6 +1075,10 @@ const ITEM={};
   const xsubs=xadds.map(a=>({id:`z:${a.x}0+${a.y}0`,kind:'xsub',x:a.x,y:a.y,c:a.x+a.y,src:a.id,ans:a.y*10}));
   const oadds=[]; for(let u=1;u<=4;u++) for(let o=1;o<=9-u;o++) oadds.push({id:`o:${o}+${u}`,kind:'oadd',o,u,ans:o+u});
   const osubs=oadds.map(a=>({id:`p:${a.o}+${a.u}`,kind:'osub',o:a.o,u:a.u,src:a.id,ans:a.o}));
+  /* Drop 2 batch 2 (week 6): two-digit plus two-digit with no regrouping, and counting in steps */
+  const dadds=[]; for(let o1=1;o1<=8;o1++) for(let o2=o1;o1+o2<=9;o2++) dadds.push({id:`d:${o1}+${o2}`,kind:'dadd',o1,o2});
+  const dsubs=dadds.map(a=>({id:`e:${a.o1}+${a.o2}`,kind:'dsub',o1:a.o1,o2:a.o2,src:a.id}));
+  const skips=[]; for(const st of [2,5,10]) for(let n=3;n<=(st===10?9:10);n++) skips.push({id:`k:${st}x${n}`,kind:'skip',st,n,ans:st*n});
   SKILLS.push({id:'bonds',name:'Pairs that make ten',blurb:'How many more to fill a ten-frame.',items:bonds});
   SKILLS.push({id:'w10add',easy:true,name:'Adding within ten',blurb:'Join small groups, e.g. 3 + 4.',items:wadds});
   SKILLS.push({id:'w10sub',easy:true,name:'Taking away within ten',blurb:'Use an adding fact to take away, e.g. 7 − 3.',items:wsubs});
@@ -1078,6 +1091,9 @@ const ITEM={};
   SKILLS.push({id:'tenssub',easy:true,name:'Taking away tens',blurb:'Use an adding tens fact to take away, e.g. 50 − 20.',items:xsubs});
   SKILLS.push({id:'onesadd',easy:true,name:'Tens and ones plus ones',blurb:'Only the ones change, e.g. 34 + 5.',items:oadds});
   SKILLS.push({id:'onessub',easy:true,name:'Tens and ones take away ones',blurb:'Only the ones change, e.g. 38 − 5.',items:osubs});
+  SKILLS.push({id:'twodadd',easy:true,name:'Two-digit adding',blurb:'Add the tens, then add the ones, e.g. 23 + 14.',items:dadds});
+  SKILLS.push({id:'twodsub',easy:true,name:'Two-digit taking away',blurb:'Take away the tens, then the ones, e.g. 47 − 23.',items:dsubs});
+  SKILLS.push({id:'skipcount',easy:true,name:'Counting in steps',blurb:'Count in 2s, 5s and 10s, e.g. 5, 10, 15, …',items:skips});
   for(const sk of SKILLS) for(const it of sk.items){it.skill=sk.id; ITEM[it.id]=it;}
 })();
 const ALL_ITEMS=SKILLS.flatMap(s=>s.items);
@@ -1403,7 +1419,7 @@ class TensTool{
     const mk=n=>{const arr=[]; for(let i=0;i<Math.floor(n/10);i++) arr.push({k:'ten',s:1}); for(let i=0;i<n%10;i++) arr.push({k:'one',s:1}); return arr;};
     if(T.add){ this.A=mk(T.a); this.B=mk(T.b); }
     else { this.A=mk(T.a); this.B=[]; }
-    this.target=T.b/(T.tensOnly?10:1);
+    this.quota={ten:Math.floor(T.b/10),one:T.b%10}; this.rem={ten:0,one:0};
     this.draw();
   }
   reset(){this.init();}
@@ -1421,7 +1437,7 @@ class TensTool{
   canTap(f,b){
     const T=this.t; if(b.s===3) return false;
     if(T.add) return f==='B'&&b.s===1;
-    return b.k===(T.tensOnly?'ten':'one')&&b.s===1;
+    return b.s===1&&this.rem[b.k]<this.quota[b.k];
   }
   draw(){
     const T=this.t;
@@ -1435,8 +1451,8 @@ class TensTool{
     const el=this.root.querySelector('[data-note]'); if(!el) return;
     if(this.custom){ el.innerHTML=this.custom; return; }
     const T=this.t, all=this.A.concat(this.B), tn=this.count(all,'ten'), on=this.count(all,'one');
-    if(T.add&&this.moved===0) el.innerHTML=T.tensOnly?'Tap the tall bars in the second group to move them across.':'Tap the little cubes in the second group to move them across.';
-    else if(!T.add&&this.removed===0) el.innerHTML=T.tensOnly?'Tap the tall bars to take them away.':'Tap little cubes to take them away.';
+    if(T.add&&this.moved===0) el.innerHTML=T.tensOnly?'Tap the tall bars in the second group to move them across.':(T.b>=10?'Tap the bars, then the cubes, in the second group to move them across.':'Tap the little cubes in the second group to move them across.');
+    else if(!T.add&&this.removed===0) el.innerHTML=T.tensOnly?'Tap the tall bars to take them away.':(T.b>=10?'Tap the bars, then the cubes, to take them away.':'Tap little cubes to take them away.');
     else el.innerHTML=`Now there are <b>${tn}</b> ${tn===1?'ten':'tens'} and <b>${on}</b> ${on===1?'one':'ones'}.`;
   }
   onClick(e){
@@ -1446,12 +1462,11 @@ class TensTool{
     this.touched=true; this.cb.onTouch&&this.cb.onTouch(); this.custom=null;
     if(this.t.add){ blk.s=2; this.A.push({k:blk.k,s:2}); this.B.splice(+b.dataset.i,1); this.moved++; Audio_.fx('pop'); }
     else{
-      if(this.removed>=this.target){ this.note(`You have taken away enough. Look at what is left.`); return; }
-      blk.s=3; this.removed++; Audio_.fx('tap');
+      blk.s=3; this.removed++; this.rem[blk.k]++; Audio_.fx('tap');
     }
     this.draw();
   }
-  strategyUsed(){ return this.t.add?this.B.length===0:this.removed>=this.target; }
+  strategyUsed(){ return this.t.add?this.B.length===0:(this.rem.ten>=this.quota.ten&&this.rem.one>=this.quota.one); }
   async demo(){
     this.reset(); this.busy=true; await sleep(450);
     const T=this.t, kind=T.tensOnly?'ten':'one';
@@ -1459,9 +1474,40 @@ class TensTool{
       while(this.B.length){ const blk=this.B[0]; blk.s=2; this.A.push({k:blk.k,s:2}); this.B.shift(); this.moved++; this.draw(); Audio_.fx('pop'); await sleep(600); }
       this.note(T.tensOnly?`<b>${T.a/10}</b> tens and <b>${T.b/10}</b> tens make <b>${(T.a+T.b)/10}</b> tens. That is <b>${T.a+T.b}</b>.`:`The tens stay. <b>${T.a%10} + ${T.b} = ${T.a%10+T.b}</b> ones. So <b>${T.a+T.b}</b>.`);
     }else{
-      for(let k=0;k<this.target;k++){ const blk=this.A.find(x=>x.k===kind&&x.s===1); if(!blk) break; blk.s=3; this.removed++; this.draw(); Audio_.fx('tap'); await sleep(650); }
+      for(const kk of ['ten','one']) for(let k=0;k<this.quota[kk];k++){ const blk=this.A.find(x=>x.k===kk&&x.s===1); if(!blk) break; blk.s=3; this.removed++; this.rem[kk]++; this.draw(); Audio_.fx('tap'); await sleep(650); }
       this.note(`<b>${T.a} − ${T.b}</b> leaves <b>${T.a-T.b}</b>.`);
     }
+    this.busy=false;
+  }
+}
+
+
+/* ================= counting in steps: a row of number tiles with hops ================= */
+class SkipTool{
+  constructor(root,q,cb){this.root=root;this.q=q;this.cb=cb||{};this.root.addEventListener('click',e=>this.onClick(e));this.init();}
+  init(){ this.sk=this.q.skip; this.touched=false; this.busy=false; this.lit=0; this.custom=null; this.draw(); }
+  reset(){this.init();}
+  setHighlight(){}
+  note(html){this.custom=html;this.updateNote();}
+  draw(){
+    const sk=this.sk, seq=sk.seq; let h='<div class="skip-row">';
+    seq.forEach((v,i)=>{
+      h+=`<button class="skip-tile${i<this.lit?' lit':''}" data-i="${i}">${v}</button>`;
+      h+=`<span class="skip-hop">+${sk.st}</span>`;
+    });
+    h+=`<span class="skip-tile q">?</span></div><div class="tool-note" data-note></div>`;
+    this.root.innerHTML=h; this.updateNote();
+  }
+  updateNote(){ const el=this.root.querySelector('[data-note]'); if(!el) return; el.innerHTML=this.custom||`Each hop is <b>+${this.sk.st}</b>. Tap the numbers and count along.`; }
+  onClick(e){
+    const b=e.target.closest('.skip-tile[data-i]'); if(!b||this.busy) return;
+    this.touched=true; this.cb.onTouch&&this.cb.onTouch(); this.custom=null; this.lit=Math.max(this.lit,+b.dataset.i+1); Audio_.fx('tap'); this.draw();
+  }
+  strategyUsed(){ return this.lit>=this.sk.seq.length; }
+  async demo(){
+    this.reset(); this.busy=true; await sleep(400);
+    for(let i=0;i<this.sk.seq.length;i++){ this.lit=i+1; this.draw(); Audio_.fx('tap'); await sleep(450); }
+    this.note(`The next hop is <b>+${this.sk.st}</b>. <b>${this.sk.seq[this.sk.seq.length-1]} + ${this.sk.st} = ${this.q.ans}</b>.`);
     this.busy=false;
   }
 }
@@ -1472,6 +1518,33 @@ let SESS=null, Q=null, DASH=null;
 
 function makeQ(it,opts={}){
   const D=S.dragon.name, th=pick(THINGS), q={it,kind:it.kind,ans:it.ans,th,id:it.id};
+  if(it.kind==='dadd'||it.kind==='dsub'){
+    const add=it.kind==='dadd';
+    const T1=add?RR(1,8):RR(2,9), T2=add?RR(1,9-T1):RR(1,T1-1);   /* tens digits, no regrouping and no negatives */
+    const sm=add?[it.o1,it.o2]:[it.o1,it.o2]; let o1=sm[0],o2=sm[1];
+    if(add){ if(Math.random()<.5){const z=o1;o1=o2;o2=z;} }
+    let a,b;
+    if(add){ a=T1*10+o1; b=T2*10+o2; }
+    else{ a=T1*10+o1+o2; b=T2*10+o2; }   /* ones: (o1+o2) - o2 = o1, never borrow */
+    q.kind='tens'; q.tens={add,a,b,tensOnly:false}; q.land=add?a+b:a-b; q.ans=q.land;
+    q.eq=[{t:a},{op:add?'+':'−'},{t:b},{op:'='},{ans:1}];
+    q.story=add?`${esc(D)} has <b>${a}</b> ${th.many}. A friend gives <b>${b}</b> more. How many ${th.many} now?`:`${esc(D)} has <b>${a}</b> ${th.many}. <b>${b}</b> of them ${b===1?'rolls':'roll'} away. How many are left?`;
+    q.nudge={counters:add?`Move the tall bars first, then the little cubes. Tap every block in the second group. Then count.`:`Take away the tall bars first, then the little cubes. Then count what is left.`,line:''};
+    q.explain=add?`Tens first: <b>${Math.floor(a/10)} + ${Math.floor(b/10)} = ${Math.floor(a/10)+Math.floor(b/10)}</b> tens. Ones next: <b>${a%10} + ${b%10} = ${a%10+b%10}</b>. Together: <b>${q.land}</b>.`
+                  :`Tens first: <b>${Math.floor(a/10)} − ${Math.floor(b/10)} = ${Math.floor(a/10)-Math.floor(b/10)}</b> tens. Ones next: <b>${a%10} − ${b%10} = ${a%10-b%10}</b>. Together: <b>${q.land}</b>.`;
+    q.hintLine=`Do the tens, then the ones.`;
+    return q;
+  }
+  if(it.kind==='skip'){
+    const st=it.st,n=it.n; const seq=[]; for(let i=1;i<n;i++) seq.push(st*i);
+    q.kind='skip'; q.skip={st,n,seq}; q.ans=st*n;
+    q.eq=[{t:seq.slice(-3).join(', ')+','},{ans:1}];
+    q.story=`${esc(D)} counts in ${st}s: <b>${seq.slice(-3).join(', ')}</b>, and then? What number comes next?`;
+    q.nudge={counters:`Each hop is +${st}. Tap the numbers one at a time and say them out loud.`,line:''};
+    q.explain=`Each step adds ${st}. <b>${seq[seq.length-1]} + ${st} = ${st*n}</b>.`;
+    q.hintLine=`Count on ${st} from ${seq[seq.length-1]}.`;
+    return q;
+  }
   if(it.kind==='xadd'||it.kind==='xsub'||it.kind==='oadd'||it.kind==='osub'){
     const add=it.kind==='xadd'||it.kind==='oadd', tens=it.kind==='xadd'||it.kind==='xsub';
     let a,b,t=0;   /* a = start amount, b = amount joined or taken */
@@ -1480,7 +1553,7 @@ function makeQ(it,opts={}){
     q.kind='tens'; q.tens={add,a,b,tensOnly:tens}; q.land=add?a+b:a-b; q.ans=q.land;
     q.eq=[{t:a},{op:add?'+':'−'},{t:b},{op:'='},{ans:1}];
     const unit=tens?'tens':'ones';
-    q.story=add?`${esc(D)} found <b>${a}</b> ${th.many}, then <b>${b}</b> more. How many ${th.many} altogether?`:`${esc(D)} has <b>${a}</b> ${th.many}. <b>${b}</b> of them roll away. How many are left?`;
+    q.story=add?`${esc(D)} found <b>${a}</b> ${th.many}, then <b>${b}</b> more. How many ${th.many} altogether?`:`${esc(D)} has <b>${a}</b> ${th.many}. <b>${b}</b> of them ${b===1?'rolls':'roll'} away. How many are left?`;
     const na=tens?a/10:a, nb=tens?b/10:b;
     q.nudge={counters:tens?(add?`Each tall bar is a ten. Tap the bars in the second group to move them across. Then count the tens.`:`Each tall bar is a ten. Tap ${b/10} bar${b/10>1?'s':''} to take ${b/10>1?'them':'it'} away. Count the bars that are left.`)
                               :(add?`Leave the tens alone. Tap the little cubes in the second group to move them across. Then count.`:`Leave the tens alone. Tap ${b} little cube${b>1?'s':''} to take away. Then count what is left.`),line:''};
@@ -1596,7 +1669,7 @@ function nextQuestion(){
   const entry=SESS.plan[SESS.idx]; SESS.idx++;
   const it=ITEM[entry.id]; const q=makeQ(it);
   const st=S.items[entry.id];
-  const sugg=(st&&st.seen>=2&&st.seen%2===0&&q.kind!=='tens')?'line':'counters';
+  const sugg=(st&&st.seen>=2&&st.seen%2===0&&q.kind!=='tens'&&q.kind!=='skip')?'line':'counters';
   Q={entry,q,t0:Date.now(),lastAct:Date.now(),attempts:0,hints:0,guided:entry.role==='new',rapid:0,done:false,answer:'',hard:null,tool:'counters',sugg,
      touched:false,counters:null,line:null,toolsUsed:new Set(),demo:false,locked:false,gap:null};
   if(SESS.qShownAt==null) SESS.qShownAt=Date.now();
@@ -1633,13 +1706,13 @@ function renderQuestion(){
     </section>
    </div></div>`;
   const cb={onTouch:()=>{Q.touched=true;Q.lastAct=Date.now();}};
-  if(q.kind==='tens'){ Q.counters=new TensTool($('#tool-counters'),q,cb); Q.line=Q.counters; const tb=$('#tab-line'); if(tb) tb.style.display='none'; const tc=$('#tab-counters'); if(tc) tc.textContent='Blocks'; }
+  if(q.kind==='tens'||q.kind==='skip'){ Q.counters=(q.kind==='skip'?new SkipTool($('#tool-counters'),q,cb):new TensTool($('#tool-counters'),q,cb)); Q.line=Q.counters; const tb=$('#tab-line'); if(tb) tb.style.display='none'; const tc=$('#tab-counters'); if(tc) tc.textContent=(q.kind==='skip'?'Hops':'Blocks'); } else if(0){ Q.counters=new TensTool($('#tool-counters'),q,cb); Q.line=Q.counters; const tb=$('#tab-line'); if(tb) tb.style.display='none'; const tc=$('#tab-counters'); if(tc) tc.textContent='Blocks'; }
   else{ Q.counters=new CounterTool($('#tool-counters'),q,cb); Q.line=new LineTool($('#tool-line'),q,cb); }
   if(Q.sugg==='line') switchTool('line',true);
   renderRight();
   if(Q.guided){ const t=Q.tool==='line'?Q.line:Q.counters; t.note(esc(q.nudge[Q.tool])); if(Q.tool==='counters') highlightTool(); else Q.line.setHighlight(); setFb('info',`New one! Let's try it together. ${esc(q.nudge[Q.tool])}`,'help'); }
 }
-function highlightTool(){ const q=Q.q; if(q.kind==='tens') return; if(q.kind==='bond') Q.counters.setHighlight('A'); else if(q.kind==='add') Q.counters.setHighlight(q.teen?'B':'A'); else Q.counters.setHighlight(q.sub.n<=10?'A':'B'); }
+function highlightTool(){ const q=Q.q; if(q.kind==='tens'||q.kind==='skip') return; if(q.kind==='bond') Q.counters.setHighlight('A'); else if(q.kind==='add') Q.counters.setHighlight(q.teen?'B':'A'); else Q.counters.setHighlight(q.sub.n<=10?'A':'B'); }
 function setFb(kind,html,icon){ const el=$('#fb'); if(el) el.innerHTML=fbHTML(kind,html,icon); }
 function renderRight(){
   const el=$('#rightbottom'); if(!el) return;
@@ -1716,7 +1789,8 @@ function answerRight(){
   if(!clean&&entry.role!=='repeat'&&entry.role!=='rebuild'&&!entry.again){ SESS.plan.splice(Math.min(SESS.plan.length,SESS.idx+3),0,{id:entry.id,role:'repeat',again:true}); }
   /* feedback */
   let msg;
-  if(clean&&strat&&q.kind==='tens') msg=q.tens.add?'You joined the blocks and counted. Nice!':'You took them away and counted what was left. Nice!';
+  if(clean&&strat&&q.kind==='skip') msg='You hopped along and counted on. Nice!';
+  else if(clean&&strat&&q.kind==='tens') msg=q.tens.add?'You joined the blocks and counted. Nice!':'You took them away and counted what was left. Nice!';
   else if(clean&&strat&&q.noBridge) msg=q.kind==='add'?'You worked it out step by step. Nice!':'You took them away and counted what was left. Nice!';
   else if(clean&&strat) msg=q.kind==='sub'||q.kind==='fam'?'You stepped back to ten first. Smart strategy!':q.kind==='bond'?'You filled the tray to ten. Nice work!':'You made ten first, then added the rest. That is the trick!';
   else if(clean&&toolUsed!=='none') msg=`You checked it with the ${toolUsed==='line'?'number line':'counters'}. That is a good habit.`;
@@ -1756,7 +1830,7 @@ function finishSession(partial){
   if(!partial&&bonus&&SESS.total>=3){ bonusEmbers=Math.min(3,extraLeft()); S.day.extra=(S.day.extra||0)+bonusEmbers; S.embers+=bonusEmbers; SESS.earned+=bonusEmbers; rec.embers=SESS.earned; }
   if(!partial&&!bonus){
     bonusEmbers=5+(S.day.trained?0:0); S.embers+=bonusEmbers; SESS.earned+=bonusEmbers; rec.embers=SESS.earned;
-    S.day.trained=true; bumpStreak(); abilityTick(); SESS.chest=Fam.practiceDone();
+    S.day.trained=true; bumpStreak(); abilityTick(); SESS.chest=Fam.practiceDone(); SESS.build=Fam.lastBuild||null;
     SESS.newborn=[]; S.extra.forEach(e=>{ if(!e.hatched){ e.hatched=true; e.since=S.days.length; SESS.newborn.push(e.name); } });
   }
   snapshot(); saveState();
@@ -1783,6 +1857,7 @@ function renderEnd(stage){
       ${SESS.bonus?'':`<div class="stat"><b class="num">${S.streak.cur}</b><span>day flame ${ic('flame',16)}</span></div>`}
     </div>
     ${SESS.chest?`<p style="max-width:520px"><b>Family chest:</b> a key turned (+${SESS.chest.gain-(SESS.chest.opened?CHEST_BONUS:0)} embers).${SESS.chest.opened?` <b>The chest is open! +${CHEST_BONUS} bonus embers.</b>`:(SESS.chest.total>=2?` ${SESS.chest.keys} of ${SESS.chest.total} keys so far today.`:'')}</p>`:''}
+    ${SESS.build?`<p style="max-width:520px"><b>Island project:</b> ${SESS.build.done?`the ${esc(SESS.build.name.toLowerCase())} is finished! <b>+${SESS.build.reward} embers.</b>`:`${SESS.build.stageUp?`the ${esc(SESS.build.name.toLowerCase())} grew another stage! `:`${esc(SESS.build.name)}: `}${SESS.build.n} of ${SESS.build.need} bricks.`}</p>`:''}
     <div style="margin-top:6px"><p style="color:var(--ink2)">How was that?</p>
     <div class="faces" style="margin:6px 0" id="endfaces">
       <button class="face" data-act="endface" data-v="3" style="width:96px;padding:8px">${faceSVG('good')}Good</button>
@@ -1979,6 +2054,14 @@ const eventsNow=()=>EVENTS.filter(e=>eventActive(e.id));
    (not inside either child's save), so one child's game never writes into the other's. */
 const FAM_KEY='isleOfRu.family';
 const CHEST_BASE=4, CHEST_BONUS=10;
+/* ---- weekly shared island project: every finished practice adds bricks from each child, nobody sees who added more ---- */
+const BRICKS_EACH=5;
+const PROJECTS=[
+  {id:'lighthouse',name:'Lighthouse',start:'2026-11-14',need:40,stages:[10,20,30,40],reward:30,
+   stageText:['A staked-out plot by the sea, ready for a lighthouse.','The stone base is going up.','The tower is rising, stripe by stripe.','The tower is done. The lamp room just needs its light.','The lighthouse is finished. Its lamp shines over the sea at night.']}
+  /* later projects (longship repairs, windmill, market stall, ...) are listed in ROADMAP.md and added as their art is made */
+];
+const projStage=(p,n)=>{let st=0;for(const th of p.stages) if(n>=th) st++;return st};
 const Fam={
   get(){
     let f={}; try{ f=JSON.parse(localStorage.getItem(FAM_KEY))||{}; }catch(e){}
@@ -2004,9 +2087,10 @@ const Fam={
   },
   /* called once when today's practice is finished */
   practiceDone(){
-    if(!S||!S.dragon) return null;
+    this.lastBuild=null; if(!S||!S.dragon) return null;
     const f=this.get(), k=SAVE_KEY; if(f.done[k]) return null;
     f.done[k]=true; f.last[k]=today(); f.names[k]=(S.hero&&S.hero.name)||S.dragon.name;
+    this.lastBuild=this.addBricks(f,k);
     if(listProfiles().length<2){ this.put(f); return null; }   /* a chest needs a family: nothing happens with one player */
     let gain=CHEST_BASE, opened=false; const m=this.members(f);
     if(m.length>=2&&m.every(x=>f.done[x])&&!f.opened){
@@ -2015,6 +2099,27 @@ const Fam={
     }
     this.put(f); S.embers+=gain;
     return {gain,opened,keys:m.filter(x=>f.done[x]).length,total:m.length};
+  },
+  /* the project being built now: the first one not yet finished whose start date has come */
+  current(f){ f=f||this.get(); f.projDone=f.projDone||[]; return PROJECTS.find(p=>!f.projDone.includes(p.id)&&p.start<=today())||null; },
+  bricks(id,f){ f=f||this.get(); return (f.bricks&&f.bricks[id])||0; },
+  /* one set of bricks per child per day, added when practice is finished */
+  addBricks(f,k){
+    f.projDone=f.projDone||[]; f.bricks=f.bricks||{}; f.bday=f.bday||{}; f.pendingB=f.pendingB||{};
+    const p=this.current(f); if(!p||f.bday[k]===today()) return null;
+    f.bday[k]=today();
+    const before=f.bricks[p.id]||0, after=Math.min(p.need,before+BRICKS_EACH); f.bricks[p.id]=after;
+    const r={id:p.id,name:p.name,n:after,need:p.need,stage:projStage(p,after),stageUp:projStage(p,after)>projStage(p,before),done:false,reward:0};
+    if(after>=p.need){
+      f.projDone.push(p.id); r.done=true; r.reward=p.reward; S.embers+=p.reward;
+      this.members(f).forEach(x=>{ if(x!==k) f.pendingB[x]={e:p.reward,name:p.name}; });
+    }
+    return r;
+  },
+  /* a finished project's reward for a child who was not the one who placed the last bricks */
+  claimBuild(){
+    const f=this.get(), g=f.pendingB&&f.pendingB[SAVE_KEY]; if(!g) return null;
+    delete f.pendingB[SAVE_KEY]; this.put(f); S.embers+=g.e; saveState(); return g;
   },
   /* embers waiting from a chest that opened after this child had finished */
   claim(){
@@ -2613,10 +2718,11 @@ function makeSprites2(){
   });
 
   /* ---- banner on a tall pole ---- */
-  SPR.banner=mk(70,130,(c)=>{shadowBlob(c,22,122,14,5,.3);c.fillStyle='#6c4a2a';c.fillRect(20,12,5,110);c.fillStyle='#d9a441';c.beginPath();c.arc(22.5,10,4,0,6.3);c.fill();
-    c.fillStyle=lg(c,24,0,64,0,['#e8743b','#c9431d']);c.beginPath();c.moveTo(25,16);c.quadraticCurveTo(46,8,62,16);c.quadraticCurveTo(54,32,62,50);c.quadraticCurveTo(44,42,25,50);c.closePath();c.fill();
-    c.fillStyle='#ffd36b';for(let r=0;r<2;r++)for(let k=0;k<5;k++){c.beginPath();c.arc(32+k*5.4,26+r*8,1.7,0,6.3);c.fill()}});
-
+  function mkBanner(a,b,dots){return mk(70,130,(c)=>{shadowBlob(c,22,122,14,5,.3);c.fillStyle='#6c4a2a';c.fillRect(20,12,5,110);c.fillStyle='#d9a441';c.beginPath();c.arc(22.5,10,4,0,6.3);c.fill();
+    c.fillStyle=lg(c,24,0,64,0,[a,b]);c.beginPath();c.moveTo(25,16);c.quadraticCurveTo(46,8,62,16);c.quadraticCurveTo(54,32,62,50);c.quadraticCurveTo(44,42,25,50);c.closePath();c.fill();
+    c.fillStyle=dots;for(let r=0;r<2;r++)for(let k=0;k<5;k++){c.beginPath();c.arc(32+k*5.4,26+r*8,1.7,0,6.3);c.fill()}})}
+  SPR.banner=mkBanner('#e8743b','#c9431d','#ffd36b');
+  SPR.bannerVar=[SPR.banner,mkBanner('#4b8fd9','#2a5aa8','#e8f3ff'),mkBanner('#5fae5a','#2f7a3a','#f3ffe0'),mkBanner('#a366d9','#6b3aa8','#ffe8ff')];
   /* ---- Dragon Dash arch ---- */
   SPR.dashgate=mk(120,120,(c)=>{shadowBlob(c,60,110,50,8,.35);
     [[22],[98]].forEach(([x])=>{c.fillStyle=lg(c,x-5,0,x+5,0,['#8a5f36','#5a3b22']);c.fillRect(x-5,26,10,84);c.fillStyle='#d9a441';c.beginPath();c.arc(x,24,6,0,6.3);c.fill()});
@@ -2723,6 +2829,16 @@ function openChest(){
 /* ---- painted sprites for the islands ---- */
 /* ---- Millie the cat (dark brown with white paws; coat colours are easy to change) ---- */
 const MILLIE_COAT={base:'#4a3326',dark:'#2c1d14',belly:'#5a4030',ear:'#c98a8a',eye:'#e6c04a',paw:'#f4efe6'};
+/* horned Viking helmet: (x,y) is the middle of the brow line, k scales it */
+function vikingHelm(c,x,y,k){
+  c.save();c.translate(x,y);c.scale(k,k);
+  c.fillStyle='#f4ecd8';c.strokeStyle='#bfb59c';c.lineWidth=1;
+  for(const sd of [-1,1]){c.beginPath();c.moveTo(sd*8,-4);c.quadraticCurveTo(sd*13,-6,sd*13.5,-14);c.quadraticCurveTo(sd*10,-9,sd*5.5,-6.5);c.closePath();c.fill();c.stroke()}
+  c.fillStyle='#8b929a';c.strokeStyle='#5d636b';c.lineWidth=1;c.beginPath();c.moveTo(-9,1);c.quadraticCurveTo(-9,-12,0,-12);c.quadraticCurveTo(9,-12,9,1);c.closePath();c.fill();c.stroke();
+  c.fillStyle='#c98a2b';c.fillRect(-9.2,-3.5,18.4,3.2);
+  c.fillStyle='#6b4a1a';c.fillRect(-1,-3.5,2,3.2);
+  c.restore();
+}
 function drawCat(c,pose,prop,K){
   shadowBlob(c,32,60,22,5,.3);
   const stuck=pose==='stuck';
@@ -2737,7 +2853,8 @@ function drawCat(c,pose,prop,K){
   [[-1],[1]].forEach(([m])=>{c.fillStyle=K.base;c.beginPath();c.moveTo(31+m*10.5,24);c.lineTo(31+m*10,10);c.lineTo(31+m*2,19);c.closePath();c.fill();c.fillStyle=K.ear;c.beginPath();c.moveTo(31+m*9,22);c.lineTo(31+m*8.6,13.5);c.lineTo(31+m*3.4,19.5);c.closePath();c.fill()});
   c.strokeStyle=K.dark;c.lineWidth=1.6;[[-3],[0],[3]].forEach(([x])=>{c.beginPath();c.moveTo(31+x,19);c.lineTo(31+x,23.5);c.stroke()});
   if(K.collar){c.strokeStyle='#d9342b';c.lineWidth=2.6;c.lineCap='round';c.beginPath();c.ellipse(31,39.5,8.6,3,0,0.2,2.95);c.stroke();c.fillStyle='#ffd23a';c.beginPath();c.arc(31,43.4,2.3,0,6.3);c.fill()}
-  if(K.hat){c.fillStyle='#2b1d3a';c.beginPath();c.ellipse(31,17.5,13,3.2,0,0,6.3);c.fill();c.fillStyle='#3a2a52';c.beginPath();c.moveTo(22.5,17.5);c.lineTo(33,1.5);c.lineTo(39.5,17.5);c.closePath();c.fill();c.fillStyle='#e8751a';c.fillRect(23.5,13,15,2.6)}
+  if(K.hat===2){vikingHelm(c,31,17.5,1)}
+  else if(K.hat){c.fillStyle='#2b1d3a';c.beginPath();c.ellipse(31,17.5,13,3.2,0,0,6.3);c.fill();c.fillStyle='#3a2a52';c.beginPath();c.moveTo(22.5,17.5);c.lineTo(33,1.5);c.lineTo(39.5,17.5);c.closePath();c.fill();c.fillStyle='#e8751a';c.fillRect(23.5,13,15,2.6)}
   if(stuck){[[-4.6],[4.6]].forEach(([x])=>{c.fillStyle='#fff';c.beginPath();c.ellipse(31+x,29,3.6,4.4,0,0,6.3);c.fill();c.fillStyle=K.eye;c.beginPath();c.arc(31+x,29.6,2.4,0,6.3);c.fill();c.fillStyle='#1d1d22';c.beginPath();c.arc(31+x,29.6,1.2,0,6.3);c.fill()});
     c.fillStyle='#4a2a2a';c.beginPath();c.ellipse(31,36,1.8,2.4,0,0,6.3);c.fill();
     c.fillStyle='#6fc3ee';c.beginPath();c.moveTo(43,20);c.quadraticCurveTo(46,25,43,27);c.quadraticCurveTo(40,25,43,20);c.fill();
@@ -2988,9 +3105,10 @@ function drawHen(c,col,v,bow,hat){shadowBlob(c,13,23,8,3,.3);c.fillStyle=col;c.b
   c.fillStyle='#d9342b';c.beginPath();c.arc(17,4.6,1.8,0,6.3);c.arc(19.6,5,1.6,0,6.3);c.fill();c.fillStyle='#f0a030';c.beginPath();c.moveTo(22,9);c.lineTo(26,10.4);c.lineTo(22,11.6);c.closePath();c.fill();c.fillStyle='#111';c.beginPath();c.arc(19.4,8.4,.9,0,6.3);c.fill();
   c.strokeStyle='#f0a030';c.lineWidth=1.2;c.beginPath();c.moveTo(11,20);c.lineTo(11,24);c.moveTo(15,20);c.lineTo(15,24);c.stroke();if(v===0){c.strokeStyle='rgba(0,0,0,.12)';c.beginPath();c.ellipse(12,15,8,6.4,0,0,6.3);c.stroke()}
   if(bow){c.fillStyle='#ff6fa5';c.beginPath();c.moveTo(14.4,12);c.lineTo(10.8,9.8);c.lineTo(10.8,14.2);c.closePath();c.moveTo(14.4,12);c.lineTo(18,9.8);c.lineTo(18,14.2);c.closePath();c.fill();c.fillStyle='#d93b7a';c.beginPath();c.arc(14.4,12,1.5,0,6.3);c.fill()}
-  if(hat){c.fillStyle='#ee7a1c';c.beginPath();c.ellipse(17.6,3.6,4.6,3.2,0,0,6.3);c.fill();c.strokeStyle='#b9560c';c.lineWidth=.8;c.beginPath();c.moveTo(17.6,.6);c.lineTo(17.6,6.4);c.stroke();c.fillStyle='#3f7a3a';c.fillRect(17,-.8,1.6,2)}}
-function henSprite(v){const b=own('henbows')?1:0,h=own('henhats')?1:0,k='hen'+v+b+h;return SPCACHE[k]||(SPCACHE[k]=mk(26,26,c=>drawHen(c,HEN_COLS[v],v,b,h)))}
-function millieSprite(pose,prop){const col=own('milliecollar')?1:0,hat=own('milliehat')?1:0,k='m'+pose+prop+col+hat;
+  if(hat===2){vikingHelm(c,18,6.2,.5)}
+  else if(hat){c.fillStyle='#ee7a1c';c.beginPath();c.ellipse(17.6,3.6,4.6,3.2,0,0,6.3);c.fill();c.strokeStyle='#b9560c';c.lineWidth=.8;c.beginPath();c.moveTo(17.6,.6);c.lineTo(17.6,6.4);c.stroke();c.fillStyle='#3f7a3a';c.fillRect(17,-.8,1.6,2)}}
+function henSprite(v){const b=own('henbows')?1:0,h=own('henvik')?2:own('henhats')?1:0,k='hen'+v+b+h;return SPCACHE[k]||(SPCACHE[k]=mk(26,26,c=>drawHen(c,HEN_COLS[v],v,b,h)))}
+function millieSprite(pose,prop){const col=own('milliecollar')?1:0,hat=own('millievik')?2:own('milliehat')?1:0,k='m'+pose+prop+col+hat;
   return SPCACHE[k]||(SPCACHE[k]=mk(64,66,c=>drawCat(c,pose,prop,Object.assign({},MILLIE_COAT,{collar:col,hat}))))}
 function makeSprites5(){
   SPR.hsboard=mk(76,88,(c)=>{shadowBlob(c,38,82,20,6,.3);c.fillStyle='#5a3920';c.fillRect(34,40,8,42);
@@ -3020,6 +3138,8 @@ function makeSprites5(){
     c.fillStyle='#b8a384';c.beginPath();c.ellipse(70,50,6,8,0,0,6.3);c.fill();c.fillStyle='#ffd23a';c.beginPath();c.arc(68,48,2,0,6.3);c.arc(73,48,2,0,6.3);c.fill();c.fillStyle='#111';c.beginPath();c.arc(68,48,.9,0,6.3);c.arc(73,48,.9,0,6.3);c.fill()});
   SPR.milliecollar=mk(48,40,c=>{c.strokeStyle='#d9342b';c.lineWidth=5;c.lineCap='round';c.beginPath();c.ellipse(24,16,16,8,0,0.15,3);c.stroke();c.fillStyle='#ffd23a';c.strokeStyle='#a87a10';c.lineWidth=1.4;c.beginPath();c.arc(24,27,5,0,6.3);c.fill();c.stroke();c.fillStyle='#a87a10';c.fillRect(23,26,2,5)});
   SPR.milliehat=mk(48,48,c=>{c.fillStyle='#2b1d3a';c.beginPath();c.ellipse(24,36,20,5,0,0,6.3);c.fill();c.fillStyle='#3a2a52';c.beginPath();c.moveTo(12,36);c.lineTo(26,4);c.lineTo(36,36);c.closePath();c.fill();c.fillStyle='#e8751a';c.fillRect(13,29,22,4);c.fillStyle='#ffd23a';c.fillRect(21,28,6,6)});
+  SPR.millievik=mk(48,48,c=>{vikingHelm(c,24,36,1.5)});
+  SPR.henvik=mk(44,44,c=>{vikingHelm(c,22,32,1.4)});
   SPR.henbows=mk(48,40,c=>{c.fillStyle='#ff6fa5';c.beginPath();c.moveTo(24,20);c.lineTo(6,8);c.lineTo(6,32);c.closePath();c.moveTo(24,20);c.lineTo(42,8);c.lineTo(42,32);c.closePath();c.fill();c.fillStyle='#d93b7a';c.beginPath();c.arc(24,20,5.5,0,6.3);c.fill()});
   SPR.henhats=mk(44,44,c=>{c.fillStyle='#ee7a1c';c.beginPath();c.ellipse(22,26,17,13,0,0,6.3);c.fill();c.strokeStyle='#b9560c';c.lineWidth=1.4;c.beginPath();c.moveTo(22,13);c.lineTo(22,39);c.moveTo(14,15);c.quadraticCurveTo(10,26,14,37);c.moveTo(30,15);c.quadraticCurveTo(34,26,30,37);c.stroke();c.fillStyle='#3f7a3a';c.fillRect(20,6,4,8)});
   SPR.hsflag=[];for(let n=0;n<=10;n++)SPR.hsflag[n]=mk(40,84,c=>{shadowBlob(c,20,78,10,3,.3);c.fillStyle='#6b4524';c.fillRect(8,6,4,72);c.fillStyle='#e8751a';c.beginPath();c.moveTo(12,8);c.lineTo(38,16);c.lineTo(12,34);c.closePath();c.fill();c.strokeStyle='#8a3a08';c.lineWidth=1.2;c.stroke();c.fillStyle='#fff';c.font='bold 15px sans-serif';c.textAlign='center';c.fillText(String(n),21,25)});
@@ -3073,6 +3193,147 @@ function hsFlag(i){
   if(h.tries>=3){vsay(`That is flag ${f.n}. Millie is not here. The clue is "${h.text}", which makes ${h.ans}. Look for flag ${h.ans}.`)}
   else vsay(`That is flag ${f.n}. Millie is not behind this one. Read the clue again: ${h.text}.`,[{label:'Hear the clue',fn:()=>hsClueSay()},{label:'OK'}])}
 BUILD_ACTS.hsboard=hsBoard;
+
+/* ===== little uses for the decorations: one calm thing to do with each, once a day ===== */
+const useDay=()=>dayB().use||(dayB().use={});
+const usedToday=id=>!!useDay()[id];
+const markUsed=id=>{useDay()[id]=1;saveState()};
+const STORIES=[
+ "Long ago a tiny dragon named Pip was scared of the dark. Then Pip breathed one small flame, and found the dark was only a big, quiet blanket. Pip slept very well.",
+ "A shy troll once built a bridge, one stone each day. The goats thought it would never end. On the hundredth day the goats walked over it, and the troll waved. Little by little gets there.",
+ "The north wind lost her whistle on a snowy hill. A fox found it and gave it back. Ever since, the wind whistles a thank you every winter evening.",
+ "Two dragons argued about who could count the most stars. They counted all night and both lost count at the same star. They laughed, and started again, together.",
+ "An old longship sailed in circles for a week. The sailors were lost, but the tiny crew mouse knew the way. Everyone listens to the mouse now.",
+ "A baby seal found a shiny shell and thought it was the moon. She kept it safe all night. In the morning the real moon smiled and said, keep it."];
+function useItem(id){
+  const D=S.dragon?S.dragon.name:'Your dragon';
+  const once=(msg,e)=>{ if(usedToday(id)){vsay(msg);return false} markUsed(id); if(e)reward(e); return true };
+  if(id==='tower'){
+    if(usedToday('tower')){vsay("You have already looked out from the tower today. The sea is calm and the boats are heading home.");return}
+    const boats=RR(3,6), opts=[boats,boats+1,boats-1>=2?boats-1:boats+2].sort(()=>Math.random()-.5);
+    const ask=()=>vsay(`You climb to the top of the tower. The whole sea is spread out below. There are little boats sailing: ${'⛵'.repeat(boats)}  How many boats can you count?`,
+      opts.map(n=>({label:String(n),fn:()=>{ if(n===boats){markUsed('tower');reward(2);vsay(`Yes, ${boats} boats! Good counting. ${D} watches them from the top and you find 2 embers in the lookout's old box.`)} else vsay('Have another look and count them one by one.',[{label:'Look again',fn:ask}]) }})));
+    ask();return}
+  if(id==='fountain'){
+    if(usedToday('fountain')){vsay("The fountain sparkles. Your wish for today is already on its way.");return}
+    if(S.embers<1){vsay("The fountain would like an ember to make a wish. You do not have one yet. Practise and you will!");return}
+    vsay("Throw one ember into the fountain and make a wish?",[{label:'Make a wish',fn:()=>{markUsed('fountain');S.embers-=1;saveState();
+      if(Math.random()<.65){reward(3);vsay("The water swirls and glows. Something shiny floats up: 3 embers! (You wished well.)")}
+      else{const j=pick(JOKES);reward(0);vsay(`The fountain giggles and tells you a joke. ${j[0]} ... ${j[1]}`)}}},{label:'Not now'}]);return}
+  if(id==='statue'){
+    if(usedToday('statue')){vsay("The stone dragon stands proudly. It remembers your salute from earlier today.");return}
+    const n=S.streak?S.streak.cur||0:0;
+    vsay(`${D} strikes the same pose as the statue, wings out, chin up. ${n>1?`You have practised ${n} days in a row. The statue looks very proud.`:'The statue looks very proud of you both.'} Salute?`,[{label:'Salute',fn:()=>{markUsed('statue');reward(2);vsay(`${D} salutes. A tiny stone chip falls off and turns out to be 2 embers.`)}},{label:'Not now'}]);return}
+  if(id==='campfire'){
+    if(usedToday('campfire')){vsay("The fire crackles quietly. Story time was lovely earlier today.");return}
+    vsay("The campfire crackles. It is story time. Sit by the fire?",[{label:'Hear a story',fn:()=>{markUsed('campfire');reward(2);vsay(`${pick(STORIES)}  (The fire gives you 2 warm embers.)`)}},{label:'Not now'}]);return}
+  if(id==='lantern'){
+    if(usedToday('lantern')){vsay("The dragon torch is lit and flickering. It will glow brighter when the sun goes down.");return}
+    vsay("A dragon torch, not yet lit. Ask your dragon to light it?",[{label:'Light it',fn:()=>{markUsed('lantern');reward(1);vsay(`${D} takes a very small, very careful breath. Whoosh! The torch is lit. (+1 ember.)`)}},{label:'Not now'}]);return}
+  if(id==='banner'){
+    const cols=[['Orange','#e8743b','#c9431d','#ffd36b'],['Blue','#4b8fd9','#2a5aa8','#e8f3ff'],['Green','#5fae5a','#2f7a3a','#f3ffe0'],['Purple','#a366d9','#6b3aa8','#ffe8ff']];
+    const cur=S.inv.bannerCol||0;
+    vsay("Pick a colour for the island banner. Today's choice stays until you change it.",cols.map((c,i)=>({label:c[0]+(i===cur?' (now)':''),fn:()=>{S.inv.bannerCol=i;saveState();Village.refresh&&Village.refresh();if(!usedToday('banner')){markUsed('banner');reward(1)}vsay(`The banner is now ${c[0].toLowerCase()}.`)}})));return}
+}
+
+/* ===== dragon fishing trips from the jetty ===== */
+SPR.fishpost=mk(46,60,c=>{shadowBlob(c,22,54,14,4,.3);
+  c.fillStyle='#7a5230';c.beginPath();c.moveTo(8,36);c.lineTo(34,36);c.lineTo(31,54);c.lineTo(11,54);c.closePath();c.fill();
+  c.strokeStyle='#4f3419';c.lineWidth=1.5;c.beginPath();c.moveTo(9,42);c.lineTo(33,42);c.moveTo(10,48);c.lineTo(32,48);c.stroke();
+  c.fillStyle='#8aa4b8';for(let i=0;i<3;i++){c.beginPath();c.ellipse(15+i*7,34,3.6,1.8,0,0,6.3);c.fill()}
+  c.strokeStyle='#6c4a2a';c.lineWidth=2.2;c.lineCap='round';c.beginPath();c.moveTo(34,50);c.lineTo(40,6);c.stroke();
+  c.strokeStyle='#d8d2c0';c.lineWidth=.8;c.beginPath();c.moveTo(40,6);c.quadraticCurveTo(46,22,42,40);c.stroke();
+  c.fillStyle='#d9342b';c.beginPath();c.arc(42,41,2.2,0,6.3);c.fill()});
+const FISH_NEED_DAYS=4, FISH_COST=100;
+const fishSt=()=>S.fishing||(S.fishing={unlocked:false,sent:null,total:0});
+function fishJetty(){
+  if(needDragon())return;
+  const D=S.dragon.name, F=fishSt(), t=today();
+  if(!F.unlocked){
+    const days=S.days.length;
+    if(days<FISH_NEED_DAYS){vsay(`A good spot for fishing! ${D} needs to learn first. Practise on ${FISH_NEED_DAYS} different days and come back. So far: ${days}.`);return}
+    if(S.embers<FISH_COST){vsay(`${D} would love to learn fishing. It costs ${FISH_COST} embers and you have ${S.embers}. Keep collecting!`);return}
+    vsay(`Teach ${D} to fish? A fishing lesson costs ${FISH_COST} embers. After that, ${D} can go out each day and bring fish back by the next day.`,[{label:`Pay ${FISH_COST} embers`,fn:()=>{S.embers-=FISH_COST;F.unlocked=true;saveState();hud();Audio_.fx('fanfare');vsay(`${D} learns to fish! A splash, a wiggle, a very surprised fish. Tap the bucket again to send ${D} out.`)}},{label:'Not yet'}]);return}
+  if(F.sent===t){vsay(`${D} is out on the water, fishing. Come back tomorrow to see what was caught!`);return}
+  if(!F.sent){sendFish();return}
+  /* a trip is waiting: count the catch */
+  const n=RR(3,8), a=RR(1,n-1), b=n-a;
+  const opts=[n,n+1,n-1>=2?n-1:n+2].sort(()=>Math.random()-.5);
+  const ask=()=>vsay(`${D} is back with a bucket of fish! Silver fish: ${'🐟'.repeat(a)}  Blue fish: ${'🐠'.repeat(b)}  How many fish altogether?`,
+    opts.map(x=>({label:String(x),fn:()=>{ if(x===n){F.sent=null;F.total+=n;saveState();reward(n*2);
+        vsay(`Yes, ${a} and ${b} make ${n}! The fish sell at the market for 2 embers each: +${n*2} embers.`,[{label:`Send ${D} out again`,fn:sendFish},{label:'OK'}]) }
+      else vsay('Count them again, one at a time. Silver first, then blue.',[{label:'Count again',fn:ask}]) }})));
+  ask();
+}
+function sendFish(){const D=S.dragon.name,F=fishSt();F.sent=today();saveState();Audio_.fx('pop');vsay(`${D} flaps off over the water with a tiny fishing net. Come back tomorrow!`)}
+
+/* ===== the shared island project (lighthouse first): drawn in four stages ===== */
+function lhDraw(c,stage){
+  const cx=45, base=160;
+  shadowBlob(c,cx,base+3,34,7,.34);
+  if(stage===0){
+    /* staked-out plot: corner stakes, rope, a pile of stones and bricks */
+    c.strokeStyle='#d9d2b8';c.lineWidth=1.4;c.setLineDash([4,3]);c.beginPath();c.moveTo(18,base-4);c.lineTo(72,base-4);c.lineTo(80,base+4);c.lineTo(10,base+4);c.closePath();c.stroke();c.setLineDash([]);
+    c.fillStyle='#8a5f36';[[18,base-4],[72,base-4],[80,base+4],[10,base+4]].forEach(([x,y])=>c.fillRect(x-1.5,y-12,3,13));
+    c.fillStyle='#9a9ea3';[[34,base-2,9],[43,base-4,7],[52,base-1,8],[40,base+2,6]].forEach(([x,y,r])=>{c.beginPath();c.ellipse(x,y,r,r*.6,0,0,6.3);c.fill()});
+    c.fillStyle='#b5533a';c.fillRect(56,base-8,10,5);c.fillRect(58,base-13,10,5);
+    c.fillStyle='#8a6a3a';c.fillRect(44,base-34,3,32);c.fillStyle='#e8d9a8';c.fillRect(30,base-48,32,16);c.fillStyle='#6b4a1a';c.fillRect(34,base-44,24,2);c.fillRect(34,base-39,18,2);
+    return;
+  }
+  /* tower height and half-width per stage */
+  const H=[0,44,88,122,122][stage], wB=24, wT=15;
+  const topY=base-H;
+  const halfAt=y=>wB-(wB-wT)*((base-y)/122);
+  /* body */
+  c.beginPath();c.moveTo(cx-wB,base);c.lineTo(cx+wB,base);c.lineTo(cx+halfAt(topY),topY);c.lineTo(cx-halfAt(topY),topY);c.closePath();
+  c.fillStyle=lg(c,cx-wB,0,cx+wB,0,['#f2ede0','#dcd4c0','#b9b09a']);c.fill();
+  /* red stripes */
+  c.save();c.clip();
+  c.fillStyle='#c9432b';for(let k=0;k<4;k++){const y1=base-14-k*34;c.fillRect(cx-40,y1-14,80,14)}
+  c.fillStyle='rgba(0,0,0,.12)';c.fillRect(cx+6,topY,30,H);c.restore();
+  /* stone footing */
+  c.fillStyle='#8a8f96';c.beginPath();c.moveTo(cx-wB-5,base);c.lineTo(cx+wB+5,base);c.lineTo(cx+wB+2,base-9);c.lineTo(cx-wB-2,base-9);c.closePath();c.fill();
+  c.strokeStyle='rgba(40,44,50,.45)';c.lineWidth=1;for(let k=0;k<5;k++){c.beginPath();c.moveTo(cx-wB-4+k*12,base-9);c.lineTo(cx-wB-4+k*12+2,base);c.stroke()}
+  /* door */
+  if(stage>=2){c.fillStyle='#6b4a2a';c.beginPath();c.moveTo(cx-6,base-9);c.lineTo(cx-6,base-24);c.arc(cx,base-24,6,Math.PI,0);c.lineTo(cx+6,base-9);c.closePath();c.fill()}
+  /* scaffold in the early stages */
+  if(stage<3){c.strokeStyle='#8a5f36';c.lineWidth=2;const sx=cx+wB+6;c.beginPath();c.moveTo(sx,base);c.lineTo(sx,topY-6);c.moveTo(sx-60,base);c.lineTo(sx-60,topY-6);c.stroke();
+    c.lineWidth=1.6;for(let y=base-16;y>topY-4;y-=24){c.beginPath();c.moveTo(sx-60,y);c.lineTo(sx,y);c.stroke()}}
+  if(stage>=3){
+    /* gallery, lamp room, roof */
+    c.fillStyle='#4a4f57';c.fillRect(cx-halfAt(topY)-6,topY-5,2*halfAt(topY)+12,6);
+    c.fillStyle='#3a3f46';c.fillRect(cx-halfAt(topY)-6,topY-12,2*halfAt(topY)+12,2);
+    const lampOn=stage>=4;
+    c.fillStyle=lampOn?'#ffe48a':'#5a6770';c.fillRect(cx-9,topY-30,18,24);
+    c.strokeStyle='#3a3f46';c.lineWidth=1.6;c.strokeRect(cx-9,topY-30,18,24);c.beginPath();c.moveTo(cx,topY-30);c.lineTo(cx,topY-6);c.moveTo(cx-9,topY-18);c.lineTo(cx+9,topY-18);c.stroke();
+    c.fillStyle='#c9432b';c.beginPath();c.moveTo(cx-13,topY-30);c.lineTo(cx,topY-46);c.lineTo(cx+13,topY-30);c.closePath();c.fill();
+    c.fillStyle='#d9a441';c.beginPath();c.arc(cx,topY-48,2.6,0,6.3);c.fill();
+    /* little windows */
+    c.fillStyle='#35505e';[[base-60],[base-95]].forEach(([y])=>{c.beginPath();c.arc(cx,y,4,0,6.3);c.fill()});
+  }
+}
+SPR.lh=[0,1,2,3,4].map(st=>mk(90,170,c=>lhDraw(c,st)));
+
+function buildSite(){
+  const f=Fam.get(), done=(f.projDone||[]).includes('lighthouse');
+  const cur=Fam.current(f), p=cur&&cur.id==='lighthouse'?cur:null;
+  if(!done&&!p) return;   /* nothing to show until the project starts */
+  const n=Fam.bricks('lighthouse',f), proj=PROJECTS.find(x=>x.id==='lighthouse');
+  const st=done?4:projStage(proj,n);
+  const X=37.5, Y=13.95, tx=37, ty=13;
+  addObj(SPR.lh[st],X,Y,45,163,Object.assign({},st===4?{glow:[45,46],glowR:60,glowCol:'255,226,140'}:{}));
+  block([[tx,ty]],null,'use:lighthouse');
+  hitArea(tx,ty,[[0,-1],[0,-2],[0,-3],[-1,0],[0,1],[-1,-1],[-1,1]]);
+}
+function useLighthouse(){
+  const f=Fam.get(), proj=PROJECTS.find(x=>x.id==='lighthouse'), done=(f.projDone||[]).includes('lighthouse');
+  const n=Fam.bricks('lighthouse',f), st=done?4:projStage(proj,n), D=S.dragon?S.dragon.name:'Your dragon';
+  if(!done){
+    const left=proj.need-n;
+    vsay(`${proj.stageText[st]} It has ${n} of ${proj.need} bricks. Each child's finished practice adds ${BRICKS_EACH} bricks, so you are building it together. ${left>0?`${Math.ceil(left/BRICKS_EACH)} more practice${Math.ceil(left/BRICKS_EACH)>1?'s':''} to go.`:''} Missed days cost nothing.`);return}
+  if(usedToday('lighthouse')){vsay("The lighthouse beam is sweeping slowly across the sea. The boats are safe.");return}
+  vsay(`${proj.stageText[4]} Turn the great lamp?`,[{label:'Turn the lamp',fn:()=>{markUsed('lighthouse');reward(2);vsay(`${D} flaps up beside you. The beam sweeps the sea, and a little boat answers with a toot. (+2 embers.)`)}},{label:'Not now'}]);
+}
 
 /* ===== Characters: Ruan's adventurer + his dragon (all drawn in code) ===== */
 const DRG={body:'#38b2a0',body2:'#1f7f78',belly:'#f3dd9a',mem:'#e0764a',mem2:'#a8402c',horn:'#f3e6c4',eye:'#9be84a',spine:'#ef9b3e'};
@@ -3402,7 +3663,7 @@ function addObj(spr,wx,wy,ax,ay,o={}){const sc=o.sc||1;const it=Object.assign({s
 const MSG={
  house:"This is the school house. Today's practice happens inside.",
  tower:"The lookout tower. From the top you can see other islands. Tap Map to fly to them as they open.",
- ship:"A longship is moored at the dock. Tap Map to see the other islands.",
+ ship:"A longship is moored at the dock. Tap Map to see the other islands. The bucket and rod at the end of the jetty are for fishing.",
  bridge:"The bridge is being mended. Finish today's practice at the school house and it will be ready.",
  fire:"The campfire crackles. A good place to rest.",lantern:"A warm lantern.",banner:"The banner flaps in the sea breeze."};
 const PLOTS={ /* where each shop item goes: x,y (tile coords), scale */
@@ -3413,6 +3674,7 @@ const PLOTS={ /* where each shop item goes: x,y (tile coords), scale */
 Object.assign(PLOTS,GREEN_PLOTS,GREEN_DECOR);
 const GROVE=[[10.8,19.6],[12.2,19.2],[13.6,19.9],[11.6,21],[13,21.4],[14.4,21]];
 const STABLE_SPOTS=[[10.4,12.3],[12.7,12.3]];
+const bannerSpr=()=>SPR.bannerVar[S.inv.bannerCol||0]||SPR.banner;
 const own=id=>S.inv.decor.includes(id), built=id=>S.inv.built.includes(id);
 const done=()=>!!(S.day.trained||S.settings.exploreAny);
 const hatched=()=>!!(S.dragon&&S.dragon.hatched);
@@ -3459,14 +3721,15 @@ function buildObjects(){
   if(built('stables')){addObj(SPR.stables,11.6,11.0,110,148,{sc:.85});block([[9,9],[10,9],[11,9],[12,9],[13,9],[9,10],[10,10],[11,10],[12,10],[13,10]],null,'stables');
     S.extra.forEach((e,k)=>{const sp=STABLE_SPOTS[k];if(sp)block([[Math.floor(sp[0]),Math.floor(sp[1])]],null,'stables')})}else plot('stables');
   if(built('clothes')){addObj(SPR.clothes,33.3,17.3,90,148,{sc:.8});block([[32,15],[33,15],[34,15],[32,16],[33,16],[34,16]],null,'clothes')}else plot('clothes');
-  if(own('campfire')){addObj(SPR.firepit,22.5,17.55,30,17,{under:true});block([[22,17]],MSG.fire)}else plot('campfire');
-  if(own('lantern')){[[16.5,11.9],[19.5,11.9],[24.4,16.4]].forEach(([x,y])=>{addObj(SPR.lantern,x,y,20,78,{glow:[20,24]});block([[Math.floor(x),Math.floor(y)]],MSG.lantern)})}else plot('lantern');
-  if(own('banner')){addObj(SPR.banner,21.7,13.7,22,122,{});block([[21,13]],MSG.banner)}else plot('banner');
+  if(own('campfire')){addObj(SPR.firepit,22.5,17.55,30,17,{under:true});block([[22,17]],MSG.fire,'use:campfire');hitArea(22,17,[[0,1],[-1,0],[1,0],[0,-1]])}else plot('campfire');
+  if(own('lantern')){[[16.5,11.9],[19.5,11.9],[24.4,16.4]].forEach(([x,y])=>{addObj(SPR.lantern,x,y,20,78,{glow:[20,24]});block([[Math.floor(x),Math.floor(y)]],MSG.lantern,'use:lantern');hitArea(Math.floor(x),Math.floor(y),[[0,-1],[0,-2],[-1,0],[1,0]])})}else plot('lantern');
+  if(own('banner')){addObj(bannerSpr(),21.7,13.7,22,122,{});block([[21,13]],MSG.banner,'use:banner');hitArea(21,13,[[0,-1],[0,-2],[-1,0],[1,0],[0,1]])}else plot('banner');
   if(own('pines')){GROVE.forEach(([x,y],k)=>{addObj(SPR.pine[k%3],x,y,35,98,{tree:1});block([[Math.floor(x),Math.floor(y-.35)]])})}else plot('pines');
-  if(own('jetty')){addObj(SPR.dock,31.25,21,2,0,{under:true});addObj(SPR.ship,35.3,24.9,90,128,{ship:true});block([[31,25],[32,25],[30,24],[33,24]],MSG.ship)}else plot('jetty');
-  if(own('tower')){addObj(SPR.tower,36,9.95,60,176,{});block([[35,9],[36,9]],MSG.tower)}else plot('tower');
+  if(own('jetty')){addObj(SPR.dock,31.25,21,2,0,{under:true});addObj(SPR.ship,35.3,24.9,90,128,{ship:true});block([[31,25],[32,25],[30,24],[33,24]],MSG.ship);addObj(SPR.fishpost,32.5,24.55,23,56,{});block([[32,24]],'A bucket and a fishing rod.','use:jetty');hitArea(32,24,[[0,-1],[0,-2],[-1,0],[1,0],[0,1]])}else plot('jetty');
+  if(own('tower')){addObj(SPR.tower,36,9.95,60,176,{});block([[35,9],[36,9]],MSG.tower,'use:tower');hitArea(35,9,[[0,-1],[0,-2],[-1,0]]);hitArea(36,9,[[0,-1],[0,-2],[1,0],[0,1]])}else plot('tower');
+  buildSite();
   if(own('garden'))addObj(SPR.garden,16.4,16.7,48,34,{under:true});else plot('garden');
-  if(own('fountain')){addObj(SPR.fountain,19.5,16.2,45,76,{sc:.9});block([[19,15]],"A little fountain. The water sparkles.")}else plot('fountain');
+  if(own('fountain')){addObj(SPR.fountain,19.5,16.2,45,76,{sc:.9});block([[19,15]],"A little fountain. The water sparkles.",'use:fountain');hitArea(19,15,[[0,-1],[-1,0],[1,0],[0,1]])}else plot('fountain');
   if(own('windmill')){addObj(SPR.windmill,6.6,15.5,50,150,{sc:.9});block([[6,15]],"The windmill creaks round and round.")}else plot('windmill');
   { const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
     if(done()&&hatched()&&sp&&okGround(Math.floor(sp.x),Math.floor(sp.y))){addObj(mi.rescued?millieSprite('free',null):millieSprite('stuck',sp.prop),sp.x,sp.y,32,60,{});block([[Math.floor(sp.x),Math.floor(sp.y-.3)]],null,'millie')} }
@@ -3476,7 +3739,7 @@ function buildObjects(){
       block([[fx,fy]],ch.opened?`The family chest is open! ${who}. Everyone who played today gets a bonus.`:`The family chest has two locks. ${who}. When every key is turned, it opens for everyone.`); hitArea(fx,fy,[[-1,0],[1,0],[0,1],[0,-1]]) } }
   todaysMounds().forEach(([i,j],n)=>{if(!(S.day.dug||[]).includes(n)){addObj(SPR.mound,i+.5,j+.8,20,22,{});block([[i,j]],null,'dig:'+n)}});
   if(eventActive('xmas')&&okGround(16,14)){addObj(SPR.xtree,16.5,14.7,35,102,{sc:.95,glow:[35,56],glowCol:'255,220,120',glowR:30});block([[16,14]],"A Christmas tree, sparkling with lights.")}
-  if(own('statue')){addObj(SPR.statue,29.6,14.6,40,110,{sc:.9});block([[29,14]],"A stone dragon, standing guard over the island.")}else plot('statue');
+  if(own('statue')){addObj(SPR.statue,29.6,14.6,40,110,{sc:.9});block([[29,14]],"A stone dragon, standing guard over the island.",'use:statue');hitArea(29,14,[[0,-1],[0,-2],[-1,0],[1,0],[0,1]])}else plot('statue');
   }else buildIsle();
   // trees
   for(const t of TREES){
@@ -3555,6 +3818,9 @@ const overlayOpen=()=>{const o=$('#overlay');return !!(o&&o.children.length)};
 function runAct(a){
   if(BUILD_ACTS[a])return BUILD_ACTS[a]();
   if(a.startsWith('hs:'))return hsFlag(+a.slice(3));
+  if(a==='use:jetty')return fishJetty();
+  if(a==='use:lighthouse')return useLighthouse();
+  if(a.startsWith('use:'))return useItem(a.slice(4));
   if(a==='nest')return openNest();
   if(a==='stall')return openShop();
   if(a==='forge')return openForge();
@@ -3900,6 +4166,7 @@ async function show(){
   VS.last=0;VS.raf=requestAnimationFrame(frame);
   if(first&&!S.day.trained)vtoast('Walk to the school house. Arrow keys, or tap where you want to go.',4200);
   announceNew();
+  { const gb=Fam.claimBuild(); if(gb){ hud(); setTimeout(()=>{ if(screen==='village'&&!G.modal) vsay(`The ${gb.name.toLowerCase()} is finished! Your brother or sister placed the last bricks. There is a reward for you: +${gb.e} embers.`) },900) } }
   { const got=Fam.claim(); if(got){ hud(); setTimeout(()=>{ if(screen==='village'&&!G.modal) vsay(`The family chest opened! There is a bonus for you: +${got} embers.`) },900) } }
   if(S.day.trained&&!S.day.jokeShown&&!first){S.day.jokeShown=true;saveState();setTimeout(()=>{if(screen==='village'&&!G.modal&&!overlayOpen())tellJoke()},1800)}
 }
@@ -4158,7 +4425,7 @@ function frame(now){
 const idle=()=>!!(VS.ready&&!G.modal&&!overlayOpen()&&G.mode==='ground'&&!P.moving&&!P.queue.length&&!typing&&!($('#vq')&&!$('#vq').hidden));
 const busy=()=>!!(overlayOpen()||($('#vq')&&!$('#vq').hidden));
 function yawn(){if(screen!=='village')return;vtoast(`${S.dragon.name} yawns and stretches. Getting sleepy...`,4200);Audio_.fx('soft');VS.zT=0}
-return {show,preload,refresh,reset,idle,busy,yawn,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
+return {warp:(x,y)=>{const [wx,wy]=nearestWalkable(x,y);P.x=wx;P.y=wy;Dg.x=wx-1;Dg.y=wy;Dg.trail=[];cam.init=false;VS.pos={x:P.x,y:P.y,dir:P.dir}},scan:()=>{const r=[];for(let j=4;j<28;j++){let s="";for(let i=0;i<42;i++){s+=blocked[j][i]?"#":(landV(i+.5,j+.5)>.05?".":" ")}r.push(String(j).padStart(2)+" "+s)}return r.join("\n")},sprDebug:()=>({m:millieSprite("sit",0),h:henSprite(0),h2:henSprite(1)}),show,preload,refresh,reset,idle,busy,yawn,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
   state:{G,P,Dg,VS,OBJ,TREES,notes,acts,blocked,walk,cam,held},
   setHour:h=>{VS.hour=h},setPos:(x,y)=>{P.x=x+.5;P.y=y+.5;Dg.x=P.x-1;Dg.y=P.y;Dg.trail=[]},
   okGround,bfs,ptile,tapTile:doTapTile,say:vsay,shards:()=>VS.shards,collectAt,runAct,
@@ -4497,7 +4764,7 @@ function swapDragon(k){
 }
 
 /* ---- grown-ups ---- */
-function itemLabel(it){ return it.kind==='bond'?`${it.a}+?`:it.kind==='add'||it.kind==='wadd'?`${it.x}+${it.y}`:it.kind==='tadd'?`${it.T}+${it.u}`:it.kind==='sub'?`${it.n}−${it.m}`:it.kind==='tsub'?`${it.c}−${it.u}`:it.kind==='xadd'?`${it.x}0+${it.y}0`:it.kind==='xsub'?`${it.c}0−${it.y}0`:it.kind==='oadd'?`ones ${it.o}+${it.u}`:it.kind==='osub'?`ones ${it.o+it.u}−${it.u}`:it.kind==='wsub'?`${it.c}−?`:`fam ${it.x}+${it.y}`; }
+function itemLabel(it){ return it.kind==='bond'?`${it.a}+?`:it.kind==='add'||it.kind==='wadd'?`${it.x}+${it.y}`:it.kind==='tadd'?`${it.T}+${it.u}`:it.kind==='sub'?`${it.n}−${it.m}`:it.kind==='tsub'?`${it.c}−${it.u}`:it.kind==='dadd'?`2-digit +, ones ${it.o1}+${it.o2}`:it.kind==='dsub'?`2-digit −, ones ${it.o1}`:it.kind==='skip'?`count in ${it.st}s (${it.n})`:it.kind==='xadd'?`${it.x}0+${it.y}0`:it.kind==='xsub'?`${it.c}0−${it.y}0`:it.kind==='oadd'?`ones ${it.o}+${it.u}`:it.kind==='osub'?`ones ${it.o+it.u}−${it.u}`:it.kind==='wsub'?`${it.c}−?`:`fam ${it.x}+${it.y}`; }
 function median(a){ if(!a.length) return null; const s=a.slice().sort((x,y)=>x-y), m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
 function fmtS(ms){ if(ms==null) return '–'; const s=Math.round(ms/1000); return s<90?`${s}s`:`${Math.round(s/60)} min`; }
 function faceWord(v){return v===3?'good':v===2?'okay':v===1?'worried':'no answer';}

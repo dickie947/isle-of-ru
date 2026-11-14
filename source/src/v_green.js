@@ -151,9 +151,10 @@ function drawHen(c,col,v,bow,hat){shadowBlob(c,13,23,8,3,.3);c.fillStyle=col;c.b
   c.fillStyle='#d9342b';c.beginPath();c.arc(17,4.6,1.8,0,6.3);c.arc(19.6,5,1.6,0,6.3);c.fill();c.fillStyle='#f0a030';c.beginPath();c.moveTo(22,9);c.lineTo(26,10.4);c.lineTo(22,11.6);c.closePath();c.fill();c.fillStyle='#111';c.beginPath();c.arc(19.4,8.4,.9,0,6.3);c.fill();
   c.strokeStyle='#f0a030';c.lineWidth=1.2;c.beginPath();c.moveTo(11,20);c.lineTo(11,24);c.moveTo(15,20);c.lineTo(15,24);c.stroke();if(v===0){c.strokeStyle='rgba(0,0,0,.12)';c.beginPath();c.ellipse(12,15,8,6.4,0,0,6.3);c.stroke()}
   if(bow){c.fillStyle='#ff6fa5';c.beginPath();c.moveTo(14.4,12);c.lineTo(10.8,9.8);c.lineTo(10.8,14.2);c.closePath();c.moveTo(14.4,12);c.lineTo(18,9.8);c.lineTo(18,14.2);c.closePath();c.fill();c.fillStyle='#d93b7a';c.beginPath();c.arc(14.4,12,1.5,0,6.3);c.fill()}
-  if(hat){c.fillStyle='#ee7a1c';c.beginPath();c.ellipse(17.6,3.6,4.6,3.2,0,0,6.3);c.fill();c.strokeStyle='#b9560c';c.lineWidth=.8;c.beginPath();c.moveTo(17.6,.6);c.lineTo(17.6,6.4);c.stroke();c.fillStyle='#3f7a3a';c.fillRect(17,-.8,1.6,2)}}
-function henSprite(v){const b=own('henbows')?1:0,h=own('henhats')?1:0,k='hen'+v+b+h;return SPCACHE[k]||(SPCACHE[k]=mk(26,26,c=>drawHen(c,HEN_COLS[v],v,b,h)))}
-function millieSprite(pose,prop){const col=own('milliecollar')?1:0,hat=own('milliehat')?1:0,k='m'+pose+prop+col+hat;
+  if(hat===2){vikingHelm(c,18,6.2,.5)}
+  else if(hat){c.fillStyle='#ee7a1c';c.beginPath();c.ellipse(17.6,3.6,4.6,3.2,0,0,6.3);c.fill();c.strokeStyle='#b9560c';c.lineWidth=.8;c.beginPath();c.moveTo(17.6,.6);c.lineTo(17.6,6.4);c.stroke();c.fillStyle='#3f7a3a';c.fillRect(17,-.8,1.6,2)}}
+function henSprite(v){const b=own('henbows')?1:0,h=own('henvik')?2:own('henhats')?1:0,k='hen'+v+b+h;return SPCACHE[k]||(SPCACHE[k]=mk(26,26,c=>drawHen(c,HEN_COLS[v],v,b,h)))}
+function millieSprite(pose,prop){const col=own('milliecollar')?1:0,hat=own('millievik')?2:own('milliehat')?1:0,k='m'+pose+prop+col+hat;
   return SPCACHE[k]||(SPCACHE[k]=mk(64,66,c=>drawCat(c,pose,prop,Object.assign({},MILLIE_COAT,{collar:col,hat}))))}
 function makeSprites5(){
   SPR.hsboard=mk(76,88,(c)=>{shadowBlob(c,38,82,20,6,.3);c.fillStyle='#5a3920';c.fillRect(34,40,8,42);
@@ -183,6 +184,8 @@ function makeSprites5(){
     c.fillStyle='#b8a384';c.beginPath();c.ellipse(70,50,6,8,0,0,6.3);c.fill();c.fillStyle='#ffd23a';c.beginPath();c.arc(68,48,2,0,6.3);c.arc(73,48,2,0,6.3);c.fill();c.fillStyle='#111';c.beginPath();c.arc(68,48,.9,0,6.3);c.arc(73,48,.9,0,6.3);c.fill()});
   SPR.milliecollar=mk(48,40,c=>{c.strokeStyle='#d9342b';c.lineWidth=5;c.lineCap='round';c.beginPath();c.ellipse(24,16,16,8,0,0.15,3);c.stroke();c.fillStyle='#ffd23a';c.strokeStyle='#a87a10';c.lineWidth=1.4;c.beginPath();c.arc(24,27,5,0,6.3);c.fill();c.stroke();c.fillStyle='#a87a10';c.fillRect(23,26,2,5)});
   SPR.milliehat=mk(48,48,c=>{c.fillStyle='#2b1d3a';c.beginPath();c.ellipse(24,36,20,5,0,0,6.3);c.fill();c.fillStyle='#3a2a52';c.beginPath();c.moveTo(12,36);c.lineTo(26,4);c.lineTo(36,36);c.closePath();c.fill();c.fillStyle='#e8751a';c.fillRect(13,29,22,4);c.fillStyle='#ffd23a';c.fillRect(21,28,6,6)});
+  SPR.millievik=mk(48,48,c=>{vikingHelm(c,24,36,1.5)});
+  SPR.henvik=mk(44,44,c=>{vikingHelm(c,22,32,1.4)});
   SPR.henbows=mk(48,40,c=>{c.fillStyle='#ff6fa5';c.beginPath();c.moveTo(24,20);c.lineTo(6,8);c.lineTo(6,32);c.closePath();c.moveTo(24,20);c.lineTo(42,8);c.lineTo(42,32);c.closePath();c.fill();c.fillStyle='#d93b7a';c.beginPath();c.arc(24,20,5.5,0,6.3);c.fill()});
   SPR.henhats=mk(44,44,c=>{c.fillStyle='#ee7a1c';c.beginPath();c.ellipse(22,26,17,13,0,0,6.3);c.fill();c.strokeStyle='#b9560c';c.lineWidth=1.4;c.beginPath();c.moveTo(22,13);c.lineTo(22,39);c.moveTo(14,15);c.quadraticCurveTo(10,26,14,37);c.moveTo(30,15);c.quadraticCurveTo(34,26,30,37);c.stroke();c.fillStyle='#3f7a3a';c.fillRect(20,6,4,8)});
   SPR.hsflag=[];for(let n=0;n<=10;n++)SPR.hsflag[n]=mk(40,84,c=>{shadowBlob(c,20,78,10,3,.3);c.fillStyle='#6b4524';c.fillRect(8,6,4,72);c.fillStyle='#e8751a';c.beginPath();c.moveTo(12,8);c.lineTo(38,16);c.lineTo(12,34);c.closePath();c.fill();c.strokeStyle='#8a3a08';c.lineWidth=1.2;c.stroke();c.fillStyle='#fff';c.font='bold 15px sans-serif';c.textAlign='center';c.fillText(String(n),21,25)});

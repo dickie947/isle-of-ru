@@ -5,6 +5,14 @@
    (not inside either child's save), so one child's game never writes into the other's. */
 const FAM_KEY='isleOfRu.family';
 const CHEST_BASE=4, CHEST_BONUS=10;
+/* ---- weekly shared island project: every finished practice adds bricks from each child, nobody sees who added more ---- */
+const BRICKS_EACH=5;
+const PROJECTS=[
+  {id:'lighthouse',name:'Lighthouse',start:'2026-11-14',need:40,stages:[10,20,30,40],reward:30,
+   stageText:['A staked-out plot by the sea, ready for a lighthouse.','The stone base is going up.','The tower is rising, stripe by stripe.','The tower is done. The lamp room just needs its light.','The lighthouse is finished. Its lamp shines over the sea at night.']}
+  /* later projects (longship repairs, windmill, market stall, ...) are listed in ROADMAP.md and added as their art is made */
+];
+const projStage=(p,n)=>{let st=0;for(const th of p.stages) if(n>=th) st++;return st};
 const Fam={
   get(){
     let f={}; try{ f=JSON.parse(localStorage.getItem(FAM_KEY))||{}; }catch(e){}
@@ -30,9 +38,10 @@ const Fam={
   },
   /* called once when today's practice is finished */
   practiceDone(){
-    if(!S||!S.dragon) return null;
+    this.lastBuild=null; if(!S||!S.dragon) return null;
     const f=this.get(), k=SAVE_KEY; if(f.done[k]) return null;
     f.done[k]=true; f.last[k]=today(); f.names[k]=(S.hero&&S.hero.name)||S.dragon.name;
+    this.lastBuild=this.addBricks(f,k);
     if(listProfiles().length<2){ this.put(f); return null; }   /* a chest needs a family: nothing happens with one player */
     let gain=CHEST_BASE, opened=false; const m=this.members(f);
     if(m.length>=2&&m.every(x=>f.done[x])&&!f.opened){
@@ -41,6 +50,27 @@ const Fam={
     }
     this.put(f); S.embers+=gain;
     return {gain,opened,keys:m.filter(x=>f.done[x]).length,total:m.length};
+  },
+  /* the project being built now: the first one not yet finished whose start date has come */
+  current(f){ f=f||this.get(); f.projDone=f.projDone||[]; return PROJECTS.find(p=>!f.projDone.includes(p.id)&&p.start<=today())||null; },
+  bricks(id,f){ f=f||this.get(); return (f.bricks&&f.bricks[id])||0; },
+  /* one set of bricks per child per day, added when practice is finished */
+  addBricks(f,k){
+    f.projDone=f.projDone||[]; f.bricks=f.bricks||{}; f.bday=f.bday||{}; f.pendingB=f.pendingB||{};
+    const p=this.current(f); if(!p||f.bday[k]===today()) return null;
+    f.bday[k]=today();
+    const before=f.bricks[p.id]||0, after=Math.min(p.need,before+BRICKS_EACH); f.bricks[p.id]=after;
+    const r={id:p.id,name:p.name,n:after,need:p.need,stage:projStage(p,after),stageUp:projStage(p,after)>projStage(p,before),done:false,reward:0};
+    if(after>=p.need){
+      f.projDone.push(p.id); r.done=true; r.reward=p.reward; S.embers+=p.reward;
+      this.members(f).forEach(x=>{ if(x!==k) f.pendingB[x]={e:p.reward,name:p.name}; });
+    }
+    return r;
+  },
+  /* a finished project's reward for a child who was not the one who placed the last bricks */
+  claimBuild(){
+    const f=this.get(), g=f.pendingB&&f.pendingB[SAVE_KEY]; if(!g) return null;
+    delete f.pendingB[SAVE_KEY]; this.put(f); S.embers+=g.e; saveState(); return g;
   },
   /* embers waiting from a chest that opened after this child had finished */
   claim(){

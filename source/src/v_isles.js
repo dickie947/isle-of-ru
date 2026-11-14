@@ -68,6 +68,16 @@ function openChest(){
 /* ---- painted sprites for the islands ---- */
 /* ---- Millie the cat (dark brown with white paws; coat colours are easy to change) ---- */
 const MILLIE_COAT={base:'#4a3326',dark:'#2c1d14',belly:'#5a4030',ear:'#c98a8a',eye:'#e6c04a',paw:'#f4efe6'};
+/* horned Viking helmet: (x,y) is the middle of the brow line, k scales it */
+function vikingHelm(c,x,y,k){
+  c.save();c.translate(x,y);c.scale(k,k);
+  c.fillStyle='#f4ecd8';c.strokeStyle='#bfb59c';c.lineWidth=1;
+  for(const sd of [-1,1]){c.beginPath();c.moveTo(sd*8,-4);c.quadraticCurveTo(sd*13,-6,sd*13.5,-14);c.quadraticCurveTo(sd*10,-9,sd*5.5,-6.5);c.closePath();c.fill();c.stroke()}
+  c.fillStyle='#8b929a';c.strokeStyle='#5d636b';c.lineWidth=1;c.beginPath();c.moveTo(-9,1);c.quadraticCurveTo(-9,-12,0,-12);c.quadraticCurveTo(9,-12,9,1);c.closePath();c.fill();c.stroke();
+  c.fillStyle='#c98a2b';c.fillRect(-9.2,-3.5,18.4,3.2);
+  c.fillStyle='#6b4a1a';c.fillRect(-1,-3.5,2,3.2);
+  c.restore();
+}
 function drawCat(c,pose,prop,K){
   shadowBlob(c,32,60,22,5,.3);
   const stuck=pose==='stuck';
@@ -82,7 +92,8 @@ function drawCat(c,pose,prop,K){
   [[-1],[1]].forEach(([m])=>{c.fillStyle=K.base;c.beginPath();c.moveTo(31+m*10.5,24);c.lineTo(31+m*10,10);c.lineTo(31+m*2,19);c.closePath();c.fill();c.fillStyle=K.ear;c.beginPath();c.moveTo(31+m*9,22);c.lineTo(31+m*8.6,13.5);c.lineTo(31+m*3.4,19.5);c.closePath();c.fill()});
   c.strokeStyle=K.dark;c.lineWidth=1.6;[[-3],[0],[3]].forEach(([x])=>{c.beginPath();c.moveTo(31+x,19);c.lineTo(31+x,23.5);c.stroke()});
   if(K.collar){c.strokeStyle='#d9342b';c.lineWidth=2.6;c.lineCap='round';c.beginPath();c.ellipse(31,39.5,8.6,3,0,0.2,2.95);c.stroke();c.fillStyle='#ffd23a';c.beginPath();c.arc(31,43.4,2.3,0,6.3);c.fill()}
-  if(K.hat){c.fillStyle='#2b1d3a';c.beginPath();c.ellipse(31,17.5,13,3.2,0,0,6.3);c.fill();c.fillStyle='#3a2a52';c.beginPath();c.moveTo(22.5,17.5);c.lineTo(33,1.5);c.lineTo(39.5,17.5);c.closePath();c.fill();c.fillStyle='#e8751a';c.fillRect(23.5,13,15,2.6)}
+  if(K.hat===2){vikingHelm(c,31,17.5,1)}
+  else if(K.hat){c.fillStyle='#2b1d3a';c.beginPath();c.ellipse(31,17.5,13,3.2,0,0,6.3);c.fill();c.fillStyle='#3a2a52';c.beginPath();c.moveTo(22.5,17.5);c.lineTo(33,1.5);c.lineTo(39.5,17.5);c.closePath();c.fill();c.fillStyle='#e8751a';c.fillRect(23.5,13,15,2.6)}
   if(stuck){[[-4.6],[4.6]].forEach(([x])=>{c.fillStyle='#fff';c.beginPath();c.ellipse(31+x,29,3.6,4.4,0,0,6.3);c.fill();c.fillStyle=K.eye;c.beginPath();c.arc(31+x,29.6,2.4,0,6.3);c.fill();c.fillStyle='#1d1d22';c.beginPath();c.arc(31+x,29.6,1.2,0,6.3);c.fill()});
     c.fillStyle='#4a2a2a';c.beginPath();c.ellipse(31,36,1.8,2.4,0,0,6.3);c.fill();
     c.fillStyle='#6fc3ee';c.beginPath();c.moveTo(43,20);c.quadraticCurveTo(46,25,43,27);c.quadraticCurveTo(40,25,43,20);c.fill();

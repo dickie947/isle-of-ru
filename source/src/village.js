@@ -9,7 +9,7 @@ function addObj(spr,wx,wy,ax,ay,o={}){const sc=o.sc||1;const it=Object.assign({s
 const MSG={
  house:"This is the school house. Today's practice happens inside.",
  tower:"The lookout tower. From the top you can see other islands. Tap Map to fly to them as they open.",
- ship:"A longship is moored at the dock. Tap Map to see the other islands.",
+ ship:"A longship is moored at the dock. Tap Map to see the other islands. The bucket and rod at the end of the jetty are for fishing.",
  bridge:"The bridge is being mended. Finish today's practice at the school house and it will be ready.",
  fire:"The campfire crackles. A good place to rest.",lantern:"A warm lantern.",banner:"The banner flaps in the sea breeze."};
 const PLOTS={ /* where each shop item goes: x,y (tile coords), scale */
@@ -20,6 +20,7 @@ const PLOTS={ /* where each shop item goes: x,y (tile coords), scale */
 Object.assign(PLOTS,GREEN_PLOTS,GREEN_DECOR);
 const GROVE=[[10.8,19.6],[12.2,19.2],[13.6,19.9],[11.6,21],[13,21.4],[14.4,21]];
 const STABLE_SPOTS=[[10.4,12.3],[12.7,12.3]];
+const bannerSpr=()=>SPR.bannerVar[S.inv.bannerCol||0]||SPR.banner;
 const own=id=>S.inv.decor.includes(id), built=id=>S.inv.built.includes(id);
 const done=()=>!!(S.day.trained||S.settings.exploreAny);
 const hatched=()=>!!(S.dragon&&S.dragon.hatched);
@@ -66,14 +67,15 @@ function buildObjects(){
   if(built('stables')){addObj(SPR.stables,11.6,11.0,110,148,{sc:.85});block([[9,9],[10,9],[11,9],[12,9],[13,9],[9,10],[10,10],[11,10],[12,10],[13,10]],null,'stables');
     S.extra.forEach((e,k)=>{const sp=STABLE_SPOTS[k];if(sp)block([[Math.floor(sp[0]),Math.floor(sp[1])]],null,'stables')})}else plot('stables');
   if(built('clothes')){addObj(SPR.clothes,33.3,17.3,90,148,{sc:.8});block([[32,15],[33,15],[34,15],[32,16],[33,16],[34,16]],null,'clothes')}else plot('clothes');
-  if(own('campfire')){addObj(SPR.firepit,22.5,17.55,30,17,{under:true});block([[22,17]],MSG.fire)}else plot('campfire');
-  if(own('lantern')){[[16.5,11.9],[19.5,11.9],[24.4,16.4]].forEach(([x,y])=>{addObj(SPR.lantern,x,y,20,78,{glow:[20,24]});block([[Math.floor(x),Math.floor(y)]],MSG.lantern)})}else plot('lantern');
-  if(own('banner')){addObj(SPR.banner,21.7,13.7,22,122,{});block([[21,13]],MSG.banner)}else plot('banner');
+  if(own('campfire')){addObj(SPR.firepit,22.5,17.55,30,17,{under:true});block([[22,17]],MSG.fire,'use:campfire');hitArea(22,17,[[0,1],[-1,0],[1,0],[0,-1]])}else plot('campfire');
+  if(own('lantern')){[[16.5,11.9],[19.5,11.9],[24.4,16.4]].forEach(([x,y])=>{addObj(SPR.lantern,x,y,20,78,{glow:[20,24]});block([[Math.floor(x),Math.floor(y)]],MSG.lantern,'use:lantern');hitArea(Math.floor(x),Math.floor(y),[[0,-1],[0,-2],[-1,0],[1,0]])})}else plot('lantern');
+  if(own('banner')){addObj(bannerSpr(),21.7,13.7,22,122,{});block([[21,13]],MSG.banner,'use:banner');hitArea(21,13,[[0,-1],[0,-2],[-1,0],[1,0],[0,1]])}else plot('banner');
   if(own('pines')){GROVE.forEach(([x,y],k)=>{addObj(SPR.pine[k%3],x,y,35,98,{tree:1});block([[Math.floor(x),Math.floor(y-.35)]])})}else plot('pines');
-  if(own('jetty')){addObj(SPR.dock,31.25,21,2,0,{under:true});addObj(SPR.ship,35.3,24.9,90,128,{ship:true});block([[31,25],[32,25],[30,24],[33,24]],MSG.ship)}else plot('jetty');
-  if(own('tower')){addObj(SPR.tower,36,9.95,60,176,{});block([[35,9],[36,9]],MSG.tower)}else plot('tower');
+  if(own('jetty')){addObj(SPR.dock,31.25,21,2,0,{under:true});addObj(SPR.ship,35.3,24.9,90,128,{ship:true});block([[31,25],[32,25],[30,24],[33,24]],MSG.ship);addObj(SPR.fishpost,32.5,24.55,23,56,{});block([[32,24]],'A bucket and a fishing rod.','use:jetty');hitArea(32,24,[[0,-1],[0,-2],[-1,0],[1,0],[0,1]])}else plot('jetty');
+  if(own('tower')){addObj(SPR.tower,36,9.95,60,176,{});block([[35,9],[36,9]],MSG.tower,'use:tower');hitArea(35,9,[[0,-1],[0,-2],[-1,0]]);hitArea(36,9,[[0,-1],[0,-2],[1,0],[0,1]])}else plot('tower');
+  buildSite();
   if(own('garden'))addObj(SPR.garden,16.4,16.7,48,34,{under:true});else plot('garden');
-  if(own('fountain')){addObj(SPR.fountain,19.5,16.2,45,76,{sc:.9});block([[19,15]],"A little fountain. The water sparkles.")}else plot('fountain');
+  if(own('fountain')){addObj(SPR.fountain,19.5,16.2,45,76,{sc:.9});block([[19,15]],"A little fountain. The water sparkles.",'use:fountain');hitArea(19,15,[[0,-1],[-1,0],[1,0],[0,1]])}else plot('fountain');
   if(own('windmill')){addObj(SPR.windmill,6.6,15.5,50,150,{sc:.9});block([[6,15]],"The windmill creaks round and round.")}else plot('windmill');
   { const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
     if(done()&&hatched()&&sp&&okGround(Math.floor(sp.x),Math.floor(sp.y))){addObj(mi.rescued?millieSprite('free',null):millieSprite('stuck',sp.prop),sp.x,sp.y,32,60,{});block([[Math.floor(sp.x),Math.floor(sp.y-.3)]],null,'millie')} }
@@ -83,7 +85,7 @@ function buildObjects(){
       block([[fx,fy]],ch.opened?`The family chest is open! ${who}. Everyone who played today gets a bonus.`:`The family chest has two locks. ${who}. When every key is turned, it opens for everyone.`); hitArea(fx,fy,[[-1,0],[1,0],[0,1],[0,-1]]) } }
   todaysMounds().forEach(([i,j],n)=>{if(!(S.day.dug||[]).includes(n)){addObj(SPR.mound,i+.5,j+.8,20,22,{});block([[i,j]],null,'dig:'+n)}});
   if(eventActive('xmas')&&okGround(16,14)){addObj(SPR.xtree,16.5,14.7,35,102,{sc:.95,glow:[35,56],glowCol:'255,220,120',glowR:30});block([[16,14]],"A Christmas tree, sparkling with lights.")}
-  if(own('statue')){addObj(SPR.statue,29.6,14.6,40,110,{sc:.9});block([[29,14]],"A stone dragon, standing guard over the island.")}else plot('statue');
+  if(own('statue')){addObj(SPR.statue,29.6,14.6,40,110,{sc:.9});block([[29,14]],"A stone dragon, standing guard over the island.",'use:statue');hitArea(29,14,[[0,-1],[0,-2],[-1,0],[1,0],[0,1]])}else plot('statue');
   }else buildIsle();
   // trees
   for(const t of TREES){
@@ -162,6 +164,9 @@ const overlayOpen=()=>{const o=$('#overlay');return !!(o&&o.children.length)};
 function runAct(a){
   if(BUILD_ACTS[a])return BUILD_ACTS[a]();
   if(a.startsWith('hs:'))return hsFlag(+a.slice(3));
+  if(a==='use:jetty')return fishJetty();
+  if(a==='use:lighthouse')return useLighthouse();
+  if(a.startsWith('use:'))return useItem(a.slice(4));
   if(a==='nest')return openNest();
   if(a==='stall')return openShop();
   if(a==='forge')return openForge();
@@ -507,6 +512,7 @@ async function show(){
   VS.last=0;VS.raf=requestAnimationFrame(frame);
   if(first&&!S.day.trained)vtoast('Walk to the school house. Arrow keys, or tap where you want to go.',4200);
   announceNew();
+  { const gb=Fam.claimBuild(); if(gb){ hud(); setTimeout(()=>{ if(screen==='village'&&!G.modal) vsay(`The ${gb.name.toLowerCase()} is finished! Your brother or sister placed the last bricks. There is a reward for you: +${gb.e} embers.`) },900) } }
   { const got=Fam.claim(); if(got){ hud(); setTimeout(()=>{ if(screen==='village'&&!G.modal) vsay(`The family chest opened! There is a bonus for you: +${got} embers.`) },900) } }
   if(S.day.trained&&!S.day.jokeShown&&!first){S.day.jokeShown=true;saveState();setTimeout(()=>{if(screen==='village'&&!G.modal&&!overlayOpen())tellJoke()},1800)}
 }
@@ -765,7 +771,7 @@ function frame(now){
 const idle=()=>!!(VS.ready&&!G.modal&&!overlayOpen()&&G.mode==='ground'&&!P.moving&&!P.queue.length&&!typing&&!($('#vq')&&!$('#vq').hidden));
 const busy=()=>!!(overlayOpen()||($('#vq')&&!$('#vq').hidden));
 function yawn(){if(screen!=='village')return;vtoast(`${S.dragon.name} yawns and stretches. Getting sleepy...`,4200);Audio_.fx('soft');VS.zT=0}
-return {show,preload,refresh,reset,idle,busy,yawn,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
+return {warp:(x,y)=>{const [wx,wy]=nearestWalkable(x,y);P.x=wx;P.y=wy;Dg.x=wx-1;Dg.y=wy;Dg.trail=[];cam.init=false;VS.pos={x:P.x,y:P.y,dir:P.dir}},scan:()=>{const r=[];for(let j=4;j<28;j++){let s="";for(let i=0;i<42;i++){s+=blocked[j][i]?"#":(landV(i+.5,j+.5)>.05?".":" ")}r.push(String(j).padStart(2)+" "+s)}return r.join("\n")},sprDebug:()=>({m:millieSprite("sit",0),h:henSprite(0),h2:henSprite(1)}),show,preload,refresh,reset,idle,busy,yawn,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
   state:{G,P,Dg,VS,OBJ,TREES,notes,acts,blocked,walk,cam,held},
   setHour:h=>{VS.hour=h},setPos:(x,y)=>{P.x=x+.5;P.y=y+.5;Dg.x=P.x-1;Dg.y=P.y;Dg.trail=[]},
   okGround,bfs,ptile,tapTile:doTapTile,say:vsay,shards:()=>VS.shards,collectAt,runAct,

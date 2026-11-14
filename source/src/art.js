@@ -197,6 +197,8 @@ const CATALOG={
     {id:'milliecollar',name:'Millie bell collar',cost:30,note:'A red collar with a tinkly bell for Millie.',spr:1},
     {id:'milliehat',name:'Millie witch hat',cost:45,note:'A pointy hat for Millie. She will pretend she hates it.',spr:1},
     {id:'henbows',name:'Hen bows',cost:35,note:'Pink bows for the hens at the coop.',spr:1},
+    {id:'millievik',name:'Millie Viking helmet',cost:45,note:'A tiny horned helmet for Millie. Very fierce, very small.',spr:1},
+    {id:'henvik',name:'Hen Viking helmets',cost:45,note:'Tiny horned helmets for the hens. They march about like a shield wall.',spr:1},
     {id:'henhats',name:'Hen pumpkin hats',cost:45,note:'Tiny pumpkin hats for the hens at the coop.',spr:1}
   ],
   acc:[

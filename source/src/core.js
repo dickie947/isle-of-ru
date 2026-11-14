@@ -113,6 +113,10 @@ const ITEM={};
   const xsubs=xadds.map(a=>({id:`z:${a.x}0+${a.y}0`,kind:'xsub',x:a.x,y:a.y,c:a.x+a.y,src:a.id,ans:a.y*10}));
   const oadds=[]; for(let u=1;u<=4;u++) for(let o=1;o<=9-u;o++) oadds.push({id:`o:${o}+${u}`,kind:'oadd',o,u,ans:o+u});
   const osubs=oadds.map(a=>({id:`p:${a.o}+${a.u}`,kind:'osub',o:a.o,u:a.u,src:a.id,ans:a.o}));
+  /* Drop 2 batch 2 (week 6): two-digit plus two-digit with no regrouping, and counting in steps */
+  const dadds=[]; for(let o1=1;o1<=8;o1++) for(let o2=o1;o1+o2<=9;o2++) dadds.push({id:`d:${o1}+${o2}`,kind:'dadd',o1,o2});
+  const dsubs=dadds.map(a=>({id:`e:${a.o1}+${a.o2}`,kind:'dsub',o1:a.o1,o2:a.o2,src:a.id}));
+  const skips=[]; for(const st of [2,5,10]) for(let n=3;n<=(st===10?9:10);n++) skips.push({id:`k:${st}x${n}`,kind:'skip',st,n,ans:st*n});
   SKILLS.push({id:'bonds',name:'Pairs that make ten',blurb:'How many more to fill a ten-frame.',items:bonds});
   SKILLS.push({id:'w10add',easy:true,name:'Adding within ten',blurb:'Join small groups, e.g. 3 + 4.',items:wadds});
   SKILLS.push({id:'w10sub',easy:true,name:'Taking away within ten',blurb:'Use an adding fact to take away, e.g. 7 − 3.',items:wsubs});
@@ -125,6 +129,9 @@ const ITEM={};
   SKILLS.push({id:'tenssub',easy:true,name:'Taking away tens',blurb:'Use an adding tens fact to take away, e.g. 50 − 20.',items:xsubs});
   SKILLS.push({id:'onesadd',easy:true,name:'Tens and ones plus ones',blurb:'Only the ones change, e.g. 34 + 5.',items:oadds});
   SKILLS.push({id:'onessub',easy:true,name:'Tens and ones take away ones',blurb:'Only the ones change, e.g. 38 − 5.',items:osubs});
+  SKILLS.push({id:'twodadd',easy:true,name:'Two-digit adding',blurb:'Add the tens, then add the ones, e.g. 23 + 14.',items:dadds});
+  SKILLS.push({id:'twodsub',easy:true,name:'Two-digit taking away',blurb:'Take away the tens, then the ones, e.g. 47 − 23.',items:dsubs});
+  SKILLS.push({id:'skipcount',easy:true,name:'Counting in steps',blurb:'Count in 2s, 5s and 10s, e.g. 5, 10, 15, …',items:skips});
   for(const sk of SKILLS) for(const it of sk.items){it.skill=sk.id; ITEM[it.id]=it;}
 })();
 const ALL_ITEMS=SKILLS.flatMap(s=>s.items);
