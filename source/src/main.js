@@ -346,6 +346,42 @@ function openGate(after){
     <div class="row" style="justify-content:center;margin-top:10px"><button class="btn btn-primary" data-act="gate-go">Open</button></div></div>`);
   const i=$('#gans'); if(i){ i.focus(); i.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); const b=$('[data-act="gate-go"]'); if(b) b.click(); } }); }
 }
+/* ---- the parents' summary: reads every profile on this device (read only) and says in plain words how the week went ---- */
+function weekSummary(){
+  const rows=listProfiles().map(({s,name,active})=>{
+    const days=(s.days||[]).filter(d=>daysBetween(d,today())<7).length;
+    const box=id=>(s.items&&s.items[id])?s.items[id].box:-1;
+    const steady=i=>SKILLS[i].items.filter(x=>box(x.id)>=2).length;
+    const unlocked=i=>i===0||i<=(s.startSkill||0)||steady(i-1)>=Math.ceil(SKILLS[i-1].items.length*.7);
+    let cur=0; SKILLS.forEach((k,i)=>{ if(unlocked(i)) cur=i; });
+    const doneSk=SKILLS.filter((k,i)=>steady(i)>=Math.ceil(k.items.length*.7)).length;
+    const secure=ALL_ITEMS.filter(it=>box(it.id)>=3).length, seen=ALL_ITEMS.filter(it=>box(it.id)>=0).length;
+    const ss=(s.sessions||[]).filter(x=>!x.partial&&!x.bonus&&x.date&&daysBetween(x.date,today())<7);
+    const fa=ss.map(x=>x.firstAnswerMs).filter(x=>x!=null).sort((a,b)=>a-b), med=fa.length?fa[Math.floor(fa.length/2)]:null;
+    const worried=ss.filter(x=>x.faceStart===1).length;
+    const hA=ss.reduce((a,x)=>a+(x.hardAsked||0),0), hT=ss.reduce((a,x)=>a+(x.hardTry||0),0), hG=ss.reduce((a,x)=>a+(x.hardGuess||0),0);
+    const ck=(s.checkups||[]).filter(c=>!c.partial).slice(-1)[0];
+    let ckTxt='No check-up yet.';
+    if(ck){
+      const per={}; (ck.items||[]).forEach(t=>{const it=ITEM[t.id]; if(!it) return; const sk=SKILLS.find(k=>k.id===it.skill); if(!sk) return; (per[sk.name]=per[sk.name]||[0,0])[1]++; if(t.clean) per[sk.name][0]++;});
+      const weak=Object.keys(per).filter(k=>per[k][1]>=2&&per[k][0]/per[k][1]<.5);
+      ckTxt=`${ck.date}: ${ck.clean} of ${ck.total} right first time.${weak.length?` Worth a little extra time: ${weak.join(', ')}.`:' Nothing stood out as weak.'}`;
+    }
+    const sec=(a,b)=>a==null?'not enough yet':`${Math.round(a/1000)} second${Math.round(a/1000)===1?"":"s"}`;
+    return `<div class="box"><h3>${esc(name)}${active?' (playing now)':''}</h3><ul class="note" style="line-height:1.55;padding-left:18px;margin:6px 0">
+      <li><b>Days practised in the last 7:</b> ${days} of 7</li>
+      <li><b>Working on now:</b> ${esc(SKILLS[cur].name)} (${steady(cur)} of ${SKILLS[cur].items.length} facts steady)</li>
+      <li><b>Skills going well so far:</b> ${doneSk} of ${SKILLS.length}</li>
+      <li><b>Facts met:</b> ${seen}; <b>secure after a week:</b> ${secure}</li>
+      <li><b>Calm starts:</b> typical time to first answer ${sec(med)}${worried?`; ${worried} session${worried>1?'s':''} started feeling worried`:''}</li>
+      <li><b>When it got hard:</b> asked for help ${hA}, tried again ${hT}, quick guess ${hG}</li>
+      <li><b>Latest check-up:</b> ${ckTxt}</li></ul></div>`;
+  }).join('');
+  const seenN=ALL_ITEMS.filter(it=>isSeen(it.id)&&itemEligible(it)).length;
+  return `<div class="box"><h3>This week at a glance</h3><p class="note">A plain summary for each player on this device. It only reads their saves, it never changes them. Accuracy is never shown to the children.</p></div>${rows||'<p class="note">No players yet.</p>'}
+    <div class="box"><h3>Calm check-up for ${esc((S.hero&&S.hero.name)||S.dragon.name)}</h3><p class="note">About 8 questions mixed from facts already practised. It is not marked in front of them, gives no embers and changes nothing in their practice. The result appears above. Best done when they are relaxed, not tired. Needs about 6 facts met first (${seenN} so far).</p>
+    <div class="row"><button class="btn btn-primary" data-act="checkup-go" ${seenN<6?'disabled':''}>Start a calm check-up</button></div></div>`;
+}
 function openGrownups(tab){
   tab=tab||'progress';
   const ss=S.sessions.filter(s=>!s.partial&&!s.bonus), last=ss.slice(-10);
@@ -394,8 +430,8 @@ function openGrownups(tab){
   const bk=`<div class="box"><h3>Save code (move to another device)</h3><p class="note">This saves the current player (${esc((S.hero&&S.hero.name)||S.dragon.name)}) only. Progress lives in this browser. To move to another device, copy the save code, then paste it into "Restore" on the new device. Do this every few weeks as a backup too.</p>
     <textarea readonly id="bk" aria-label="Backup code">${backup}</textarea><div class="row"><button class="btn btn-sm" data-act="copy-bk">Copy save code</button></div>
     <textarea id="rs" aria-label="Paste a backup code to restore" placeholder="Paste a backup code here"></textarea><div class="row"><button class="btn btn-sm" data-act="restore">Restore from code</button><button class="btn btn-sm btn-ghost" data-act="reset-all" id="rsall">Erase this player</button></div></div>`;
-  const tabs=[['progress','Progress'],['facts','Facts'],['settings','Settings']];
-  const body=tab==='progress'?`<div class="grid2">${calm}${hard}${ret}${tools}</div>${tips}${soon}`:tab==='facts'?`${legend}<div class="grid2">${facts}</div>`:`<div class="grid2">${settings}${bk}</div>`;
+  const tabs=[['progress','Progress'],['week','This week'],['facts','Facts'],['settings','Settings']];
+  const body=tab==='progress'?`<div class="grid2">${calm}${hard}${ret}${tools}</div>${tips}${soon}`:tab==='week'?weekSummary():tab==='facts'?`${legend}<div class="grid2">${facts}</div>`:`<div class="grid2">${settings}${bk}</div>`;
   openSheet(`<div class="row spread"><h2>Grown-ups</h2><button class="btn btn-ghost btn-sm" data-act="close">${ic('close',18)} Close</button></div>
     <p class="sub">${esc((S.hero&&S.hero.name)||S.dragon.name)} has trained ${S.days.length} day${S.days.length===1?'':'s'} and played ${S.dash.plays.length} Dash${S.dash.plays.length===1?'':'es'}. ${storageOK?'':'<span class="warn">Saving is blocked in this browser, so use the backup code.</span>'}</p>
     <div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button class="tab" role="tab" data-act="gtab" data-k="${k}" aria-selected="${tab===k}">${l}</button>`).join('')}</div><div class="gu">${body}</div>`,{wide:true});
@@ -487,6 +523,7 @@ document.addEventListener('click',e=>{
     case 'help': pressHelp(false); break;
     case 'next': afterQuestion(); break;
     case 'quit': quitTraining(); break;
+    case 'checkup-go': closeSheet(); startCheckup(); break;
     case 'quit-yes': closeSheet(); finishSession(true); break;
     case 'breathe': showBreather('close'); break;
     case 'breathe-next': showBreather('close-next'); break;

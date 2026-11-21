@@ -115,6 +115,18 @@ function startTraining(bonus){
   if(bonus){ beginPlan(); return; }
   screen='face'; renderFace('start');
 }
+/* ---- calm check-up: a grown-up starts it from the Grown-ups screen. A short mix of facts already met, nothing scored for the child,
+   no embers, no streak, and it never changes the practice boxes. Results go to the parents' summary only. ---- */
+function startCheckup(){
+  rollDay(); Audio_.ensure();
+  const seen=ALL_ITEMS.filter(it=>isSeen(it.id)&&itemEligible(it));
+  if(seen.length<6){ toast('The check-up needs a few more facts practised first.'); return; }
+  const bySkill=SKILLS.map(sk=>shuffle(seen.filter(it=>it.skill===sk.id))).filter(a=>a.length);
+  const plan=[]; for(let r=0;plan.length<8&&bySkill.some(a=>a.length);r++){ for(const a of bySkill){ if(a.length&&plan.length<8) plan.push({id:a.pop().id,role:'check'}); } }
+  SESS={bonus:false,checkup:true,plan,idx:0,startedAt:Date.now(),startDelayMs:null,faceStart:null,faceEnd:null,firstAnswerMs:null,qShownAt:null,earned:0,ok:0,clean:0,help:0,strat:0,
+        newItems:0,total:0,hardAsked:0,hardGuess:0,hardTry:0,struggleRun:0,capAt:Date.now()+9*60000,pips:[],ck:[]};
+  SESS.max=plan.length; S.tutorialSeen=true; nextQuestion();
+}
 function renderFace(when){
   const start=when==='start';
   const app=$('#app');
@@ -262,17 +274,18 @@ function answerRight(){
   const clean=Q.attempts===0&&Q.hints===0, strat=Q.counters.strategyUsed()||Q.line.strategyUsed();
   const toolUsed=Q.counters.touched?'counters':(Q.line.touched&&Q.line!==Q.counters)?'line':'none';
   const fast=clean&&!S.items[entry.id]&&!!(SKILLS.find(k=>k.id===q.it.skill)||{}).easy;
-  const gap=applyResult(entry.id,{clean,kind:'train',fast});
+  const gap=SESS.checkup?null:applyResult(entry.id,{clean,kind:'train',fast});
   const ms=Date.now()-Q.t0;
   let gain=clean?3:1; if(clean&&strat) gain+=1;
   if(SESS.bonus){ gain=Math.min(clean?2:1,extraLeft()); S.day.extra=(S.day.extra||0)+gain; }
+  if(SESS.checkup){ gain=0; SESS.ck.push({id:entry.id,clean}); }
   if(gain){S.embers+=gain; SESS.earned+=gain;}
   SESS.ok++; SESS.total++; if(clean) SESS.clean++; else SESS.help++; if(strat&&clean) SESS.strat++;
   SESS.pips[SESS.idx-1]=clean?'done':'help';
   if(!clean){ SESS.struggleRun++; } else SESS.struggleRun=0;
-  S.log.push({t:Date.now(),id:entry.id,ok:true,clean,hints:Q.hints,att:Q.attempts,rapid:Q.rapid,ms,tool:toolUsed,strat:!!strat,hard:Q.hard,gap,role:entry.role,kind:'train'});
+  S.log.push({t:Date.now(),id:entry.id,ok:true,clean,hints:Q.hints,att:Q.attempts,rapid:Q.rapid,ms,tool:toolUsed,strat:!!strat,hard:Q.hard,gap,role:entry.role,kind:SESS.checkup?'checkup':'train'});
   /* come back to it later in the same session if it needed help */
-  if(!clean&&entry.role!=='repeat'&&entry.role!=='rebuild'&&!entry.again){ SESS.plan.splice(Math.min(SESS.plan.length,SESS.idx+3),0,{id:entry.id,role:'repeat',again:true}); }
+  if(!SESS.checkup&&!clean&&entry.role!=='repeat'&&entry.role!=='rebuild'&&!entry.again){ SESS.plan.splice(Math.min(SESS.plan.length,SESS.idx+3),0,{id:entry.id,role:'repeat',again:true}); }
   /* feedback */
   let msg;
   if(clean&&strat&&q.kind==='skip') msg='You hopped along and counted on. Nice!';
@@ -281,6 +294,7 @@ function answerRight(){
   else if(clean&&strat) msg=q.kind==='sub'||q.kind==='fam'?'You stepped back to ten first. Smart strategy!':q.kind==='bond'?'You filled the tray to ten. Nice work!':'You made ten first, then added the rest. That is the trick!';
   else if(clean&&toolUsed!=='none') msg=`You checked it with the ${toolUsed==='line'?'number line':'counters'}. That is a good habit.`;
   else if(clean) msg='You just knew that one! Can you tell someone how?';
+  else if(SESS.checkup) msg='You got there. Thank you, that is just what we wanted to see.';
   else msg=`You got there. That is what practising is for. ${esc(S.dragon.name)} will bring this one back soon.`;
   setFb('good',`${msg}${gain?` <b>+${gain}</b> ${ic('ember',16)}`:''}`,'check');
   Audio_.fx('good');
@@ -308,6 +322,12 @@ function quitTraining(){
   openSheet(`<h2>Stop for now?</h2><p class="sub">Your embers and progress so far are saved.</p><div class="row" style="justify-content:flex-end"><button class="btn btn-ghost" data-act="close">Keep going</button><button class="btn btn-primary" data-act="quit-yes">Stop for now</button></div>`);
 }
 function finishSession(partial){
+  if(SESS.checkup){
+    if(SESS.total>0){ (S.checkups=S.checkups||[]).push({date:today(),total:SESS.total,clean:SESS.clean,items:SESS.ck,partial:!!partial}); if(S.checkups.length>30) S.checkups=S.checkups.slice(-30); saveState(); }
+    goHome();
+    if(!partial) setTimeout(()=>openSheet(`<div class="center"><div class="hero-dragon">${S.dragon.hatched?dragonSVG(S.dragon,{mood:'happy',stage:dragonStage(),wear:S.dragon.gear,uid:'ck'}):eggSVG(S.dragon)}</div><h2>All done. Thank you!</h2><p class="sub">That was just a look at what you already know. Nothing was marked, and ${esc(S.dragon.name)} is proud of you.</p><button class="btn btn-primary btn-big" data-act="close">Back to the island</button></div>`),300);
+    return;
+  }
   const bonus=SESS.bonus; let bonusEmbers=0;
   const rec={id:Date.now(),date:today(),start:SESS.startedAt,end:Date.now(),q:SESS.total,ok:SESS.ok,clean:SESS.clean,help:SESS.help,strat:SESS.strat,hardAsked:SESS.hardAsked,hardGuess:SESS.hardGuess,hardTry:SESS.hardTry,
     firstAnswerMs:SESS.firstAnswerMs,startDelayMs:SESS.startDelayMs,faceStart:SESS.faceStart,faceEnd:null,newItems:SESS.newItems,embers:SESS.earned,partial:!!partial,bonus};

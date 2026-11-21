@@ -450,7 +450,7 @@ button.hero-dragon{display:block;background:none;border:0}
 <script>
 (function(){
 'use strict';
-const BUILD={v:'2.1.1',d:'21 Nov 2026, 10:30 UTC'};
+const BUILD={v:'2.2.0',d:'21 Nov 2026, 11:00 UTC'};
 /* ================= art: colours, icons, dragon, egg, island ================= */
 function hex2rgb(h){h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.substr(i,2),16));}
 function rgb2hex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');}
@@ -1629,6 +1629,18 @@ function startTraining(bonus){
   if(bonus){ beginPlan(); return; }
   screen='face'; renderFace('start');
 }
+/* ---- calm check-up: a grown-up starts it from the Grown-ups screen. A short mix of facts already met, nothing scored for the child,
+   no embers, no streak, and it never changes the practice boxes. Results go to the parents' summary only. ---- */
+function startCheckup(){
+  rollDay(); Audio_.ensure();
+  const seen=ALL_ITEMS.filter(it=>isSeen(it.id)&&itemEligible(it));
+  if(seen.length<6){ toast('The check-up needs a few more facts practised first.'); return; }
+  const bySkill=SKILLS.map(sk=>shuffle(seen.filter(it=>it.skill===sk.id))).filter(a=>a.length);
+  const plan=[]; for(let r=0;plan.length<8&&bySkill.some(a=>a.length);r++){ for(const a of bySkill){ if(a.length&&plan.length<8) plan.push({id:a.pop().id,role:'check'}); } }
+  SESS={bonus:false,checkup:true,plan,idx:0,startedAt:Date.now(),startDelayMs:null,faceStart:null,faceEnd:null,firstAnswerMs:null,qShownAt:null,earned:0,ok:0,clean:0,help:0,strat:0,
+        newItems:0,total:0,hardAsked:0,hardGuess:0,hardTry:0,struggleRun:0,capAt:Date.now()+9*60000,pips:[],ck:[]};
+  SESS.max=plan.length; S.tutorialSeen=true; nextQuestion();
+}
 function renderFace(when){
   const start=when==='start';
   const app=$('#app');
@@ -1776,17 +1788,18 @@ function answerRight(){
   const clean=Q.attempts===0&&Q.hints===0, strat=Q.counters.strategyUsed()||Q.line.strategyUsed();
   const toolUsed=Q.counters.touched?'counters':(Q.line.touched&&Q.line!==Q.counters)?'line':'none';
   const fast=clean&&!S.items[entry.id]&&!!(SKILLS.find(k=>k.id===q.it.skill)||{}).easy;
-  const gap=applyResult(entry.id,{clean,kind:'train',fast});
+  const gap=SESS.checkup?null:applyResult(entry.id,{clean,kind:'train',fast});
   const ms=Date.now()-Q.t0;
   let gain=clean?3:1; if(clean&&strat) gain+=1;
   if(SESS.bonus){ gain=Math.min(clean?2:1,extraLeft()); S.day.extra=(S.day.extra||0)+gain; }
+  if(SESS.checkup){ gain=0; SESS.ck.push({id:entry.id,clean}); }
   if(gain){S.embers+=gain; SESS.earned+=gain;}
   SESS.ok++; SESS.total++; if(clean) SESS.clean++; else SESS.help++; if(strat&&clean) SESS.strat++;
   SESS.pips[SESS.idx-1]=clean?'done':'help';
   if(!clean){ SESS.struggleRun++; } else SESS.struggleRun=0;
-  S.log.push({t:Date.now(),id:entry.id,ok:true,clean,hints:Q.hints,att:Q.attempts,rapid:Q.rapid,ms,tool:toolUsed,strat:!!strat,hard:Q.hard,gap,role:entry.role,kind:'train'});
+  S.log.push({t:Date.now(),id:entry.id,ok:true,clean,hints:Q.hints,att:Q.attempts,rapid:Q.rapid,ms,tool:toolUsed,strat:!!strat,hard:Q.hard,gap,role:entry.role,kind:SESS.checkup?'checkup':'train'});
   /* come back to it later in the same session if it needed help */
-  if(!clean&&entry.role!=='repeat'&&entry.role!=='rebuild'&&!entry.again){ SESS.plan.splice(Math.min(SESS.plan.length,SESS.idx+3),0,{id:entry.id,role:'repeat',again:true}); }
+  if(!SESS.checkup&&!clean&&entry.role!=='repeat'&&entry.role!=='rebuild'&&!entry.again){ SESS.plan.splice(Math.min(SESS.plan.length,SESS.idx+3),0,{id:entry.id,role:'repeat',again:true}); }
   /* feedback */
   let msg;
   if(clean&&strat&&q.kind==='skip') msg='You hopped along and counted on. Nice!';
@@ -1795,6 +1808,7 @@ function answerRight(){
   else if(clean&&strat) msg=q.kind==='sub'||q.kind==='fam'?'You stepped back to ten first. Smart strategy!':q.kind==='bond'?'You filled the tray to ten. Nice work!':'You made ten first, then added the rest. That is the trick!';
   else if(clean&&toolUsed!=='none') msg=`You checked it with the ${toolUsed==='line'?'number line':'counters'}. That is a good habit.`;
   else if(clean) msg='You just knew that one! Can you tell someone how?';
+  else if(SESS.checkup) msg='You got there. Thank you, that is just what we wanted to see.';
   else msg=`You got there. That is what practising is for. ${esc(S.dragon.name)} will bring this one back soon.`;
   setFb('good',`${msg}${gain?` <b>+${gain}</b> ${ic('ember',16)}`:''}`,'check');
   Audio_.fx('good');
@@ -1822,6 +1836,12 @@ function quitTraining(){
   openSheet(`<h2>Stop for now?</h2><p class="sub">Your embers and progress so far are saved.</p><div class="row" style="justify-content:flex-end"><button class="btn btn-ghost" data-act="close">Keep going</button><button class="btn btn-primary" data-act="quit-yes">Stop for now</button></div>`);
 }
 function finishSession(partial){
+  if(SESS.checkup){
+    if(SESS.total>0){ (S.checkups=S.checkups||[]).push({date:today(),total:SESS.total,clean:SESS.clean,items:SESS.ck,partial:!!partial}); if(S.checkups.length>30) S.checkups=S.checkups.slice(-30); saveState(); }
+    goHome();
+    if(!partial) setTimeout(()=>openSheet(`<div class="center"><div class="hero-dragon">${S.dragon.hatched?dragonSVG(S.dragon,{mood:'happy',stage:dragonStage(),wear:S.dragon.gear,uid:'ck'}):eggSVG(S.dragon)}</div><h2>All done. Thank you!</h2><p class="sub">That was just a look at what you already know. Nothing was marked, and ${esc(S.dragon.name)} is proud of you.</p><button class="btn btn-primary btn-big" data-act="close">Back to the island</button></div>`),300);
+    return;
+  }
   const bonus=SESS.bonus; let bonusEmbers=0;
   const rec={id:Date.now(),date:today(),start:SESS.startedAt,end:Date.now(),q:SESS.total,ok:SESS.ok,clean:SESS.clean,help:SESS.help,strat:SESS.strat,hardAsked:SESS.hardAsked,hardGuess:SESS.hardGuess,hardTry:SESS.hardTry,
     firstAnswerMs:SESS.firstAnswerMs,startDelayMs:SESS.startDelayMs,faceStart:SESS.faceStart,faceEnd:null,newItems:SESS.newItems,embers:SESS.earned,partial:!!partial,bonus};
@@ -2056,10 +2076,16 @@ const FAM_KEY='isleOfRu.family';
 const CHEST_BASE=4, CHEST_BONUS=10;
 /* ---- weekly shared island project: every finished practice adds bricks from each child, nobody sees who added more ---- */
 const BRICKS_EACH=5;
+/* gifts a child can leave for the other: always free to give, a few embers to receive. Messages are kind one-liners to pick from. */
+const GIFT_THANKS=1;
+const GIFTS={fish:{name:'a fish snack',e:3,eat:'gobbles the fish snack in one gulp'},bun:{name:'a honey bun',e:3,eat:'nibbles the honey bun and hums'},shell:{name:'a shiny shell',e:3,eat:'holds the shiny shell up to the light and sighs happily'}};
+const GIFT_MSGS=["Hope you have a lovely day!","Thinking of you and your dragon.","This one is for you. Enjoy!","You are a brilliant builder.","Look after each other today."];
 const PROJECTS=[
   {id:'lighthouse',name:'Lighthouse',start:'2026-11-14',need:40,stages:[10,20,30,40],reward:30,
    stageText:['A staked-out plot by the sea, ready for a lighthouse.','The stone base is going up.','The tower is rising, stripe by stripe.','The tower is done. The lamp room just needs its light.','The lighthouse is finished. Its lamp shines over the sea at night.']}
-  /* later projects (longship repairs, windmill, market stall, ...) are listed in ROADMAP.md and added as their art is made */
+  ,{id:'longship',name:'Longship repairs',start:'2026-11-23',need:40,stages:[10,20,30,40],reward:30,
+   stageText:['A battered old longship rests on the beach, waiting to be mended.','The keel and ribs are fixed in place.','Planks are going on, row by row.','The hull is sound. The mast is up and the dragon prow is carved.','The longship is mended. Its striped sail is full of wind.']}
+  /* later projects (windmill, market stall, ...) are listed in ROADMAP.md and added as their art is made */
 ];
 const projStage=(p,n)=>{let st=0;for(const th of p.stages) if(n>=th) st++;return st};
 const Fam={
@@ -2120,6 +2146,21 @@ const Fam={
   claimBuild(){
     const f=this.get(), g=f.pendingB&&f.pendingB[SAVE_KEY]; if(!g) return null;
     delete f.pendingB[SAVE_KEY]; this.put(f); S.embers+=g.e; saveState(); return g;
+  },
+  /* ---- gift swaps: one free gift a day for a brother or sister, passed through the shared record so neither save is touched ---- */
+  giftTargets(f){ f=f||this.get(); return this.members(f).filter(x=>x!==SAVE_KEY); },
+  gaveToday(f){ f=f||this.get(); return !!(f.gday&&f.gday[SAVE_KEY]===today()); },
+  sendGift(to,gift,msg){
+    const f=this.get(); f.gday=f.gday||{}; f.gifts=f.gifts||{};
+    if(f.gday[SAVE_KEY]===today()||!to||to===SAVE_KEY) return false;
+    f.gday[SAVE_KEY]=today(); (f.gifts[to]=f.gifts[to]||[]).push({from:(S.hero&&S.hero.name)||S.dragon.name,g:gift,m:msg,d:today()});
+    if(f.gifts[to].length>5) f.gifts[to]=f.gifts[to].slice(-5);
+    this.put(f); S.embers+=GIFT_THANKS; saveState(); return true;
+  },
+  claimGifts(){
+    const f=this.get(), g=f.gifts&&f.gifts[SAVE_KEY]; if(!g||!g.length) return null;
+    delete f.gifts[SAVE_KEY]; this.put(f);
+    const e=g.reduce((t,x)=>t+(GIFTS[x.g]?GIFTS[x.g].e:0),0); S.embers+=e; saveState(); return {list:g,e};
   },
   /* embers waiting from a chest that opened after this child had finished */
   claim(){
@@ -3267,6 +3308,20 @@ function fishJetty(){
 }
 function sendFish(){const D=S.dragon.name,F=fishSt();F.sent=today();saveState();Audio_.fx('pop');vsay(`${D} flaps off over the water with a tiny fishing net. Come back tomorrow!`)}
 
+/* the family chest: shows today's keys, and is where a child leaves a gift for a brother or sister */
+function chestTap(){
+  const ch=Fam.chest(), who=ch.rows.map(r=>`${r.name}: ${r.done?'key turned':'waiting'}`).join('. ');
+  const base=ch.opened?`The family chest is open! ${who}. Everyone who played today gets a bonus.`:`The family chest has two locks. ${who}. When every key is turned, it opens for everyone.`;
+  const f=Fam.get(), to=Fam.giftTargets(f);
+  if(!to.length) return vsay(base);
+  if(Fam.gaveToday(f)) return vsay(base+" Your gift is tucked inside for them.");
+  const name=k=>f.names[k]||'your brother or sister';
+  const pickGift=k=>vsay(`What would you like to leave for ${name(k)}? It is free.`,Object.keys(GIFTS).map(g=>({label:GIFTS[g].name.replace(/^an? /,''),fn:()=>pickMsg(k,g)})).concat([{label:'Not now'}]));
+  const pickMsg=(k,g)=>vsay(`Add a little message for ${name(k)}:`,GIFT_MSGS.slice(0,4).map(m=>({label:m,fn:()=>{
+    if(Fam.sendGift(k,g,m)){hud();vsay(`You tuck ${GIFTS[g].name} into the chest with your message. ${name(k)} will find it next time they play. (+${GIFT_THANKS} ember for being kind.)`)}}})));
+  vsay(base+" Would you like to leave a gift for "+name(to[0])+"?",[{label:'Leave a gift',fn:()=>pickGift(to[0])},{label:'Not now'}]);
+}
+
 /* ===== the shared island project (lighthouse first): drawn in four stages ===== */
 function lhDraw(c,stage){
   const cx=45, base=160;
@@ -3314,16 +3369,81 @@ function lhDraw(c,stage){
 }
 SPR.lh=[0,1,2,3,4].map(st=>mk(90,170,c=>lhDraw(c,st)));
 
+/* ===== project 2: the longship on the beach, mended in stages ===== */
+function shipDraw(c,stage){
+  const W=150, by=118;            /* waterline y */
+  shadowBlob(c,76,by+6,58,8,.32);
+  /* sand mound and props under the hull */
+  c.fillStyle='#d9c48e';c.beginPath();c.ellipse(76,by+2,62,9,0,0,6.3);c.fill();
+  const hull=(x0,x1)=>{ /* hull outline as a curved boat shape, left/right bow rise */
+    c.beginPath();c.moveTo(14,by-40);c.quadraticCurveTo(26,by-6,76,by-2);c.quadraticCurveTo(126,by-6,138,by-40);c.lineTo(126,by-36);c.quadraticCurveTo(112,by-18,76,by-16);c.quadraticCurveTo(40,by-18,26,by-36);c.closePath()};
+  if(stage===0){
+    /* a broken keel, a few ribs and a pile of planks */
+    c.strokeStyle='#6b4a2a';c.lineWidth=5;c.beginPath();c.moveTo(22,by-8);c.quadraticCurveTo(76,by+2,130,by-8);c.stroke();
+    c.lineWidth=4;for(const x of [38,54,70,86,102]){c.beginPath();c.moveTo(x,by-4);c.quadraticCurveTo(x-6,by-24,x-12+(x>70?24:0),by-40);c.stroke()}
+    c.fillStyle='#a87a45';[[104,by-4,34,6,-.08],[108,by-11,30,6,.05],[100,by-17,28,6,-.04]].forEach(([x,y,w,h,r])=>{c.save();c.translate(x,y);c.rotate(r);c.fillRect(0,0,w,h);c.restore()});
+    c.fillStyle='#8a5f36';c.fillRect(124,by-34,3,30);c.fillStyle='#e8d9a8';c.fillRect(112,by-48,26,14);c.fillStyle='#6b4a1a';c.fillRect(115,by-44,20,2);c.fillRect(115,by-39,14,2);
+    return;
+  }
+  /* planks fill in as the stages go up */
+  const frac=[0,.4,.75,1,1][stage];
+  c.save();hull();c.clip();
+  c.fillStyle=lg(c,0,by-44,0,by,['#b98b52','#8a5f36']);c.fillRect(0,by-44*frac-4,150,60);
+  c.strokeStyle='rgba(60,36,16,.55)';c.lineWidth=1.2;for(let k=0;k<5;k++){c.beginPath();c.moveTo(0,by-8-k*9);c.lineTo(150,by-8-k*9);c.stroke()}
+  if(stage>=3){c.fillStyle='#b8452e';for(let x=34;x<126;x+=12){c.fillRect(x,by-34,6,8)}}
+  c.restore();
+  c.strokeStyle='#4a3018';c.lineWidth=2;hull();c.stroke();
+  /* shields on the side when finished */
+  if(stage>=4){[['#c9432b'],['#e8d9a8'],['#3f6f8a'],['#d9a441'],['#c9432b'],['#e8d9a8']].forEach(([col],k)=>{const x=36+k*15;c.fillStyle=col;c.beginPath();c.arc(x,by-24,6,0,6.3);c.fill();c.strokeStyle='#4a3018';c.lineWidth=1.2;c.stroke();c.fillStyle='#4a3018';c.beginPath();c.arc(x,by-24,1.6,0,6.3);c.fill()})}
+  /* scaffold props while building */
+  if(stage<3){c.strokeStyle='#8a5f36';c.lineWidth=3;[[30,by-2],[122,by-2]].forEach(([x,y])=>{c.beginPath();c.moveTo(x,y);c.lineTo(x+(x<76?-10:10),by-46);c.stroke()});c.lineWidth=2.4;c.beginPath();c.moveTo(20,by-30);c.lineTo(132,by-30);c.stroke()}
+  if(stage>=3){
+    /* mast */
+    c.fillStyle='#5a3a1a';c.fillRect(73,by-100,5,86);
+    c.fillStyle='#3a2410';c.fillRect(56,by-96,40,3);
+  }
+  if(stage>=4){
+    /* striped sail */
+    c.beginPath();c.moveTo(58,by-94);c.lineTo(94,by-94);c.quadraticCurveTo(100,by-64,92,by-40);c.lineTo(60,by-40);c.quadraticCurveTo(52,by-66,58,by-94);c.closePath();
+    c.save();c.clip();c.fillStyle='#f2ede0';c.fillRect(40,by-100,80,70);c.fillStyle='#c9432b';for(let k=0;k<4;k++)c.fillRect(40+k*20,by-100,10,70);c.restore();
+    c.strokeStyle='#4a3018';c.lineWidth=1.6;c.stroke();
+  }
+  if(stage>=3){
+    /* dragon head prow (left) and tail (right) */
+    c.fillStyle='#2f7d5a';c.beginPath();c.moveTo(14,by-40);c.quadraticCurveTo(6,by-58,16,by-72);c.quadraticCurveTo(26,by-76,30,by-70);c.quadraticCurveTo(22,by-64,22,by-52);c.quadraticCurveTo(24,by-44,26,by-36);c.closePath();c.fill();
+    c.strokeStyle='#1f5a40';c.lineWidth=1.4;c.stroke();
+    c.fillStyle='#fff8e6';c.beginPath();c.arc(20,by-68,2.4,0,6.3);c.fill();c.fillStyle='#222';c.beginPath();c.arc(20.6,by-68,1.1,0,6.3);c.fill();
+    c.fillStyle='#d9a441';c.beginPath();c.moveTo(15,by-72);c.lineTo(10,by-82);c.lineTo(20,by-76);c.closePath();c.fill();
+    c.fillStyle='#2f7d5a';c.beginPath();c.moveTo(138,by-40);c.quadraticCurveTo(144,by-52,136,by-60);c.quadraticCurveTo(132,by-52,126,by-36);c.closePath();c.fill();
+  }
+}
+SPR.ship2=[0,1,2,3,4].map(st=>mk(150,130,c=>shipDraw(c,st)));
+
+/* ===== where each shared project stands on the island, and what tapping it does ===== */
+const BUILDS={
+  lighthouse:{spr:()=>SPR.lh,X:37.5,Y:13.95,ax:45,ay:163,cells:[[37,13]],hit:[[0,-1],[0,-2],[0,-3],[-1,0],[0,1],[-1,-1],[-1,1]],glow:{glow:[45,46],glowR:60,glowCol:'255,226,140'}},
+  longship:{spr:()=>SPR.ship2,X:33.6,Y:18.9,ax:76,ay:118,cells:[[32,18],[33,18],[34,18]],hit:[[0,-1],[0,-2],[-1,-1],[1,-1]]}
+};
 function buildSite(){
-  const f=Fam.get(), done=(f.projDone||[]).includes('lighthouse');
-  const cur=Fam.current(f), p=cur&&cur.id==='lighthouse'?cur:null;
-  if(!done&&!p) return;   /* nothing to show until the project starts */
-  const n=Fam.bricks('lighthouse',f), proj=PROJECTS.find(x=>x.id==='lighthouse');
-  const st=done?4:projStage(proj,n);
-  const X=37.5, Y=13.95, tx=37, ty=13;
-  addObj(SPR.lh[st],X,Y,45,163,Object.assign({},st===4?{glow:[45,46],glowR:60,glowCol:'255,226,140'}:{}));
-  block([[tx,ty]],null,'use:lighthouse');
-  hitArea(tx,ty,[[0,-1],[0,-2],[0,-3],[-1,0],[0,1],[-1,-1],[-1,1]]);
+  const f=Fam.get(), cur=Fam.current(f);
+  PROJECTS.forEach(proj=>{
+    const B=BUILDS[proj.id]; if(!B) return;
+    const done=(f.projDone||[]).includes(proj.id), mine=cur&&cur.id===proj.id;
+    if(!done&&!mine) return;   /* nothing to show until the project starts */
+    const n=Fam.bricks(proj.id,f), st=done?4:projStage(proj,n);
+    addObj(B.spr()[st],B.X,B.Y,B.ax,B.ay,Object.assign({},st===4&&B.glow?B.glow:{}));
+    block(B.cells,null,'use:'+proj.id);
+    hitArea(B.cells[0][0],B.cells[0][1],B.hit);
+  });
+}
+function useLongship(){
+  const f=Fam.get(), proj=PROJECTS.find(x=>x.id==='longship'), done=(f.projDone||[]).includes('longship');
+  const n=Fam.bricks('longship',f), st=done?4:projStage(proj,n), D=S.dragon?S.dragon.name:'Your dragon';
+  if(!done){
+    const left=proj.need-n, goes=Math.ceil(left/BRICKS_EACH);
+    vsay(`${proj.stageText[st]} It has ${n} of ${proj.need} planks and nails. Each child's finished practice adds ${BRICKS_EACH}, so you are mending it together.${goes>0?` ${goes} more practice${goes>1?'s':''} to go.`:''} Missed days cost nothing.`);return}
+  if(usedToday('longship')){vsay("The mended longship rocks gently on the sand. It is ready for tomorrow's sail.");return}
+  vsay(`${proj.stageText[4]} Take it for a short sail around the bay?`,[{label:'Set sail',fn:()=>{markUsed('longship');reward(2);vsay(`${D} sits proudly at the front like a figurehead. The sail fills, the gulls cheer, and you find 2 embers in a lobster pot. (+2 embers.)`)}},{label:'Not now'}]);
 }
 function useLighthouse(){
   const f=Fam.get(), proj=PROJECTS.find(x=>x.id==='lighthouse'), done=(f.projDone||[]).includes('lighthouse');
@@ -3736,7 +3856,7 @@ function buildObjects(){
   placeVillagers();
   { const ch=Fam.chest(),fx=20,fy=13; if(ch.total>=2&&okGround(fx,fy)){ const n=ch.opened?3:Math.min(2,ch.count); addObj(SPR.famchest[n],fx+.5,fy+.9,30,46,{});
       const who=ch.rows.map(r=>`${r.name}: ${r.done?'key turned':'waiting'}`).join('. ');
-      block([[fx,fy]],ch.opened?`The family chest is open! ${who}. Everyone who played today gets a bonus.`:`The family chest has two locks. ${who}. When every key is turned, it opens for everyone.`); hitArea(fx,fy,[[-1,0],[1,0],[0,1],[0,-1]]) } }
+      block([[fx,fy]],null,'famchest'); hitArea(fx,fy,[[-1,0],[1,0],[0,1],[0,-1]]) } }
   todaysMounds().forEach(([i,j],n)=>{if(!(S.day.dug||[]).includes(n)){addObj(SPR.mound,i+.5,j+.8,20,22,{});block([[i,j]],null,'dig:'+n)}});
   if(eventActive('xmas')&&okGround(16,14)){addObj(SPR.xtree,16.5,14.7,35,102,{sc:.95,glow:[35,56],glowCol:'255,220,120',glowR:30});block([[16,14]],"A Christmas tree, sparkling with lights.")}
   if(own('statue')){addObj(SPR.statue,29.6,14.6,40,110,{sc:.9});block([[29,14]],"A stone dragon, standing guard over the island.",'use:statue');hitArea(29,14,[[0,-1],[0,-2],[-1,0],[1,0],[0,1]])}else plot('statue');
@@ -3820,6 +3940,7 @@ function runAct(a){
   if(a.startsWith('hs:'))return hsFlag(+a.slice(3));
   if(a==='use:jetty')return fishJetty();
   if(a==='use:lighthouse')return useLighthouse();
+  if(a==='use:longship')return useLongship();
   if(a.startsWith('use:'))return useItem(a.slice(4));
   if(a==='nest')return openNest();
   if(a==='stall')return openShop();
@@ -3827,6 +3948,7 @@ function runAct(a){
   if(a==='stables')return openStables();
   if(a==='clothes')return openClothes();
   if(a==='chest')return openChest();
+  if(a==='famchest')return chestTap();
   if(a.startsWith('vill:')){const v=VILLAGERS.find(x=>x.id===a.slice(5));if(v)talkVillager(v);return}
   if(a.startsWith('dig:')){digMound(+a.slice(4));return}
   if(a==='millie'){const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
@@ -4166,8 +4288,13 @@ async function show(){
   VS.last=0;VS.raf=requestAnimationFrame(frame);
   if(first&&!S.day.trained)vtoast('Walk to the school house. Arrow keys, or tap where you want to go.',4200);
   announceNew();
-  { const gb=Fam.claimBuild(); if(gb){ hud(); setTimeout(()=>{ if(screen==='village'&&!G.modal) vsay(`The ${gb.name.toLowerCase()} is finished! Your brother or sister placed the last bricks. There is a reward for you: +${gb.e} embers.`) },900) } }
-  { const got=Fam.claim(); if(got){ hud(); setTimeout(()=>{ if(screen==='village'&&!G.modal) vsay(`The family chest opened! There is a bonus for you: +${got} embers.`) },900) } }
+  { /* things left for this child by the family: show each in turn, none lost behind another */
+    const msgs=[], D=S.dragon?S.dragon.name:'Your dragon';
+    const gb=Fam.claimBuild(); if(gb) msgs.push(`The ${gb.name.toLowerCase()} is finished! Your brother or sister placed the last pieces. There is a reward for you: +${gb.e} embers.`);
+    const got=Fam.claim(); if(got) msgs.push(`The family chest opened! There is a bonus for you: +${got} embers.`);
+    const gg=Fam.claimGifts(); if(gg){ const x=gg.list[gg.list.length-1]; msgs.push(`${x.from} left you ${GIFTS[x.g]?GIFTS[x.g].name:'a gift'}: "${x.m}" ${D} ${GIFTS[x.g]?GIFTS[x.g].eat:'loves it'}. (+${gg.e} embers.)`); }
+    if(msgs.length){ hud(); const showAt=k=>{ if(screen!=='village'||(G.modal&&k===0)) return; vsay(msgs[k],[{label:'OK',fn:()=>{ if(k+1<msgs.length) setTimeout(()=>showAt(k+1),250) }}]) }; setTimeout(()=>showAt(0),900); }
+  }
   if(S.day.trained&&!S.day.jokeShown&&!first){S.day.jokeShown=true;saveState();setTimeout(()=>{if(screen==='village'&&!G.modal&&!overlayOpen())tellJoke()},1800)}
 }
 function closeSheetSafe(){try{closeSheet()}catch(e){}}
@@ -4787,6 +4914,42 @@ function openGate(after){
     <div class="row" style="justify-content:center;margin-top:10px"><button class="btn btn-primary" data-act="gate-go">Open</button></div></div>`);
   const i=$('#gans'); if(i){ i.focus(); i.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); const b=$('[data-act="gate-go"]'); if(b) b.click(); } }); }
 }
+/* ---- the parents' summary: reads every profile on this device (read only) and says in plain words how the week went ---- */
+function weekSummary(){
+  const rows=listProfiles().map(({s,name,active})=>{
+    const days=(s.days||[]).filter(d=>daysBetween(d,today())<7).length;
+    const box=id=>(s.items&&s.items[id])?s.items[id].box:-1;
+    const steady=i=>SKILLS[i].items.filter(x=>box(x.id)>=2).length;
+    const unlocked=i=>i===0||i<=(s.startSkill||0)||steady(i-1)>=Math.ceil(SKILLS[i-1].items.length*.7);
+    let cur=0; SKILLS.forEach((k,i)=>{ if(unlocked(i)) cur=i; });
+    const doneSk=SKILLS.filter((k,i)=>steady(i)>=Math.ceil(k.items.length*.7)).length;
+    const secure=ALL_ITEMS.filter(it=>box(it.id)>=3).length, seen=ALL_ITEMS.filter(it=>box(it.id)>=0).length;
+    const ss=(s.sessions||[]).filter(x=>!x.partial&&!x.bonus&&x.date&&daysBetween(x.date,today())<7);
+    const fa=ss.map(x=>x.firstAnswerMs).filter(x=>x!=null).sort((a,b)=>a-b), med=fa.length?fa[Math.floor(fa.length/2)]:null;
+    const worried=ss.filter(x=>x.faceStart===1).length;
+    const hA=ss.reduce((a,x)=>a+(x.hardAsked||0),0), hT=ss.reduce((a,x)=>a+(x.hardTry||0),0), hG=ss.reduce((a,x)=>a+(x.hardGuess||0),0);
+    const ck=(s.checkups||[]).filter(c=>!c.partial).slice(-1)[0];
+    let ckTxt='No check-up yet.';
+    if(ck){
+      const per={}; (ck.items||[]).forEach(t=>{const it=ITEM[t.id]; if(!it) return; const sk=SKILLS.find(k=>k.id===it.skill); if(!sk) return; (per[sk.name]=per[sk.name]||[0,0])[1]++; if(t.clean) per[sk.name][0]++;});
+      const weak=Object.keys(per).filter(k=>per[k][1]>=2&&per[k][0]/per[k][1]<.5);
+      ckTxt=`${ck.date}: ${ck.clean} of ${ck.total} right first time.${weak.length?` Worth a little extra time: ${weak.join(', ')}.`:' Nothing stood out as weak.'}`;
+    }
+    const sec=(a,b)=>a==null?'not enough yet':`${Math.round(a/1000)} second${Math.round(a/1000)===1?"":"s"}`;
+    return `<div class="box"><h3>${esc(name)}${active?' (playing now)':''}</h3><ul class="note" style="line-height:1.55;padding-left:18px;margin:6px 0">
+      <li><b>Days practised in the last 7:</b> ${days} of 7</li>
+      <li><b>Working on now:</b> ${esc(SKILLS[cur].name)} (${steady(cur)} of ${SKILLS[cur].items.length} facts steady)</li>
+      <li><b>Skills going well so far:</b> ${doneSk} of ${SKILLS.length}</li>
+      <li><b>Facts met:</b> ${seen}; <b>secure after a week:</b> ${secure}</li>
+      <li><b>Calm starts:</b> typical time to first answer ${sec(med)}${worried?`; ${worried} session${worried>1?'s':''} started feeling worried`:''}</li>
+      <li><b>When it got hard:</b> asked for help ${hA}, tried again ${hT}, quick guess ${hG}</li>
+      <li><b>Latest check-up:</b> ${ckTxt}</li></ul></div>`;
+  }).join('');
+  const seenN=ALL_ITEMS.filter(it=>isSeen(it.id)&&itemEligible(it)).length;
+  return `<div class="box"><h3>This week at a glance</h3><p class="note">A plain summary for each player on this device. It only reads their saves, it never changes them. Accuracy is never shown to the children.</p></div>${rows||'<p class="note">No players yet.</p>'}
+    <div class="box"><h3>Calm check-up for ${esc((S.hero&&S.hero.name)||S.dragon.name)}</h3><p class="note">About 8 questions mixed from facts already practised. It is not marked in front of them, gives no embers and changes nothing in their practice. The result appears above. Best done when they are relaxed, not tired. Needs about 6 facts met first (${seenN} so far).</p>
+    <div class="row"><button class="btn btn-primary" data-act="checkup-go" ${seenN<6?'disabled':''}>Start a calm check-up</button></div></div>`;
+}
 function openGrownups(tab){
   tab=tab||'progress';
   const ss=S.sessions.filter(s=>!s.partial&&!s.bonus), last=ss.slice(-10);
@@ -4835,8 +4998,8 @@ function openGrownups(tab){
   const bk=`<div class="box"><h3>Save code (move to another device)</h3><p class="note">This saves the current player (${esc((S.hero&&S.hero.name)||S.dragon.name)}) only. Progress lives in this browser. To move to another device, copy the save code, then paste it into "Restore" on the new device. Do this every few weeks as a backup too.</p>
     <textarea readonly id="bk" aria-label="Backup code">${backup}</textarea><div class="row"><button class="btn btn-sm" data-act="copy-bk">Copy save code</button></div>
     <textarea id="rs" aria-label="Paste a backup code to restore" placeholder="Paste a backup code here"></textarea><div class="row"><button class="btn btn-sm" data-act="restore">Restore from code</button><button class="btn btn-sm btn-ghost" data-act="reset-all" id="rsall">Erase this player</button></div></div>`;
-  const tabs=[['progress','Progress'],['facts','Facts'],['settings','Settings']];
-  const body=tab==='progress'?`<div class="grid2">${calm}${hard}${ret}${tools}</div>${tips}${soon}`:tab==='facts'?`${legend}<div class="grid2">${facts}</div>`:`<div class="grid2">${settings}${bk}</div>`;
+  const tabs=[['progress','Progress'],['week','This week'],['facts','Facts'],['settings','Settings']];
+  const body=tab==='progress'?`<div class="grid2">${calm}${hard}${ret}${tools}</div>${tips}${soon}`:tab==='week'?weekSummary():tab==='facts'?`${legend}<div class="grid2">${facts}</div>`:`<div class="grid2">${settings}${bk}</div>`;
   openSheet(`<div class="row spread"><h2>Grown-ups</h2><button class="btn btn-ghost btn-sm" data-act="close">${ic('close',18)} Close</button></div>
     <p class="sub">${esc((S.hero&&S.hero.name)||S.dragon.name)} has trained ${S.days.length} day${S.days.length===1?'':'s'} and played ${S.dash.plays.length} Dash${S.dash.plays.length===1?'':'es'}. ${storageOK?'':'<span class="warn">Saving is blocked in this browser, so use the backup code.</span>'}</p>
     <div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button class="tab" role="tab" data-act="gtab" data-k="${k}" aria-selected="${tab===k}">${l}</button>`).join('')}</div><div class="gu">${body}</div>`,{wide:true});
@@ -4928,6 +5091,7 @@ document.addEventListener('click',e=>{
     case 'help': pressHelp(false); break;
     case 'next': afterQuestion(); break;
     case 'quit': quitTraining(); break;
+    case 'checkup-go': closeSheet(); startCheckup(); break;
     case 'quit-yes': closeSheet(); finishSession(true); break;
     case 'breathe': showBreather('close'); break;
     case 'breathe-next': showBreather('close-next'); break;

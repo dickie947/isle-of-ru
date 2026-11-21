@@ -70,3 +70,17 @@ function fishJetty(){
   ask();
 }
 function sendFish(){const D=S.dragon.name,F=fishSt();F.sent=today();saveState();Audio_.fx('pop');vsay(`${D} flaps off over the water with a tiny fishing net. Come back tomorrow!`)}
+
+/* the family chest: shows today's keys, and is where a child leaves a gift for a brother or sister */
+function chestTap(){
+  const ch=Fam.chest(), who=ch.rows.map(r=>`${r.name}: ${r.done?'key turned':'waiting'}`).join('. ');
+  const base=ch.opened?`The family chest is open! ${who}. Everyone who played today gets a bonus.`:`The family chest has two locks. ${who}. When every key is turned, it opens for everyone.`;
+  const f=Fam.get(), to=Fam.giftTargets(f);
+  if(!to.length) return vsay(base);
+  if(Fam.gaveToday(f)) return vsay(base+" Your gift is tucked inside for them.");
+  const name=k=>f.names[k]||'your brother or sister';
+  const pickGift=k=>vsay(`What would you like to leave for ${name(k)}? It is free.`,Object.keys(GIFTS).map(g=>({label:GIFTS[g].name.replace(/^an? /,''),fn:()=>pickMsg(k,g)})).concat([{label:'Not now'}]));
+  const pickMsg=(k,g)=>vsay(`Add a little message for ${name(k)}:`,GIFT_MSGS.slice(0,4).map(m=>({label:m,fn:()=>{
+    if(Fam.sendGift(k,g,m)){hud();vsay(`You tuck ${GIFTS[g].name} into the chest with your message. ${name(k)} will find it next time they play. (+${GIFT_THANKS} ember for being kind.)`)}}})));
+  vsay(base+" Would you like to leave a gift for "+name(to[0])+"?",[{label:'Leave a gift',fn:()=>pickGift(to[0])},{label:'Not now'}]);
+}

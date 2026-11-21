@@ -7,12 +7,12 @@ Eight weekly updates from 23 October 2026. Each has one new mini-game for after 
 | 1 | 30 Oct (live 24 Oct; 1.1 hotfix (hide and seek board) built 24 Oct) | Hide and seek: Millie or a baby dragon hides each day, number clues. Halloween-themed | "Are you sure?" on every ember purchase; extra-practice cap 30 to 90; real hen names (Skullcrusher, Hookfang, Channel, Floppsie) and a fourth hen; check other screens for unreadable buttons; autumn and Halloween items |
 | 2 | 6 Nov | Treasure map digging: grid clues | Daily play allowance (25 min) and pass-the-iPad screen; two-key family chest; hide and seek flag tap fix; dad jokes rewrite (31 jokes); music variation step 1; Drop 2 maths begins (first batch) with spaced repetition for each new question type |
 | 3 | 14 Nov (split agreed 14 Nov; built 14 Nov, version 2.1.0) | Fishing at the jetty | Dragon fishing trips; weekly shared build framework with the lighthouse as week 1; more Drop 2 maths (batch 2); small uses for the text-only items (tower, fountain, statue, campfire, dragon torch, banner); Viking helmets for Millie and the hens |
-| 3b | 21 Nov | (none) | Gift swaps; calm check-up mode and weekly parents' summary; shared build longship repairs (week 2). Later updates move back one week: Update 4 (garden and farm, Snowcap residents, family cast) on 28 Nov and so on |
-| 4 | 20 Nov | Garden and farm | Drop 2 island and number-door puzzle; island residents (Snowcap Isle) |
-| 5 | 27 Nov | Dragon races | Drop 2 finished; eggs and new dragon species; orders board and two-good storehouse (resource management step 1); first island residents |
-| 6 | 4 Dec | Island shopkeeper | Drop 3 begins; time strand starts (rungs 1 and 2) |
-| 7 | 11 Dec | Build-a-den challenge | Drop 3 maths (more word problems) |
-| 8 | 18 Dec | Sibling riddles | Drop 3 finished; New Year content |
+| 3b | 21 Nov (built 21 Nov, version 2.2.0; the 20 Nov slot was missed) | (none) | Gift swaps; calm check-up mode and weekly parents' summary (Grown-ups, This week tab); shared build longship repairs (project 2, starts 23 Nov). |
+| 4 | 28 Nov | Garden and farm | Drop 2 island and number-door puzzle; island residents (Snowcap Isle, with Daddy, Uncle Andy and Crumpet) |
+| 5 | 5 Dec | Dragon races | Drop 2 finished; eggs and new dragon species; orders board and two-good storehouse (resource management step 1); first island residents |
+| 6 | 12 Dec | Island shopkeeper | Drop 3 begins; time strand starts (rungs 1 and 2) |
+| 7 | 19 Dec | Build-a-den challenge | Drop 3 maths (more word problems) |
+| 8 | 26 Dec | Sibling riddles | Drop 3 finished; New Year content |
 
 ## Rules
 - Calm: no timers, no losing, wrong answers never cost embers.
@@ -34,7 +34,7 @@ Problem: the children fight over whose turn it is on the shared iPad.
 - Scope decided 31 Oct: Update 2 = allowance, pass-the-iPad, chest, flag fix, music step 1, treasure map, first Drop 2 maths with spaced repetition. Moved to Update 3: gift swaps, weekly shared build, check-up mode and parents' summary (Update 4 if Update 3 is heavy). The chest needs read access to the other child's save to know they finished.
 
 ## Weekly shared build (framework built in Update 3, 14 Nov; runs to the end of February 2027)
-STATUS 14 Nov: framework and project 1 (lighthouse) built. How it works as built: each child's finished practice adds 5 bricks once per day; the lighthouse needs 40 bricks (4 stages, shown on the east coast of the home island; the plot appears at once, the finished building lights up at night). It finishes when full, not on Sunday, and the finishing child gets 30 embers at once while the other child gets 30 the next time their game opens. Progress lives in the shared family record (not in either save). The lighthouse has a daily use: turn the lamp for 2 embers. Because the lighthouse started on release day (14 Nov) instead of 16 Nov, later projects should be added one at a time as their art is made: the project list is data-driven (PROJECTS in allow.js). Project 2 (longship repairs, due 23 Nov) ships in Update 3b.
+STATUS 14 Nov: framework and project 1 (lighthouse) built. How it works as built: each child's finished practice adds 5 bricks once per day; the lighthouse needs 40 bricks (4 stages, shown on the east coast of the home island; the plot appears at once, the finished building lights up at night). It finishes when full, not on Sunday, and the finishing child gets 30 embers at once while the other child gets 30 the next time their game opens. Progress lives in the shared family record (not in either save). The lighthouse has a daily use: turn the lamp for 2 embers. Because the lighthouse started on release day (14 Nov) instead of 16 Nov, later projects should be added one at a time as their art is made: the project list is data-driven (PROJECTS in allow.js). Project 2 (longship repairs) is built in Update 3b (2.2.0): it appears on the beach in the south-east of the home island, starts 23 Nov (once the lighthouse is finished), 40 pieces in 4 stages, daily use: a short sail for 2 embers.
 The two children build one island project together each week. Every day's practice adds bricks from each child. A single progress bar shows the total, never who added more. The finished project unlocks on Sunday as a shared item, then the next project starts. Missed days cost nothing, and a late build can still finish the following week. Rewards effort, not accuracy.
 Planned content, 15 weekly projects so it runs without new work until the end of February:
 1. Lighthouse (w/c 16 Nov)
@@ -135,7 +135,7 @@ Decided 8 Nov: cows, deer and geese appear as animals on the islands, and the ch
 
 ## Resource management with simple maths (requested 1 Nov; long term)
 Goal: bring word-style problems into a practical setting. Rules: nothing ever runs out, spoils or blocks the fun; wrong answers cost nothing; the daily part is short enough to sit inside the 25-minute allowance; quantities shown as pictures and counters, not paragraphs of text (reading is a second hurdle for Ruan); a "show me" button lays out the counters, and a hint comes after a couple of tries so the answer is not found by guessing.
-Step 1, Update 5 (27 Nov): an orders board at the market. Each day it shows 3 orders as pictures with counters (for example 4 fish and 3 eggs). Check the storehouse, work out "have 9, need 14, how many more?", collect the rest, hand in for embers. A two-good storehouse (fish and eggs), using add and subtract to 20 only.
+Step 1, Update 5 (5 Dec): an orders board at the market. Each day it shows 3 orders as pictures with counters (for example 4 fish and 3 eggs). Check the storehouse, work out "have 9, need 14, how many more?", collect the rest, hand in for embers. A two-good storehouse (fish and eggs), using add and subtract to 20 only.
 Later steps, matched to the maths plan:
 - Dragon pantry: "Ember eats 2 fish a day, we have 12, how many days?" (division; Drop 2). The dragon never goes hungry.
 - Bakery recipes that scale: doubling and times tables (Drop 2). The bakery already takes orders.
@@ -168,3 +168,10 @@ Two new shop items beside the existing Millie and hen outfits: a mini Viking hel
 - Refunds or undo for accidental purchases: backlog.
 - Hide and seek flags: tap area is too small, took many taps around the base of the flag to register. Fix in Update 2 (bigger hit area, ideally the whole flag and cloth). Check other small tap targets on the Village Green at the same time.
 - Music: the same tune loops (confirmed by Richard). The game has one built-in piece (D Dorian, A and B sections), so a shuffle alone would not help. Step 1, in Update 2: make the existing piece vary each time round (alternating section order, different keys, small melody variations, changing instruments, a rest bar now and then), so no two passes sound the same. Step 2, later (placed when planning, likely Updates 3 to 5): new tunes, with different moods for the home island, the Village Green, the other isles and the practice screen. Keep it calm and quiet during practice.
+
+
+## Update 3b status (21 Nov, version 2.2.0)
+- Gift swaps built without writing into the other child's save: gifts pass through the shared family record and are claimed when the other child's game opens. One free gift a day (fish snack, honey bun or shiny shell, 3 embers each) with a kind one-line message picked from a short list; the giver gets 1 ember. Left from the family chest (appears once two players have practised).
+- Check-up mode: started by a grown-up from Grown-ups > This week. About 8 mixed questions from facts already practised, no embers, no streak, never changes the practice boxes; the child sees only a thank-you.
+- Parents' summary: Grown-ups > This week lists every player on the device: days practised in the last 7, what they are working on, facts secure, calm-start time, how hard moments went, and the latest check-up with any weak skills.
+- Draw fix (2.1.1): one bad picture can no longer hide the character and objects.

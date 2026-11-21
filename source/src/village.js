@@ -82,7 +82,7 @@ function buildObjects(){
   placeVillagers();
   { const ch=Fam.chest(),fx=20,fy=13; if(ch.total>=2&&okGround(fx,fy)){ const n=ch.opened?3:Math.min(2,ch.count); addObj(SPR.famchest[n],fx+.5,fy+.9,30,46,{});
       const who=ch.rows.map(r=>`${r.name}: ${r.done?'key turned':'waiting'}`).join('. ');
-      block([[fx,fy]],ch.opened?`The family chest is open! ${who}. Everyone who played today gets a bonus.`:`The family chest has two locks. ${who}. When every key is turned, it opens for everyone.`); hitArea(fx,fy,[[-1,0],[1,0],[0,1],[0,-1]]) } }
+      block([[fx,fy]],null,'famchest'); hitArea(fx,fy,[[-1,0],[1,0],[0,1],[0,-1]]) } }
   todaysMounds().forEach(([i,j],n)=>{if(!(S.day.dug||[]).includes(n)){addObj(SPR.mound,i+.5,j+.8,20,22,{});block([[i,j]],null,'dig:'+n)}});
   if(eventActive('xmas')&&okGround(16,14)){addObj(SPR.xtree,16.5,14.7,35,102,{sc:.95,glow:[35,56],glowCol:'255,220,120',glowR:30});block([[16,14]],"A Christmas tree, sparkling with lights.")}
   if(own('statue')){addObj(SPR.statue,29.6,14.6,40,110,{sc:.9});block([[29,14]],"A stone dragon, standing guard over the island.",'use:statue');hitArea(29,14,[[0,-1],[0,-2],[-1,0],[1,0],[0,1]])}else plot('statue');
@@ -166,6 +166,7 @@ function runAct(a){
   if(a.startsWith('hs:'))return hsFlag(+a.slice(3));
   if(a==='use:jetty')return fishJetty();
   if(a==='use:lighthouse')return useLighthouse();
+  if(a==='use:longship')return useLongship();
   if(a.startsWith('use:'))return useItem(a.slice(4));
   if(a==='nest')return openNest();
   if(a==='stall')return openShop();
@@ -173,6 +174,7 @@ function runAct(a){
   if(a==='stables')return openStables();
   if(a==='clothes')return openClothes();
   if(a==='chest')return openChest();
+  if(a==='famchest')return chestTap();
   if(a.startsWith('vill:')){const v=VILLAGERS.find(x=>x.id===a.slice(5));if(v)talkVillager(v);return}
   if(a.startsWith('dig:')){digMound(+a.slice(4));return}
   if(a==='millie'){const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
@@ -512,8 +514,13 @@ async function show(){
   VS.last=0;VS.raf=requestAnimationFrame(frame);
   if(first&&!S.day.trained)vtoast('Walk to the school house. Arrow keys, or tap where you want to go.',4200);
   announceNew();
-  { const gb=Fam.claimBuild(); if(gb){ hud(); setTimeout(()=>{ if(screen==='village'&&!G.modal) vsay(`The ${gb.name.toLowerCase()} is finished! Your brother or sister placed the last bricks. There is a reward for you: +${gb.e} embers.`) },900) } }
-  { const got=Fam.claim(); if(got){ hud(); setTimeout(()=>{ if(screen==='village'&&!G.modal) vsay(`The family chest opened! There is a bonus for you: +${got} embers.`) },900) } }
+  { /* things left for this child by the family: show each in turn, none lost behind another */
+    const msgs=[], D=S.dragon?S.dragon.name:'Your dragon';
+    const gb=Fam.claimBuild(); if(gb) msgs.push(`The ${gb.name.toLowerCase()} is finished! Your brother or sister placed the last pieces. There is a reward for you: +${gb.e} embers.`);
+    const got=Fam.claim(); if(got) msgs.push(`The family chest opened! There is a bonus for you: +${got} embers.`);
+    const gg=Fam.claimGifts(); if(gg){ const x=gg.list[gg.list.length-1]; msgs.push(`${x.from} left you ${GIFTS[x.g]?GIFTS[x.g].name:'a gift'}: "${x.m}" ${D} ${GIFTS[x.g]?GIFTS[x.g].eat:'loves it'}. (+${gg.e} embers.)`); }
+    if(msgs.length){ hud(); const showAt=k=>{ if(screen!=='village'||(G.modal&&k===0)) return; vsay(msgs[k],[{label:'OK',fn:()=>{ if(k+1<msgs.length) setTimeout(()=>showAt(k+1),250) }}]) }; setTimeout(()=>showAt(0),900); }
+  }
   if(S.day.trained&&!S.day.jokeShown&&!first){S.day.jokeShown=true;saveState();setTimeout(()=>{if(screen==='village'&&!G.modal&&!overlayOpen())tellJoke()},1800)}
 }
 function closeSheetSafe(){try{closeSheet()}catch(e){}}

@@ -7,10 +7,16 @@ const FAM_KEY='isleOfRu.family';
 const CHEST_BASE=4, CHEST_BONUS=10;
 /* ---- weekly shared island project: every finished practice adds bricks from each child, nobody sees who added more ---- */
 const BRICKS_EACH=5;
+/* gifts a child can leave for the other: always free to give, a few embers to receive. Messages are kind one-liners to pick from. */
+const GIFT_THANKS=1;
+const GIFTS={fish:{name:'a fish snack',e:3,eat:'gobbles the fish snack in one gulp'},bun:{name:'a honey bun',e:3,eat:'nibbles the honey bun and hums'},shell:{name:'a shiny shell',e:3,eat:'holds the shiny shell up to the light and sighs happily'}};
+const GIFT_MSGS=["Hope you have a lovely day!","Thinking of you and your dragon.","This one is for you. Enjoy!","You are a brilliant builder.","Look after each other today."];
 const PROJECTS=[
   {id:'lighthouse',name:'Lighthouse',start:'2026-11-14',need:40,stages:[10,20,30,40],reward:30,
    stageText:['A staked-out plot by the sea, ready for a lighthouse.','The stone base is going up.','The tower is rising, stripe by stripe.','The tower is done. The lamp room just needs its light.','The lighthouse is finished. Its lamp shines over the sea at night.']}
-  /* later projects (longship repairs, windmill, market stall, ...) are listed in ROADMAP.md and added as their art is made */
+  ,{id:'longship',name:'Longship repairs',start:'2026-11-23',need:40,stages:[10,20,30,40],reward:30,
+   stageText:['A battered old longship rests on the beach, waiting to be mended.','The keel and ribs are fixed in place.','Planks are going on, row by row.','The hull is sound. The mast is up and the dragon prow is carved.','The longship is mended. Its striped sail is full of wind.']}
+  /* later projects (windmill, market stall, ...) are listed in ROADMAP.md and added as their art is made */
 ];
 const projStage=(p,n)=>{let st=0;for(const th of p.stages) if(n>=th) st++;return st};
 const Fam={
@@ -71,6 +77,21 @@ const Fam={
   claimBuild(){
     const f=this.get(), g=f.pendingB&&f.pendingB[SAVE_KEY]; if(!g) return null;
     delete f.pendingB[SAVE_KEY]; this.put(f); S.embers+=g.e; saveState(); return g;
+  },
+  /* ---- gift swaps: one free gift a day for a brother or sister, passed through the shared record so neither save is touched ---- */
+  giftTargets(f){ f=f||this.get(); return this.members(f).filter(x=>x!==SAVE_KEY); },
+  gaveToday(f){ f=f||this.get(); return !!(f.gday&&f.gday[SAVE_KEY]===today()); },
+  sendGift(to,gift,msg){
+    const f=this.get(); f.gday=f.gday||{}; f.gifts=f.gifts||{};
+    if(f.gday[SAVE_KEY]===today()||!to||to===SAVE_KEY) return false;
+    f.gday[SAVE_KEY]=today(); (f.gifts[to]=f.gifts[to]||[]).push({from:(S.hero&&S.hero.name)||S.dragon.name,g:gift,m:msg,d:today()});
+    if(f.gifts[to].length>5) f.gifts[to]=f.gifts[to].slice(-5);
+    this.put(f); S.embers+=GIFT_THANKS; saveState(); return true;
+  },
+  claimGifts(){
+    const f=this.get(), g=f.gifts&&f.gifts[SAVE_KEY]; if(!g||!g.length) return null;
+    delete f.gifts[SAVE_KEY]; this.put(f);
+    const e=g.reduce((t,x)=>t+(GIFTS[x.g]?GIFTS[x.g].e:0),0); S.embers+=e; saveState(); return {list:g,e};
   },
   /* embers waiting from a chest that opened after this child had finished */
   claim(){
