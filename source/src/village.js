@@ -739,10 +739,16 @@ function frame(now){
   }
   list.sort((a,b)=>a.y-b.y);
   for(const it of list){
-    if(it.fn){it.fn();continue}
+    c.save();
+    try{drawItem(it)}catch(e){G.drawErr=(G.drawErr||0)+1;if(G.drawErr<4)console.warn('draw item skipped',e&&e.message)}
+    c.restore();
+  }
+  function drawItem(it){
+    if(it.fn){it.fn();return}
     const o=it.o;
-    if(o.bob){c.save();c.translate(0,-Math.abs(Math.sin(G.t*3.2))*9);c.drawImage(o.spr,o.x-o.ax,o.y-o.ay,o.w,o.h);c.restore();continue}
-    if(o.ship){c.save();c.translate(0,Math.sin(G.t*1.2)*1.6);c.drawImage(o.spr,o.x-o.ax,o.y-o.ay,o.w,o.h);c.restore();continue}
+    if(!o.spr||!o.spr.width||!o.spr.height)return;
+    if(o.bob){c.save();c.translate(0,-Math.abs(Math.sin(G.t*3.2))*9);c.drawImage(o.spr,o.x-o.ax,o.y-o.ay,o.w,o.h);c.restore();return}
+    if(o.ship){c.save();c.translate(0,Math.sin(G.t*1.2)*1.6);c.drawImage(o.spr,o.x-o.ax,o.y-o.ay,o.w,o.h);c.restore();return}
     c.drawImage(o.spr,o.x-o.ax,o.y-o.ay,o.w,o.h);
   }
   for(const p of parts){const a=1-p.age/p.life;
@@ -771,7 +777,7 @@ function frame(now){
 const idle=()=>!!(VS.ready&&!G.modal&&!overlayOpen()&&G.mode==='ground'&&!P.moving&&!P.queue.length&&!typing&&!($('#vq')&&!$('#vq').hidden));
 const busy=()=>!!(overlayOpen()||($('#vq')&&!$('#vq').hidden));
 function yawn(){if(screen!=='village')return;vtoast(`${S.dragon.name} yawns and stretches. Getting sleepy...`,4200);Audio_.fx('soft');VS.zT=0}
-return {warp:(x,y)=>{const [wx,wy]=nearestWalkable(x,y);P.x=wx;P.y=wy;Dg.x=wx-1;Dg.y=wy;Dg.trail=[];cam.init=false;VS.pos={x:P.x,y:P.y,dir:P.dir}},scan:()=>{const r=[];for(let j=4;j<28;j++){let s="";for(let i=0;i<42;i++){s+=blocked[j][i]?"#":(landV(i+.5,j+.5)>.05?".":" ")}r.push(String(j).padStart(2)+" "+s)}return r.join("\n")},sprDebug:()=>({m:millieSprite("sit",0),h:henSprite(0),h2:henSprite(1)}),show,preload,refresh,reset,idle,busy,yawn,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
+return {warp:(x,y)=>{const [wx,wy]=nearestWalkable(x,y);P.x=wx;P.y=wy;Dg.x=wx-1;Dg.y=wy;Dg.trail=[];cam.init=false;VS.pos={x:P.x,y:P.y,dir:P.dir}},scan:()=>{const r=[];for(let j=4;j<28;j++){let s="";for(let i=0;i<42;i++){s+=blocked[j][i]?"#":(landV(i+.5,j+.5)>.05?".":" ")}r.push(String(j).padStart(2)+" "+s)}return r.join("\n")},sprDebug:(pose,prop)=>({m:millieSprite(pose||"sit",prop===undefined?0:prop),h:henSprite(0),h2:henSprite(1)}),show,preload,refresh,reset,idle,busy,yawn,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
   state:{G,P,Dg,VS,OBJ,TREES,notes,acts,blocked,walk,cam,held},
   setHour:h=>{VS.hour=h},setPos:(x,y)=>{P.x=x+.5;P.y=y+.5;Dg.x=P.x-1;Dg.y=P.y;Dg.trail=[]},
   okGround,bfs,ptile,tapTile:doTapTile,say:vsay,shards:()=>VS.shards,collectAt,runAct,
