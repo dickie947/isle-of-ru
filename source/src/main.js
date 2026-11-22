@@ -485,6 +485,7 @@ document.addEventListener('click',e=>{
     case 'splash-go': { const f=SPLASH_CB; SPLASH_CB=null; if(f) f(); break; }
     case 'claimc': claimCloth(el.dataset.id); break;
     case 'vmap': Village.openMap(); break;
+    case 'vstory': Village.openStory(); break;
     case 'travel': Village.travelTo(el.dataset.id); break;
     case 'buyf': { const it=CATALOG.forge.find(x=>x.id===el.dataset.id); if(it) askSure(it.name,it.cost,()=>buyForge(it.id)); break; }
     case 'sfx': S.settings.sfx=!S.settings.sfx; saveState(); Village.hud(); break;

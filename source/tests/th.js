@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function open(opts={}){
-  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',args:['--no-sandbox']});
+  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1243/chrome-linux64/chrome',args:['--no-sandbox']});
   const ctx=await b.newContext({viewport:opts.viewport||{width:1280,height:800},hasTouch:!!opts.touch,isMobile:!!opts.touch,deviceScaleFactor:opts.dpr||1});
   const page=await ctx.newPage();
   const errs=[];page.on('console',m=>{if(m.type()==='error'&&!/ERR_FAILED|Failed to load/.test(m.text()))errs.push('console: '+m.text())});page.on('pageerror',e=>errs.push('pageerror: '+e.message));

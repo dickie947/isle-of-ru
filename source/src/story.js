@@ -1,0 +1,139 @@
+/* ===== The story: "Crumpet and the Case of the Missing Warm Stones" =====
+   Told by Old Knut the Unreliable. Chapters open by practised days, never by scores.
+   Wrong answers cost nothing, nothing is timed, and nothing here touches the maths practice. ===== */
+const STORY_EVERY=4;                     /* practised days between chapters */
+const stSt=()=>S.story||(S.story={ch:{},clues:[],seen:false,embers:0});
+const stCh=n=>stSt().ch[n]||null;
+const stDone=n=>!!(stCh(n)&&stCh(n).done);
+const stName=()=>S.dragon&&hatched()?S.dragon.name:'your egg';
+function stLevel(){const n=Object.keys(S.items||{}).length;return n<15?0:n<45?1:2}
+function stOpens(n){            /* has chapter n opened yet, and how many practised days remain */
+  if(n===1) return {open:true,left:0};
+  const p=stCh(n-1); if(!p||!p.done) return {open:false,left:null};
+  const left=Math.max(0,STORY_EVERY-(S.days.length-(p.doneDays||0)));
+  return {open:left===0,left};
+}
+const shuf=a=>a.slice().sort(()=>Math.random()-.5);
+function stChoices(ans,near){const set=new Set([ans]);let g=0;while(set.size<3&&g++<40){const d=near[RR(0,near.length-1)]*(Math.random()<.5?-1:1);const v=ans+d;if(v>=0&&v!==ans)set.add(v)}return shuf([...set])}
+
+/* ---- sprites ---- */
+SPR.stTin=mk(46,46,c=>{shadowBlob(c,23,41,15,4,.3);
+  c.fillStyle='#b8402e';c.beginPath();c.ellipse(23,32,15,6,0,0,6.3);c.fill();c.fillRect(8,22,30,10);c.fillStyle='#b8402e';c.beginPath();c.ellipse(23,32,15,6,0,0,3.15);c.fill();
+  c.fillStyle='#8f2c1f';c.beginPath();c.ellipse(23,22,15,6,0,0,6.3);c.fill();c.fillStyle='#3b2416';c.beginPath();c.ellipse(23,22,12,4.2,0,0,6.3);c.fill();
+  c.fillStyle='#e8d9a8';c.fillRect(13,26,20,5);c.fillStyle='#5a3a1a';c.fillRect(15,28,6,1.4);c.fillRect(24,28,6,1.4);
+  c.save();c.translate(33,17);c.rotate(.7);c.fillStyle='#d9a441';c.beginPath();c.ellipse(0,0,13,3.6,0,0,6.3);c.fill();c.restore();
+  c.fillStyle='#8a5a2a';[[10,38],[17,40],[29,39],[35,37],[22,42]].forEach(([x,y])=>{c.beginPath();c.arc(x,y,1.5,0,6.3);c.fill()})});
+SPR.stCrumbs=mk(48,26,c=>{c.fillStyle='rgba(60,40,20,.18)';c.beginPath();c.ellipse(24,16,21,6,0,0,6.3);c.fill();
+  [[6,14,2],[12,10,1.6],[17,16,2.2],[23,11,1.5],[28,17,2],[34,12,1.8],[40,16,2.2],[20,20,1.4],[10,19,1.3],[44,11,1.4]].forEach(([x,y,r])=>{c.fillStyle='#9a6b36';c.beginPath();c.arc(x,y,r,0,6.3);c.fill();c.fillStyle='#c79556';c.beginPath();c.arc(x-.4,y-.4,r*.55,0,6.3);c.fill()});
+  c.fillStyle='#c79556';c.beginPath();c.arc(30,9,5,0,3.14);c.fill();c.strokeStyle='#7a5226';c.lineWidth=1;c.stroke()});
+function stPaw(c,x,y,s,bow){c.fillStyle='rgba(70,50,30,.55)';c.beginPath();c.ellipse(x,y,3.4*s,2.8*s,0,0,6.3);c.fill();[[-3.6,-3.6],[-1.2,-5.2],[1.4,-5.2],[3.8,-3.6]].forEach(([dx,dy])=>{c.beginPath();c.ellipse(x+dx*s,y+dy*s,1.2*s,1.5*s,0,0,6.3);c.fill()});
+  if(bow){c.fillStyle='#d9342b';c.beginPath();c.moveTo(x,y-7*s);c.lineTo(x-4*s,y-9*s);c.lineTo(x-4*s,y-5*s);c.closePath();c.fill();c.beginPath();c.moveTo(x,y-7*s);c.lineTo(x+4*s,y-9*s);c.lineTo(x+4*s,y-5*s);c.closePath();c.fill()}}
+SPR.stPaws=mk(52,32,c=>{c.fillStyle='rgba(120,90,50,.16)';c.beginPath();c.ellipse(26,20,24,8,0,0,6.3);c.fill();stPaw(c,10,24,1,false);stPaw(c,26,18,1,false);stPaw(c,42,24,1,true)});
+SPR.stStone=mk(40,40,c=>{shadowBlob(c,20,34,11,3.5,.3);c.fillStyle='rgba(255,170,60,.28)';c.beginPath();c.arc(20,24,15,0,6.3);c.fill();
+  c.fillStyle=lg(c,0,12,0,34,['#ffb347','#e0661f']);c.beginPath();c.moveTo(9,28);c.quadraticCurveTo(8,14,20,12);c.quadraticCurveTo(33,14,32,28);c.quadraticCurveTo(20,35,9,28);c.fill();
+  c.strokeStyle='#8a3a10';c.lineWidth=1.2;c.stroke();c.fillStyle='rgba(255,236,170,.8)';c.beginPath();c.ellipse(16,19,4,2.4,-.5,0,6.3);c.fill();
+  c.strokeStyle='rgba(255,226,140,.8)';c.lineWidth=1.2;[[6,8,12,12],[34,8,28,12],[20,3,20,8]].forEach(([a,b,d,e])=>{c.beginPath();c.moveTo(a,b);c.lineTo(d,e);c.stroke()})});
+SPR.stMark=mk(24,32,c=>{c.fillStyle='#ffd23f';c.strokeStyle='#8a5a10';c.lineWidth=2;c.beginPath();c.arc(12,12,10,0,6.3);c.fill();c.stroke();
+  c.fillStyle='#3a2410';c.fillRect(10.4,5,3.2,9);c.beginPath();c.arc(12,18,1.9,0,6.3);c.fill();
+  c.fillStyle='#ffd23f';c.beginPath();c.moveTo(8,21);c.lineTo(12,28);c.lineTo(16,21);c.closePath();c.fill();c.strokeStyle='#8a5a10';c.stroke()});
+
+/* ---- Chapter 1: The Biscuit Tin Is Empty ---- */
+const KNUT=t=>'Old Knut: '+t;
+const CH1={
+  title:'The Biscuit Tin Is Empty',
+  intro:[
+   KNUT("Welcome, brave detective! I am Old Knut the Unreliable, and this is my Book of Tall Tales. Every word is true. (Most words. Some words. A few.) Our story begins on the Isle of Ru, on an ordinary morning, when something EXTRAORDINARY happened to a biscuit tin."),
+   KNUT("The tin belonged to Daddy. Daddy takes tea very seriously. He takes biscuits even more seriously. He hid them in a secret place that nobody knew about, except the hens, the gulls and everybody. Knut's Rule of Detecting Number 1: a secret that everybody knows is only a surprise."),
+   "Daddy: \"The tin is EMPTY! I am being extremely serious.\" (A crumb fell off his chin.) \"Detective, find the biscuit thief! Look for the bouncing ! on the island."
+  ],
+  /* spots are tiles on the home island; each step shows its marker only when it is next */
+  spots:[{x:24,y:14,spr:"stTin",ax:23,ay:40,cx:24.5,cy:14.95},{x:23,y:17,spr:"stCrumbs",ax:24,ay:20,cx:23.5,cy:17.9,sc:1.5},{x:21,y:18,spr:'stPaws',ax:26,ay:24,cx:21.5,cy:18.9},{x:18,y:21,spr:'stStone',ax:20,ay:30,cx:18.5,cy:21.9}]
+};
+function stPuzzle(kind,onRight){
+  const L=stLevel(); let q,ans,opts,show='';
+  if(kind==='add'){
+    const a=L===0?RR(2,5):L===1?RR(5,10):RR(8,20), b=L===0?RR(2,4):L===1?RR(4,9):RR(7,19); ans=a+b;
+    q=`Daddy's tin held ${a} chocolate biscuits and ${b} plain ones. How many biscuits have vanished altogether?`;
+    if(ans<=20) show='🍫'.repeat(a)+'  '+'🍪'.repeat(b);
+    opts=stChoices(ans,L===0?[1,2]:[1,2,10]);
+  }else if(kind==='sub'){
+    const n=L===0?RR(6,9):L===1?RR(12,20):RR(3,5)*10, k=L===0?RR(2,n-3):L===1?RR(4,n-4):RR(1,n/10-1)*10+(L===2?RR(0,4):0); ans=n-k;
+    q=`There are ${n} crumbs in the trail. The thief dropped ${k} on the grass. The rest went along the path. How many went along the path?`;
+    if(n<=20) show='🟤'.repeat(k)+'  '+'⚪'.repeat(n-k);
+    opts=stChoices(ans,L===0?[1,2]:[1,2,10]);
+  }else{
+    const s=L===0?1:[2,5,10][RR(0,2)], st=RR(1,4)*s+(L===0?RR(0,3):0), seq=[0,1,2].map(i=>st+i*s); ans=st+3*s;
+    q=`The tiny paw prints are numbered! They go: ${seq.join(', ')}, ... What number is on the next print?`;
+    opts=stChoices(ans,[s,s*2]);
+  }
+  const ask=(msg)=>vsay((msg?msg+'\n\n':'')+q+(show?'\n'+show:''),opts.map(x=>({label:String(x),fn:()=>{
+    if(x===ans){Audio_.fx('pop');onRight()}
+    else ask('Not quite. Take your time, you can try as often as you like.')}})));
+  ask('');
+}
+function stReadPages(pages,done){const go=i=>vsay(pages[i],[{label:i<pages.length-1?'Turn the page':'On we go',fn:()=>i<pages.length-1?go(i+1):(done&&done())}]);go(0)}
+function stClue(id,title,text){const s=stSt();if(!s.clues.some(c=>c.id===id)){s.clues.push({id,title,text});saveState()}}
+function stRefresh(){Village.refresh&&Village.refresh()}
+
+function storySpots(){
+  const c1=stCh(1); if(!c1||c1.done) return;
+  const sp=CH1.spots, st=Math.min(c1.step||0,3);
+  /* show the places already visited and the next one, with a bouncing marker over the next */
+  sp.forEach((p,i)=>{ if(i>st) return;
+    addObj(SPR[p.spr],p.cx,p.cy,p.ax,p.ay,i===3?{glow:[20,24],glowR:36,glowCol:'255,170,60'}:(p.sc?{sc:p.sc}:{}));
+    block([[p.x,p.y]],null,'story:'+i);hitArea(p.x,p.y,[[0,-1],[0,1],[-1,0],[1,0],[0,-2],[-1,-1],[1,-1]]);
+  });
+  const p=sp[st];addObj(SPR.stMark,p.cx,p.cy-1.1,12,26,{bob:true,glow:[12,12],glowR:26,glowCol:'255,214,90'});
+}
+function storyAct(i){
+  const c1=stCh(1); if(!c1||c1.done) return;
+  const st=c1.step||0, D=stName();
+  if(i<st){ vsay(['The biscuit tin. Still empty. Daddy is still being extremely serious about it.','The crumb trail. Whoever dropped these was small, hungry and in a hurry.','Tiny paw prints, each with a tiny bow-shaped dent. A very stylish thief.'][i]); return }
+  if(i>st){ vsay('Not this one yet. Look for the bouncing ! to find the next clue.'); return }
+  if(i===0){
+    vsay("The biscuit tin is empty, the lid is still warm and there is not one biscuit left. Daddy says: \"There were biscuits in there. MANY biscuits. I counted them. Twice.\"",[{label:'Count them',fn:()=>stPuzzle('add',()=>{
+      stClue('crumbs','The crumb trail','A trail of crumbs leads away from Daddy\'s tin across the grass.');c1.step=1;saveState();stRefresh();
+      vsay("Yes! All gone. Daddy goes pale. Then you spot something: a trail of crumbs leading away across the grass. Clue found: the crumb trail! Follow the bouncing !.")})}]);
+  }else if(i===1){
+    vsay("Crumbs, crumbs and more crumbs. Whoever took the biscuits dropped them as they ran. Let's count them properly.",[{label:'Count the crumbs',fn:()=>stPuzzle('sub',()=>{
+      stClue('small','A small, hungry thief','The crumbs are tiny. The thief is small, and in a very big hurry.');c1.step=2;saveState();stRefresh();
+      vsay("Right! And look how small the crumbs are. Our thief is small, hungry and in a hurry. Clue found! The trail goes on. Follow the bouncing !.")})}]);
+  }else if(i===2){
+    vsay(`Tiny paw prints! Each one has a dent shaped like a little bow. ${D} sniffs them and gives a very suspicious look. Each print has a number scratched beside it.`,[{label:'Read the numbers',fn:()=>stPuzzle('pat',()=>{
+      stClue('paws','Tiny paw prints with a bow','Paw prints, smaller than a conker, with a bow-shaped dent. Whoever it was dresses very smartly.');c1.step=3;saveState();stRefresh();
+      vsay("Correct! The prints lead on, towards the sandy bank. Clue found: tiny paw prints with a bow. Follow the bouncing ! one last time.")})}]);
+  }else{
+    stClue('stone','A warm, humming stone','A small orange stone, warm as toast, humming a little tune. It was left where the paw prints end.');
+    c1.done=true;c1.doneDays=S.days.length;S.embers+=6;saveState();hud();Audio_.fx('fanfare');stRefresh();
+    stReadPages([
+      "In the sand, where the paw prints end, something is humming. A small orange stone, warm as toast. You pick it up. It hums a little tune. (+6 embers.)",
+      `${D} sniffs the stone, sneezes a tiny puff of smoke, and the stone hums LOUDER.`,
+      "Then, from far out across the water, a tiny light blinks three times. And from the dark comes a bark. A very small, very smug bark.",
+      KNUT("I would tell you who it was, but my tea has gone cold and I am NOT going on. Come back soon for Chapter 2: Suspect Number One. (Chapter 2 opens after "+STORY_EVERY+" more days of practice.)")
+    ],()=>stRefresh());
+  }
+}
+
+/* ---- the book: chapters and the clue book ---- */
+const CHAPTERS=[CH1];
+function openStory(){
+  const s=stSt(); if(!s.seen){s.seen=true;saveState();hud&&hud()}
+  const c1=stCh(1);
+  if(!c1){ stReadPages(CH1.intro,()=>{s.ch[1]={step:0,done:false};saveState();stRefresh();vsay("Chapter 1 has begun! Find the bouncing ! on the island and tap it. Open the Story book any time from the Story button.")}); return }
+  const btns=[];
+  if(!c1.done) btns.push({label:'Chapter 1: '+CH1.title+' (in progress)',fn:()=>vsay("Chapter 1: "+CH1.title+". Look for the bouncing ! on the island and tap it to find the next clue.")});
+  else btns.push({label:'Chapter 1: '+CH1.title+' (finished)',fn:()=>stReadPages(CH1.intro.slice(0,1).concat(["You found the empty tin, the crumb trail, the tiny paw prints and a warm, humming stone. And out in the dark, someone barked."]))});
+  btns.push({label:'Clue Book ('+s.clues.length+')',fn:openClues});
+  btns.push({label:'Close'});
+  let t="Old Knut's Book of Tall Tales.";
+  if(c1.done){ const o=stOpens(2); t+=` Chapter 2: Suspect Number One is being written. It will open in a coming update, after ${STORY_EVERY} practised days.`; }
+  vsay(t,btns);
+}
+function openClues(){
+  const s=stSt();
+  if(!s.clues.length){vsay("Your Clue Book is empty. Start the story and every clue you find goes in here.");return}
+  openSheet(`<div class="row spread"><h2>Clue Book</h2><button class="btn btn-ghost btn-sm" data-act="close">${ic('close',18)} Close</button></div>
+   <p class="note">Every clue you have found as the island's detective.</p>
+   ${s.clues.map((c,i)=>`<div class="box"><h3>${i+1}. ${esc(c.title)}</h3><p class="note">${esc(c.text)}</p></div>`).join('')}`);
+}
+const storyNew=()=>!stSt().seen;

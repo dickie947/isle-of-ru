@@ -391,9 +391,10 @@ button.hero-dragon{display:block;background:none;border:0}
 .cfm .btn{min-height:52px;font-size:1.1rem}.cfm .btn[data-cfm="no"]{background:#fff6dc!important;color:#2b1d10!important;border:3px solid #6a4a28!important}
 .cfm .btn[data-cfm="yes"]{background:linear-gradient(180deg,#2c6a72,#22545b)!important;color:#fff!important;border:3px solid #16393f!important}
 /* every in-game button uses the same clear teal look as the dialogue buttons, in light or dark mode */
-#vdlg .btn,#vdlg .btn-primary,.vq-in .btn,.vq-in .vq-o,.vq-act .btn,.vq-act .btn-primary,.vchip.vmap,#vq .btn{background:linear-gradient(180deg,#2c6a72,#22545b)!important;color:#fff!important;border-color:#16393f!important;text-shadow:0 1px 0 rgba(0,0,0,.25)}
-#vdlg .btn:hover,.vq-in .btn:hover,.vchip.vmap:hover{filter:brightness(1.08)}
+#vdlg .btn,#vdlg .btn-primary,.vq-in .btn,.vq-in .vq-o,.vq-act .btn,.vq-act .btn-primary,.vchip.vmap,.vchip.vstory,#vq .btn{background:linear-gradient(180deg,#2c6a72,#22545b)!important;color:#fff!important;border-color:#16393f!important;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+#vdlg .btn:hover,.vq-in .btn:hover,.vchip.vmap:hover,.vchip.vstory:hover{filter:brightness(1.08)}
 .vq-in .vq-o.wrong{opacity:.4}
+.vstory{position:absolute;right:14px;bottom:calc(150px + env(safe-area-inset-bottom));z-index:3;cursor:pointer;color:#fff}.vstory.new{animation:stpulse 1.6s ease-in-out infinite}@keyframes stpulse{50%{box-shadow:0 0 0 6px rgba(255,214,90,.55),0 3px 0 #3d2714}}@media(prefers-reduced-motion:reduce){.vstory.new{animation:none;outline:3px solid #ffd23f}}
 .vmap{position:absolute;right:14px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:3;cursor:pointer;color:#2b1d10}.vmap[hidden]{display:none}
 .mapcard.locked{opacity:.75}
 @media (max-width:700px){.vmap{bottom:calc(84px + env(safe-area-inset-bottom))}}

@@ -216,3 +216,9 @@ Secret behind it all: the "crimes" are Crumpet quietly collecting the six pieces
 - Framework (Story book screen, Clue Book, Case Board, chapter unlock rule, read-aloud test): one update.
 - Writing and quests: about 2 or 3 chapters per update. Chapters 1 to 3 first, so the first shared finale (ch 3) lands early.
 - Update 4 (28 Nov) is already heavy (garden and farm, Snowcap Isle, residents). Options for the story's start: (a) framework plus chapters 1 and 2 in Update 4 and push garden and farm back a week; (b) keep Update 4 as is and start the story in Update 5. Richard to choose.
+
+## Story status (22 Nov, version 2.3.0, special update)
+- Built: the Story button (bottom right of the island, pulses until first opened), Old Knut's Book of Tall Tales, the Clue Book, and Chapter 1 "The Biscuit Tin Is Empty" (opens straight away). Chapter 1 is a trail of four spots on the home island (empty tin, crumb trail, paw prints, warm stone), each marked by a bouncing "!" when it is next. Three small clue puzzles (add, subtract, number pattern) pitched by how much the child has practised, multiple choice with counters, unlimited tries, no penalty. Finishing gives 4 clues in the Clue Book and 6 embers, then the cliffhanger.
+- Story progress is saved per child (own save slot). Chapter 2 opens after 4 more practised days once it is written; not yet built.
+- Not yet built: shared Case Board (first needed for chapter 3), read-aloud button, chapters 2 onwards.
+- Update 4 (28 Nov) keeps its scope (garden and farm, Snowcap Isle, residents) and adds Chapter 2.

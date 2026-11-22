@@ -74,6 +74,7 @@ function buildObjects(){
   if(own('jetty')){addObj(SPR.dock,31.25,21,2,0,{under:true});addObj(SPR.ship,35.3,24.9,90,128,{ship:true});block([[31,25],[32,25],[30,24],[33,24]],MSG.ship);addObj(SPR.fishpost,32.5,24.55,23,56,{});block([[32,24]],'A bucket and a fishing rod.','use:jetty');hitArea(32,24,[[0,-1],[0,-2],[-1,0],[1,0],[0,1]])}else plot('jetty');
   if(own('tower')){addObj(SPR.tower,36,9.95,60,176,{});block([[35,9],[36,9]],MSG.tower,'use:tower');hitArea(35,9,[[0,-1],[0,-2],[-1,0]]);hitArea(36,9,[[0,-1],[0,-2],[1,0],[0,1]])}else plot('tower');
   buildSite();
+  storySpots();
   if(own('garden'))addObj(SPR.garden,16.4,16.7,48,34,{under:true});else plot('garden');
   if(own('fountain')){addObj(SPR.fountain,19.5,16.2,45,76,{sc:.9});block([[19,15]],"A little fountain. The water sparkles.",'use:fountain');hitArea(19,15,[[0,-1],[-1,0],[1,0],[0,1]])}else plot('fountain');
   if(own('windmill')){addObj(SPR.windmill,6.6,15.5,50,150,{sc:.9});block([[6,15]],"The windmill creaks round and round.")}else plot('windmill');
@@ -167,6 +168,7 @@ function runAct(a){
   if(a==='use:jetty')return fishJetty();
   if(a==='use:lighthouse')return useLighthouse();
   if(a==='use:longship')return useLongship();
+  if(a.startsWith('story:'))return storyAct(+a.slice(6));
   if(a.startsWith('use:'))return useItem(a.slice(4));
   if(a==='nest')return openNest();
   if(a==='stall')return openShop();
@@ -450,6 +452,7 @@ function markup(){
       <button class="btn btn-icon btn-sm" data-act="music" id="vmus" aria-label="Music" style="background:var(--surface)"></button>
       <button class="btn btn-icon btn-sm hold" id="holdgu" data-act="gate" aria-label="Grown-ups. Tap, then answer a question, or hold to open" style="background:var(--surface)">${ic('lock',18)}<i></i></button>
     </div></div>
+   <button class="vchip vstory" id="vstory" data-act="vstory">Story</button>
    <button class="vchip vmap" id="vmap" data-act="vmap">Map</button>
    <button class="vchip vfly" id="vfly" data-act="vfly">Fly</button>
    <div id="vpad"><button data-d="u" aria-label="Up">&#9650;</button><button data-d="l" aria-label="Left">&#9664;</button><button data-d="r" aria-label="Right">&#9654;</button><button data-d="d" aria-label="Down">&#9660;</button></div>
@@ -470,6 +473,7 @@ function hud(){
   const ex=shardState();
   q.querySelector('span').textContent=!dn?(d.hatched?"Today: practice at the school house":"Today: practice to hatch your egg"):(`Practice done. Shards found: ${ex.found.length} of ${SHARDS}`);
   $('#vschool').hidden=dn;
+  const sb=$('#vstory');if(sb)sb.classList.toggle('new',storyNew());
   const mp=$('#vmap');if(mp)mp.hidden=!(dn&&d.hatched);
   const f=$('#vfly');f.classList.toggle('locked',!dn||!d.hatched);f.classList.toggle('up',G.mode!=='ground');
   f.textContent=!d.hatched?'Fly (after hatching)':!dn?'Fly (after practice)':G.mode==='ground'?'Fly':'Land';
@@ -784,7 +788,7 @@ function frame(now){
 const idle=()=>!!(VS.ready&&!G.modal&&!overlayOpen()&&G.mode==='ground'&&!P.moving&&!P.queue.length&&!typing&&!($('#vq')&&!$('#vq').hidden));
 const busy=()=>!!(overlayOpen()||($('#vq')&&!$('#vq').hidden));
 function yawn(){if(screen!=='village')return;vtoast(`${S.dragon.name} yawns and stretches. Getting sleepy...`,4200);Audio_.fx('soft');VS.zT=0}
-return {warp:(x,y)=>{const [wx,wy]=nearestWalkable(x,y);P.x=wx;P.y=wy;Dg.x=wx-1;Dg.y=wy;Dg.trail=[];cam.init=false;VS.pos={x:P.x,y:P.y,dir:P.dir}},scan:()=>{const r=[];for(let j=4;j<28;j++){let s="";for(let i=0;i<42;i++){s+=blocked[j][i]?"#":(landV(i+.5,j+.5)>.05?".":" ")}r.push(String(j).padStart(2)+" "+s)}return r.join("\n")},sprDebug:(pose,prop)=>({m:millieSprite(pose||"sit",prop===undefined?0:prop),h:henSprite(0),h2:henSprite(1)}),show,preload,refresh,reset,idle,busy,yawn,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
+return {openStory,warp:(x,y)=>{const [wx,wy]=nearestWalkable(x,y);P.x=wx;P.y=wy;Dg.x=wx-1;Dg.y=wy;Dg.trail=[];cam.init=false;VS.pos={x:P.x,y:P.y,dir:P.dir}},scan:()=>{const r=[];for(let j=4;j<28;j++){let s="";for(let i=0;i<42;i++){s+=blocked[j][i]?"#":(landV(i+.5,j+.5)>.05?".":" ")}r.push(String(j).padStart(2)+" "+s)}return r.join("\n")},sprDebug:(pose,prop)=>({m:millieSprite(pose||"sit",prop===undefined?0:prop),h:henSprite(0),h2:henSprite(1)}),show,preload,refresh,reset,idle,busy,yawn,feedTime,craftPuzzle,drill,travelTo,openMap,activate,ISLES,isleStatus,zone:()=>Z,heroPic,hud,onKey,onKeyUp,toggleFly,goToSchool,
   state:{G,P,Dg,VS,OBJ,TREES,notes,acts,blocked,walk,cam,held},
   setHour:h=>{VS.hour=h},setPos:(x,y)=>{P.x=x+.5;P.y=y+.5;Dg.x=P.x-1;Dg.y=P.y;Dg.trail=[]},
   okGround,bfs,ptile,tapTile:doTapTile,say:vsay,shards:()=>VS.shards,collectAt,runAct,
