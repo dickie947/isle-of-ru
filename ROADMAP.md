@@ -175,3 +175,44 @@ Two new shop items beside the existing Millie and hen outfits: a mini Viking hel
 - Check-up mode: started by a grown-up from Grown-ups > This week. About 8 mixed questions from facts already practised, no embers, no streak, never changes the practice boxes; the child sees only a thank-you.
 - Parents' summary: Grown-ups > This week lists every player on the device: days practised in the last 7, what they are working on, facts secure, calm-start time, how hard moments went, and the latest check-up with any weak skills.
 - Draw fix (2.1.1): one bad picture can no longer hide the character and objects.
+
+## The story: "Crumpet and the Case of the Missing Warm Stones" (requested 22 Nov)
+Agreed 22 Nov: ten chapters of cosy caper (Part 1), ending on a cliffhanger that opens an epic Nordic quest (Part 2). Exciting, a cliffhanger at the end of every chapter, child friendly, in the spirit of Cressida Cowell's dragon and wizard books (funny narrator, footnotes, wild Viking names, an underdog hero, dragons with attitude, friendship over fighting). Everything is original: no characters, places or lines from her books.
+
+### Rules (so the story never adds pressure)
+- A chapter opens after about every 4 practised days (tune after seeing the real pace), never faster than one a day. Wrong answers, slow answers and missed days never block or undo it.
+- Each child reads their own copy and has a saved Clue Book. Clues either child finds are pinned to a shared Case Board in the family record, as with the builds and gifts. Three chapters (3, 6, 9) have a shared finale that needs a clue from each child.
+- Maths in a quest comes from skills that child already has secure (a little stretch at most), with the counting blocks always available, unlimited tries, and hints that never cost anything. No timers, no "failed" screen.
+- Reading: short pages (about 60 words), large text, and an optional read-aloud button using the iPad's built-in voice (to test on Safari first).
+- Gentle peril only. Nobody is hurt, the villain can be won round, the fears of Daddy, Mummy and Uncle Andy stay funny.
+- Each chapter = opening page (the narrator) + 2 or 3 quest steps using things already in the game (dig, hide and seek, fishing, shared builds, the islands) + a clue puzzle + a cliffhanger page.
+
+### Voice and cast
+- **Narrator: Old Knut the Unreliable**, who tells the tale from his Book of Tall Tales, keeps correcting himself in footnotes ("*There were NOT forty geese. There were four. Possibly five.*") and breaks off at the exciting bit.
+- **The child** is the island's new Detective, with their dragon as sidekick. Knut's Rules of Detecting appear as short lists ("Rule 1: Never trust a dog wearing a tiny hat").
+- **Existing cast**: Crumpet (prime suspect, criminal mastermind), Uncle Andy (gives alibis without noticing), Daddy (tea, biscuits, scared of cows), Mummy (tiramisu, cheese, scared of deer, round door handles), Millie, the four hens.
+- **New**: Grimble the gull, a gossiping witness who gets every detail slightly wrong but always the last one right; Vorgrim the Frostwyrm, asleep under Snowcap Isle (seen only at the end of Part 1).
+- Calling card at every crime: a tiny paw print, a bite-sized bow, and a warm, humming orange stone swapped in for what was taken.
+
+### Part 1: ten chapters (the caper)
+Secret behind it all: the "crimes" are Crumpet quietly collecting the six pieces of the **Ember Crown**, which were hidden around the islands long ago. He is not stealing for himself. He is keeping them safe from the Frostwyrm waking, and he needs kind Uncle Andy (and a boat) to do it.
+| Ch | Title (working) | What happens | Quest uses | Cliffhanger |
+|---|---|---|---|---|
+| 1 | The Biscuit Tin Is Empty | Daddy's secret biscuit stash has vanished. Crumb trail, paw prints, a warm orange stone in the sand. | Hide-and-seek style clues, digging | The trail ends at the jetty, where a boat is missing and the lighthouse lamp has switched itself on, pointing at the sea. |
+| 2 | Suspect Number One | Everyone blames cows, deer or geese. Uncle Andy swears Crumpet was in bed all night. Grimble the gull saw "a small furry thing in a hat". | Counting clues, comparing quantities | Uncle Andy's alibi photo shows Crumpet in bed, but the bed is a pillow wearing a tiny hat. |
+| 3 | The Cheese Cellar Job (shared finale) | Mummy's tiramisu and cheese go next. One child finds the trail, the other the lock. Together they open the cellar. | Number-door puzzle, both children's clues | The cellar is empty except for a note: "Thank you for the cheese. Do not follow me." Signed with a paw print. |
+| 4 | Following Footprints | The paw prints lead across the island to a place no one has looked before. | Digging, mapping, simple routes | A tunnel under the lighthouse, and from inside it, the sound of a very small dog humming a sea shanty. |
+| 5 | The Secret Lair | Crumpet's lair: maps, a tiny desk, shelves of labelled stones. He is gone, but his plan is on the table. | Sorting and patterns | The map shows six stones. Four are crossed out. Two have a snowflake beside them. |
+| 6 | The Longship Sails (shared finale) | The mended longship (shared build) is needed to chase him. Uncle Andy is "only coming to carry the picnic". | Longship build, fishing, number line voyage | Halfway across, fog rolls in and a lantern ahead goes out, one light at a time. |
+| 7 | Snowcap Mystery | Snowcap Isle's penguin keeper has seen "a dog in a scarf". The stones are warm because something under the mountain is cold. | Island resident quest, counting in steps | Footprints in the snow stop at a door nobody built. |
+| 8 | Crumpet Confesses (nearly) | Cornered at last. Crumpet makes his case: he is not the thief, he is the guard. Uncle Andy faints from the cuteness of it. | Logic clues, who-said-what | Crumpet whispers "It is already waking" and the ground hums. |
+| 9 | Five Stones and a Problem (shared finale) | The children bring their clues together to find the sixth stone, hidden in plain sight in Daddy's tea caddy. | Both children's clues, a gentle two-step puzzle | Six stones join into a crown-shaped key and the sea turns white. |
+| 10 | The Mountain Opens One Eye | The crown-key hums and Snowcap's mountain cracks. A huge, sleepy, icy-blue eye looks out. | A short celebration quest and a feast | The eye blinks, a voice booms "WHO HAS WOKEN ME?", and the book closes on the narrator's line: "To be continued. Probably. Knut needs a lie-down." |
+
+### Part 2: the epic quest (outline only, to write after Part 1)
+"The Ember Crown": Vorgrim the Frostwyrm is not a monster, only the loneliest dragon in the world, and the crown is what keeps the long winter away. The children, Crumpet (now a reluctant ally and still a mastermind) and Uncle Andy travel through the four other islands to learn the crown's three rules and win back its lost warmth. Plan: about 12 chapters, one island trial per two chapters (Sunstone Cove, Cinder Peak, the Village Green, Snowcap), each trial tied to the maths that island teaches. It ends with a feast on the home island. Villain won over by friendship, not defeated.
+
+### Delivery plan and effort (decide at the next weekly update)
+- Framework (Story book screen, Clue Book, Case Board, chapter unlock rule, read-aloud test): one update.
+- Writing and quests: about 2 or 3 chapters per update. Chapters 1 to 3 first, so the first shared finale (ch 3) lands early.
+- Update 4 (28 Nov) is already heavy (garden and farm, Snowcap Isle, residents). Options for the story's start: (a) framework plus chapters 1 and 2 in Update 4 and push garden and farm back a week; (b) keep Update 4 as is and start the story in Update 5. Richard to choose.
