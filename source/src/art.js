@@ -36,6 +36,8 @@ const ICONS={
   next:'<path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
   back:'<path d="M19 12H6M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
   fish:'<path d="M3 12c3-5 9-6 13-2l5-3v10l-5-3c-4 4-10 3-13-2z" fill="currentColor"/><circle cx="8" cy="11" r="1.2" fill="#fff"/>',
+  egg:'<path d="M12 2.8c-3.7 0-6.6 5.3-6.6 9.8a6.6 6.6 0 0 0 13.2 0C18.6 8.1 15.7 2.8 12 2.8z" fill="currentColor" stroke="#b39a62" stroke-width="1.3"/><ellipse cx="9.4" cy="9.2" rx="1.5" ry="2.6" fill="#fff" opacity=".75" transform="rotate(18 9.4 9.2)"/>',
+  bun:'<path d="M3.5 16c0-5.6 3.8-9 8.5-9s8.5 3.4 8.5 9z" fill="currentColor" stroke="#a8742f" stroke-width="1.2"/><rect x="3.5" y="15.4" width="17" height="3.4" rx="1.7" fill="currentColor" stroke="#a8742f" stroke-width="1.2"/><path d="M8 11.5c1.4-1.3 2.6 1.3 4 0s2.6 1.3 4 0" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".8"/>',
   berry:'<circle cx="9" cy="14" r="5" fill="currentColor"/><circle cx="16" cy="14.5" r="4.2" fill="currentColor"/><path d="M12 9c0-3 1-4.5 3-5.5" stroke="#3f8f58" stroke-width="2" fill="none" stroke-linecap="round"/>',
   spice:'<path d="M7 9c2-3 7-3 9 0 2 3 0 8-4.5 12C7 17 5 12 7 9z" fill="currentColor"/><path d="M12 6c0-2 1-3 3-3.5" stroke="#3f8f58" stroke-width="2" fill="none" stroke-linecap="round"/>'
 };
@@ -174,8 +176,8 @@ const CATALOG={
     {id:'fish',name:'Silver fish',cost:5,note:'A crunchy snack.',icon:'fish',col:'#6db7d9'},
     {id:'berry',name:'Sun berries',cost:8,note:'Sweet and juicy.',icon:'berry',col:'#c0396b'},
     {id:'spice',name:'Ember pepper',cost:12,note:'Tickles the nose!',icon:'spice',col:'#e4572e'},
-    {id:'bun',name:'Honey bun',cost:0,note:'Baked at the bakery.',icon:'berry',col:'#d9a45a',own:1},
-    {id:'egg',name:'Fresh egg',cost:0,note:'From the chicken coop.',icon:'berry',col:'#f3e6c4',own:1},
+    {id:'bun',name:'Honey bun',cost:0,note:'Baked at the bakery.',icon:'bun',col:'#d9a45a',own:1},
+    {id:'egg',name:'Fresh egg',cost:0,note:'From the chicken coop.',icon:'egg',col:'#f3e6c4',own:1},
     {id:'pudding',name:'Christmas pudding',cost:6,note:'Only at Christmas. Rich and spicy!',icon:'berry',col:'#6b3a2a',event:'xmas'}
   ],
   decor:[
