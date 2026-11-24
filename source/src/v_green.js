@@ -73,7 +73,7 @@ function makeSprites4(){
     c.strokeStyle='#d9d9d9';c.lineWidth=2.4;c.lineCap='round';c.beginPath();c.moveTo(34,70);c.lineTo(46,82);c.stroke();c.strokeStyle='#8a5a30';c.beginPath();c.moveTo(48,68);c.lineTo(36,84);c.stroke();
     c.fillStyle='#c9a46e';[[88,112],[88,106],[90,100]].forEach(([x,y])=>c.fillRect(x,y,20,5));c.fillStyle='#8a5a30';c.fillRect(96,92,4,8)});
   SPR.hen=['#fff','#b8743a','#3a3230'].map((col,v)=>mk(26,26,(c)=>{shadowBlob(c,13,23,8,3,.3);c.fillStyle=col;c.beginPath();c.ellipse(12,15,8,6.4,0,0,6.3);c.fill();c.beginPath();c.moveTo(5,13);c.lineTo(1,8);c.lineTo(7,12);c.closePath();c.fill();c.beginPath();c.arc(18,9,4.4,0,6.3);c.fill();
-    c.fillStyle='#d9342b';c.beginPath();c.arc(17,4.6,1.8,0,6.3);c.arc(19.6,5,1.6,0,6.3);c.fill();c.fillStyle='#f0a030';c.beginPath();c.moveTo(22,9);c.lineTo(26,10.4);c.lineTo(22,11.6);c.closePath();c.fill();c.fillStyle='#111';c.beginPath();c.arc(19.4,8.4,.9,0,6.3);c.fill();
+    c.fillStyle='#d9342b';c.beginPath();c.arc(17,4.6,1.8,0,6.3);c.arc(19.6,5,1.6,0,6.3);c.fill();c.fillStyle='#f0a030';c.beginPath();c.moveTo(22,9);c.lineTo(26,10.4);c.lineTo(22,11.6);c.closePath();c.fill();if(HEN_HEAD[v]){c.fillStyle='#fff';c.beginPath();c.arc(19.4,8.4,1.5,0,6.3);c.fill()}c.fillStyle='#111';c.beginPath();c.arc(19.7,8.4,.9,0,6.3);c.fill();
     c.strokeStyle='#f0a030';c.lineWidth=1.2;c.beginPath();c.moveTo(11,20);c.lineTo(11,24);c.moveTo(15,20);c.lineTo(15,24);c.stroke();if(v===0){c.strokeStyle='rgba(0,0,0,.12)';c.beginPath();c.ellipse(12,15,8,6.4,0,0,6.3);c.stroke()}}));
   SPR.bench=mk(50,36,(c)=>{shadowBlob(c,25,32,20,4,.3);c.fillStyle='#8a5a30';c.fillRect(6,14,38,6);c.fillRect(6,6,38,5);c.fillStyle='#6b4524';c.fillRect(8,20,4,12);c.fillRect(38,20,4,12);c.fillRect(8,4,3,12);c.fillRect(39,4,3,12)});
   SPR.birdhouse=mk(36,72,(c)=>{shadowBlob(c,18,68,10,3,.3);c.fillStyle='#6b4524';c.fillRect(16,28,4,40);c.fillStyle='#d9a45a';c.fillRect(6,12,24,20);c.fillStyle='#b5533a';c.beginPath();c.moveTo(3,13);c.lineTo(18,0);c.lineTo(33,13);c.closePath();c.fill();c.fillStyle='#2a1c12';c.beginPath();c.arc(18,22,4,0,6.3);c.fill()});
@@ -144,10 +144,11 @@ const GREEN_DECOR={pumpkinpatch:{x:13.6,y:15.9,sc:1,k:'decor',ax:46,ay:44,note:'
  cauldron:{x:29.6,y:16.6,sc:1,k:'decor',ax:30,ay:46,note:'A bubbling cauldron. It smells of honey and slightly of socks.'},
  spooktree:{x:38.6,y:13.4,sc:1,k:'decor',ax:46,ay:118,note:'A twisty old tree with a sleepy owl. Hoo goes there?'}};
 HEN_NAMES.length=0;HEN_NAMES.push('Skullcrusher','Hookfang','Channel','Floppsie');
-const HEN_COLS=['#fff','#b8743a','#3a3230','#9aa0aa'];
-const HEN_SPOTS=[[33.4,20.5],[37.3,20.8],[34.9,21.7],[31.9,21.3]];
+const HEN_COLS=['#fff','#b8743a','#3a3230','#7a4a28'];
+const HEN_HEAD=[null,null,null,'#1b1818'];   /* Floppsie: brown with a black head, like the real one */
+const HEN_SPOTS=[[32.9,19.9],[37.3,20.8],[34.9,21.7],[35.4,20.4]];   /* none behind the pines: Floppsie used to stand out of sight */
 const SPCACHE={};
-function drawHen(c,col,v,bow,hat){shadowBlob(c,13,23,8,3,.3);c.fillStyle=col;c.beginPath();c.ellipse(12,15,8,6.4,0,0,6.3);c.fill();c.beginPath();c.moveTo(5,13);c.lineTo(1,8);c.lineTo(7,12);c.closePath();c.fill();c.beginPath();c.arc(18,9,4.4,0,6.3);c.fill();
+function drawHen(c,col,v,bow,hat){shadowBlob(c,13,23,8,3,.3);c.fillStyle=col;c.beginPath();c.ellipse(12,15,8,6.4,0,0,6.3);c.fill();c.beginPath();c.moveTo(5,13);c.lineTo(1,8);c.lineTo(7,12);c.closePath();c.fill();c.fillStyle=HEN_HEAD[v]||col;c.beginPath();c.arc(18,9,4.4,0,6.3);c.fill();
   c.fillStyle='#d9342b';c.beginPath();c.arc(17,4.6,1.8,0,6.3);c.arc(19.6,5,1.6,0,6.3);c.fill();c.fillStyle='#f0a030';c.beginPath();c.moveTo(22,9);c.lineTo(26,10.4);c.lineTo(22,11.6);c.closePath();c.fill();c.fillStyle='#111';c.beginPath();c.arc(19.4,8.4,.9,0,6.3);c.fill();
   c.strokeStyle='#f0a030';c.lineWidth=1.2;c.beginPath();c.moveTo(11,20);c.lineTo(11,24);c.moveTo(15,20);c.lineTo(15,24);c.stroke();if(v===0){c.strokeStyle='rgba(0,0,0,.12)';c.beginPath();c.ellipse(12,15,8,6.4,0,0,6.3);c.stroke()}
   if(bow){c.fillStyle='#ff6fa5';c.beginPath();c.moveTo(14.4,12);c.lineTo(10.8,9.8);c.lineTo(10.8,14.2);c.closePath();c.moveTo(14.4,12);c.lineTo(18,9.8);c.lineTo(18,14.2);c.closePath();c.fill();c.fillStyle='#d93b7a';c.beginPath();c.arc(14.4,12,1.5,0,6.3);c.fill()}
