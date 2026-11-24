@@ -9,10 +9,11 @@ Eight weekly updates from 23 October 2026. Each has one new mini-game for after 
 | 3 | 14 Nov (split agreed 14 Nov; built 14 Nov, version 2.1.0) | Fishing at the jetty | Dragon fishing trips; weekly shared build framework with the lighthouse as week 1; more Drop 2 maths (batch 2); small uses for the text-only items (tower, fountain, statue, campfire, dragon torch, banner); Viking helmets for Millie and the hens |
 | 3b | 21 Nov (built 21 Nov, version 2.2.0; the 20 Nov slot was missed) | (none) | Gift swaps; calm check-up mode and weekly parents' summary (Grown-ups, This week tab); shared build longship repairs (project 2, starts 23 Nov). |
 | 4 | 28 Nov | Garden and farm | Drop 2 island and number-door puzzle; island residents (Snowcap Isle, with Daddy, Uncle Andy and Crumpet) |
-| 5 | 5 Dec | Dragon races | Drop 2 finished; eggs and new dragon species; orders board and two-good storehouse (resource management step 1); first island residents |
-| 6 | 12 Dec | Island shopkeeper | Drop 3 begins; time strand starts (rungs 1 and 2) |
-| 7 | 19 Dec | Build-a-den challenge | Drop 3 maths (more word problems) |
-| 8 | 26 Dec | Sibling riddles | Drop 3 finished; New Year content |
+| 5 | 5 Dec | Builder's Yard (requested 24 Nov by Ruan): earn materials, design your own buildings, boats and forts, share them with your brother or sister | Story Chapter 3 if it fits (see the story section) |
+| 6 | 12 Dec | Dragon races | Drop 2 finished; eggs and new dragon species; orders board and two-good storehouse (resource management step 1, now sharing the materials stock from the Builder's Yard); first island residents |
+| 7 | 19 Dec | Island shopkeeper | Drop 3 begins; time strand starts (rungs 1 and 2) |
+| 8 | 26 Dec | Build-a-den challenge (now built on the Builder's Yard) | Drop 3 maths (more word problems) |
+| 9 | 2 Jan | Sibling riddles | Drop 3 finished; New Year content |
 
 ## Rules
 - Calm: no timers, no losing, wrong answers never cost embers.
@@ -135,7 +136,7 @@ Decided 8 Nov: cows, deer and geese appear as animals on the islands, and the ch
 
 ## Resource management with simple maths (requested 1 Nov; long term)
 Goal: bring word-style problems into a practical setting. Rules: nothing ever runs out, spoils or blocks the fun; wrong answers cost nothing; the daily part is short enough to sit inside the 25-minute allowance; quantities shown as pictures and counters, not paragraphs of text (reading is a second hurdle for Ruan); a "show me" button lays out the counters, and a hint comes after a couple of tries so the answer is not found by guessing.
-Step 1, Update 5 (5 Dec): an orders board at the market. Each day it shows 3 orders as pictures with counters (for example 4 fish and 3 eggs). Check the storehouse, work out "have 9, need 14, how many more?", collect the rest, hand in for embers. A two-good storehouse (fish and eggs), using add and subtract to 20 only.
+Step 1, Update 6 (12 Dec, moved back a week by the Builder's Yard): an orders board at the market. Each day it shows 3 orders as pictures with counters (for example 4 fish and 3 eggs). Check the storehouse, work out "have 9, need 14, how many more?", collect the rest, hand in for embers. A two-good storehouse (fish and eggs), using add and subtract to 20 only.
 Later steps, matched to the maths plan:
 - Dragon pantry: "Ember eats 2 fish a day, we have 12, how many days?" (division; Drop 2). The dragon never goes hungry.
 - Bakery recipes that scale: doubling and times tables (Drop 2). The bakery already takes orders.
@@ -222,3 +223,31 @@ Secret behind it all: the "crimes" are Crumpet quietly collecting the six pieces
 - Story progress is saved per child (own save slot). Chapter 2 opens after 4 more practised days once it is written; not yet built.
 - Not yet built: shared Case Board (first needed for chapter 3), read-aloud button, chapters 2 onwards.
 - Update 4 (28 Nov) keeps its scope (garden and farm, Snowcap Isle, residents) and adds Chapter 2.
+
+
+## Builder's Yard (requested by Ruan 24 Nov; Update 5, 5 Dec)
+Ruan's idea: earn building materials such as wood and bricks, then design and build your own buildings, boats and forts (and walls). Merryn gets the same feature, and the two should be able to see and share what they make. Agreed 24 Nov: design-first (not collecting), both children, sharing, Update 5.
+
+### Materials
+- Earned by playing, not bought with embers, so building never competes with feeding the dragon: planks (wood piles / chopping), stone and clay bricks (digging), straw and rope (hens and the garden once it arrives), cloth for sails (a small daily gift). A daily cap per material so nothing runs away. Practised-day bonus; no timers, no penalty for missed days.
+- One shared "materials stock" per child, also used by the orders board and storehouse in Update 6 so the two systems are one economy.
+
+### The build area
+- A fenced Builder's Yard on the home island (own tile area), away from paths, quest spots and Millie's hiding places. Nothing in the yard can block the way anywhere.
+- "Build" button opens a build screen: a grid of the yard, a piece tray, tap to place, tap to remove (with undo, and nothing deleted without a clear "Put it back in your stock"). Pieces snap to tiles.
+- Starter kit (about 12 pieces): wooden wall, stone wall, gate, door, window, floor, roof, tower top, fence, mast, sail, hull. Enough to make a house, a fort with towers and a gate, or a small boat. More pieces arrive in later updates.
+- A piece costs materials; pulling it down returns everything. Saved per child.
+
+### Sharing
+- "Show my build": publishes a small snapshot (just piece types and positions, a few KB) to the shared family record, with a name the child types or picks from a list (to keep it simple on a touchscreen). The other child sees it in a Gallery (browse Ruan's Fort, Merryn's Castle), and can visit it as a view-only picture on their island's gallery board.
+- "Build this too": copies a shared design into their own yard if they have the materials. They can change it freely; the original stays untouched.
+- Nobody can edit the other's build. Kind reactions only (a small set of stickers), no comments.
+
+### Maths (optional, never a gate)
+- Piece costs are small numbers with counters. A quick "Do I have enough?" check (have 9 planks, a wall needs 4, how many walls?) with the counting blocks always available. The yard also feeds the Build-a-den challenge later.
+
+### Risks and decisions
+- Touch accuracy: big tap targets, generous snapping, undo and a confirm on mass-clear.
+- Storage: designs capped at a size limit per child; snapshot sizes kept tiny.
+- Build effort: roughly one full update; keep the starter kit small and do not add more pieces until it has been played.
+- Chapter 3 of the story (shared finale, needs the Case Board) also lands in this window; to decide next Friday whether it goes in Update 5 or a small mid-week update.
