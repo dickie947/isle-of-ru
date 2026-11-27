@@ -146,7 +146,7 @@ const GREEN_DECOR={pumpkinpatch:{x:13.6,y:15.9,sc:1,k:'decor',ax:46,ay:44,note:'
 HEN_NAMES.length=0;HEN_NAMES.push('Skullcrusher','Hookfang','Channel','Floppsie');
 const HEN_COLS=['#fff','#b8743a','#3a3230','#7a4a28'];
 const HEN_HEAD=[null,null,null,'#1b1818'];   /* Floppsie: brown with a black head, like the real one */
-const HEN_SPOTS=[[32.9,19.9],[37.3,20.8],[34.9,21.7],[35.4,20.4]];   /* none behind the pines: Floppsie used to stand out of sight */
+const HEN_SPOTS=[[32.9,19.9],[36.3,19.9],[34.9,21.7],[35.4,20.4]];   /* none behind the pines: Floppsie used to stand out of sight */
 const SPCACHE={};
 function drawHen(c,col,v,bow,hat){shadowBlob(c,13,23,8,3,.3);c.fillStyle=col;c.beginPath();c.ellipse(12,15,8,6.4,0,0,6.3);c.fill();c.beginPath();c.moveTo(5,13);c.lineTo(1,8);c.lineTo(7,12);c.closePath();c.fill();c.fillStyle=HEN_HEAD[v]||col;c.beginPath();c.arc(18,9,4.4,0,6.3);c.fill();
   c.fillStyle='#d9342b';c.beginPath();c.arc(17,4.6,1.8,0,6.3);c.arc(19.6,5,1.6,0,6.3);c.fill();c.fillStyle='#f0a030';c.beginPath();c.moveTo(22,9);c.lineTo(26,10.4);c.lineTo(22,11.6);c.closePath();c.fill();c.fillStyle='#111';c.beginPath();c.arc(19.4,8.4,.9,0,6.3);c.fill();

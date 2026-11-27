@@ -23,17 +23,4 @@ const {open,create,sleep}=require('./th.js');
  console.log('milk',await page.evaluate(()=>EmberIsle.state().inv.milk));
  await page.evaluate(()=>EmberIsle.Village.runAct('farm'));await sleep(1500);console.log('farm again:',(await say()).slice(0,70));await click('OK').catch(()=>{});
  // story chapter 2 : opens after 4 days since ch1 done (days.length 5 >= 4)
- await page.click('#vstory');await sleep(500);await waitBtns();console.log('book:',await say(),await page.evaluate(()=>[...document.querySelectorAll('#vdbtn button')].map(x=>x.innerText)));
- await click('Chapter 2');for(let i=0;i<3;i++){await waitBtns();console.log('intro',i+1,(await say()).slice(0,60));await click(i<2?'Turn':'On we go')}
- await waitBtns();await click('OK');console.log('ch2',JSON.stringify(await page.evaluate(()=>EmberIsle.state().story.ch[2])));
- await page.evaluate(()=>EmberIsle.Village.warp(20,15.5));await sleep(900);
- const spots=[[13,14],[30,14],[26,12]];
- for(let i=0;i<3;i++){
-   await page.evaluate(([x,y,k])=>EmberIsle.Village.warp(x+(k===1?-2.2:-2.4),y+1.5),[...spots[i],i]);await sleep(900);await shot('u4_c2_'+i);
-   await page.evaluate((i)=>EmberIsle.Village.runAct('story:2:'+i),i);await sleep(1500);console.log('spot',i,(await say()).slice(0,80));
-   await click(['Listen carefully','Count the hoofprints','Read the numbers'][i]);await solve('c2s'+i);
-   if(i<2){await click('OK')}else{for(let p=0;p<3;p++){await waitBtns();console.log('  end',p+1,(await say()).slice(0,70));await click(p<2?'Turn':'On we go')}}
- }
- console.log('story',JSON.stringify(await page.evaluate(()=>{const s=EmberIsle.state().story;return {ch2:s.ch[2],clues:s.clues.length}})),'embers',await page.evaluate(()=>EmberIsle.state().embers));
- await page.click('#vstory');await sleep(400);await waitBtns();console.log('book now:',await say(),await page.evaluate(()=>[...document.querySelectorAll('#vdbtn button')].map(x=>x.innerText)));
  console.log('errs',JSON.stringify(errs));await b.close()})();
