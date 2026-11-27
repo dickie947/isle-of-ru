@@ -17,8 +17,8 @@ const {open,create,sleep}=require('./th.js');
  for(let i=0;i<4;i++){
    await page.evaluate(([x,y])=>{EmberIsle.Village.warp(x,y+1.6)},spots[i]);await sleep(900);await shot('st_spot'+i);
    // try later spot first on step 0 to test the hint
-   if(i===0){await page.evaluate(()=>EmberIsle.Village.runAct('story:2'));await sleep(1200);console.log('too early:',await say());await click('OK');}
-   await page.evaluate((i)=>EmberIsle.Village.runAct('story:'+i),i);await sleep(1500);
+   if(i===0){await page.evaluate(()=>EmberIsle.Village.runAct('story:1:2'));await sleep(1200);console.log('too early:',await say());await click('OK');}
+   await page.evaluate((i)=>EmberIsle.Village.runAct('story:1:'+i),i);await sleep(1500);
    console.log('spot',i,(await say()).slice(0,90));
    if(i<3){await click(['Count them','Count the crumbs','Read the numbers'][i]);await sleep(300);await waitBtns();await sleep(200);
      // wrong answer first

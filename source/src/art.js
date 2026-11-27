@@ -36,6 +36,8 @@ const ICONS={
   next:'<path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
   back:'<path d="M19 12H6M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
   fish:'<path d="M3 12c3-5 9-6 13-2l5-3v10l-5-3c-4 4-10 3-13-2z" fill="currentColor"/><circle cx="8" cy="11" r="1.2" fill="#fff"/>',
+  honey:'<rect x="6" y="9" width="12" height="11" rx="3.2" fill="currentColor" stroke="#8a5a10" stroke-width="1.2"/><rect x="8" y="5" width="8" height="4" rx="1.2" fill="#b8742a" stroke="#8a5a10" stroke-width="1"/><path d="M8.5 14c1.2-1 2.2 1 3.5 0s2.3 1 3.5 0" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".75"/>',
+  milk:'<path d="M9.5 3.4h5V6l2.2 3.2V19.5a1.6 1.6 0 0 1-1.6 1.6H8.9a1.6 1.6 0 0 1-1.6-1.6V9.2L9.5 6z" fill="currentColor" stroke="#8aa0b5" stroke-width="1.3"/><rect x="9.2" y="2.4" width="5.6" height="1.8" rx=".6" fill="#8aa0b5"/><rect x="8.6" y="12" width="6.8" height="4.6" rx="1" fill="#cfe3f5" opacity=".9"/>',
   egg:'<path d="M12 2.8c-3.7 0-6.6 5.3-6.6 9.8a6.6 6.6 0 0 0 13.2 0C18.6 8.1 15.7 2.8 12 2.8z" fill="currentColor" stroke="#b39a62" stroke-width="1.3"/><ellipse cx="9.4" cy="9.2" rx="1.5" ry="2.6" fill="#fff" opacity=".75" transform="rotate(18 9.4 9.2)"/>',
   bun:'<path d="M3.5 16c0-5.6 3.8-9 8.5-9s8.5 3.4 8.5 9z" fill="currentColor" stroke="#a8742f" stroke-width="1.2"/><rect x="3.5" y="15.4" width="17" height="3.4" rx="1.7" fill="currentColor" stroke="#a8742f" stroke-width="1.2"/><path d="M8 11.5c1.4-1.3 2.6 1.3 4 0s2.6 1.3 4 0" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".8"/>',
   berry:'<circle cx="9" cy="14" r="5" fill="currentColor"/><circle cx="16" cy="14.5" r="4.2" fill="currentColor"/><path d="M12 9c0-3 1-4.5 3-5.5" stroke="#3f8f58" stroke-width="2" fill="none" stroke-linecap="round"/>',
@@ -178,6 +180,8 @@ const CATALOG={
     {id:'spice',name:'Ember pepper',cost:12,note:'Tickles the nose!',icon:'spice',col:'#e4572e'},
     {id:'bun',name:'Honey bun',cost:0,note:'Baked at the bakery.',icon:'bun',col:'#d9a45a',own:1},
     {id:'egg',name:'Fresh egg',cost:0,note:'From the chicken coop.',icon:'egg',col:'#f3e6c4',own:1},
+    {id:'honey',name:'Honey jar',cost:0,note:'From the flower garden.',icon:'honey',col:'#e0a21f',own:1},
+    {id:'milk',name:'Fresh milk',cost:0,note:'From the cows.',icon:'milk',col:'#f4f1e6',own:1},
     {id:'pudding',name:'Christmas pudding',cost:6,note:'Only at Christmas. Rich and spicy!',icon:'berry',col:'#6b3a2a',event:'xmas'}
   ],
   decor:[

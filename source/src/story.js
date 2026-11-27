@@ -37,37 +37,46 @@ SPR.stMark=mk(24,32,c=>{c.fillStyle='#ffd23f';c.strokeStyle='#8a5a10';c.lineWidt
   c.fillStyle='#3a2410';c.fillRect(10.4,5,3.2,9);c.beginPath();c.arc(12,18,1.9,0,6.3);c.fill();
   c.fillStyle='#ffd23f';c.beginPath();c.moveTo(8,21);c.lineTo(12,28);c.lineTo(16,21);c.closePath();c.fill();c.strokeStyle='#8a5a10';c.stroke()});
 
-/* ---- Chapter 1: The Biscuit Tin Is Empty ---- */
-const KNUT=t=>'Old Knut: '+t;
-const CH1={
-  title:'The Biscuit Tin Is Empty',
-  intro:[
-   KNUT("Welcome, brave detective! I am Old Knut the Unreliable, and this is my Book of Tall Tales. Every word is true. (Most words. Some words. A few.) Our story begins on the Isle of Ru, on an ordinary morning, when something EXTRAORDINARY happened to a biscuit tin."),
-   KNUT("The tin belonged to Daddy. Daddy takes tea very seriously. He takes biscuits even more seriously. He hid them in a secret place that nobody knew about, except the hens, the gulls and everybody. Knut's Rule of Detecting Number 1: a secret that everybody knows is only a surprise."),
-   "Daddy: \"The tin is EMPTY! I am being extremely serious.\" (A crumb fell off his chin.) \"Detective, find the biscuit thief! Look for the bouncing ! on the island."
-  ],
-  /* spots are tiles on the home island; each step shows its marker only when it is next */
-  spots:[{x:24,y:14,spr:"stTin",ax:23,ay:40,cx:24.5,cy:14.95},{x:23,y:17,spr:"stCrumbs",ax:24,ay:20,cx:23.5,cy:17.9,sc:1.5},{x:21,y:18,spr:'stPaws',ax:26,ay:24,cx:21.5,cy:18.9},{x:18,y:21,spr:'stStone',ax:20,ay:30,cx:18.5,cy:21.9}]
-};
-function stPuzzle(kind,onRight){
+/* ---- chapter 2 sprites ---- */
+SPR.stGull=mk(46,56,c=>{shadowBlob(c,23,50,12,3.5,.3);c.fillStyle='#7a5230';c.fillRect(19,34,8,16);c.fillStyle='#8f6a42';c.fillRect(17,32,12,4);
+  c.fillStyle='#f4f4f0';c.beginPath();c.ellipse(23,24,10,8,0,0,6.3);c.fill();c.beginPath();c.arc(30,15,5.6,0,6.3);c.fill();
+  c.fillStyle='#9aa4b0';c.beginPath();c.moveTo(10,22);c.quadraticCurveTo(22,14,32,26);c.quadraticCurveTo(20,30,10,22);c.fill();
+  c.fillStyle='#f0a030';c.beginPath();c.moveTo(34,14);c.lineTo(42,17);c.lineTo(34,19);c.closePath();c.fill();c.fillStyle='#d9342b';c.fillRect(38,16.5,3,1.6);
+  c.fillStyle='#111';c.beginPath();c.arc(31.5,13.4,1.1,0,6.3);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(31.9,13,.4,0,6.3);c.fill();
+  c.strokeStyle='#f0a030';c.lineWidth=1.4;c.beginPath();c.moveTo(21,31);c.lineTo(21,34);c.moveTo(26,31);c.lineTo(26,34);c.stroke()});
+SPR.stHoof=mk(52,34,c=>{c.fillStyle='rgba(90,60,30,.42)';c.beginPath();c.ellipse(26,20,24,10,0,0,6.3);c.fill();
+  [[10,16],[24,22],[38,15],[44,24]].forEach(([x,y])=>{c.fillStyle='rgba(50,32,16,.7)';c.beginPath();c.ellipse(x-2.2,y,2,3.2,.15,0,6.3);c.fill();c.beginPath();c.ellipse(x+2.2,y,2,3.2,-.15,0,6.3);c.fill()})});
+SPR.stPhoto=mk(54,64,c=>{shadowBlob(c,27,58,14,4,.3);c.fillStyle='#6b4a2a';c.fillRect(24,34,6,24);
+  c.fillStyle='#8f6a42';c.strokeStyle='#4a3018';c.lineWidth=2;c.beginPath();c.rect(5,4,44,36);c.fill();c.stroke();
+  c.fillStyle='#fff8e6';c.fillRect(10,9,34,26);c.fillStyle='#d9a441';c.beginPath();c.ellipse(27,28,13,5,0,0,6.3);c.fill();
+  c.fillStyle='#f2c98a';c.beginPath();c.ellipse(27,23,10,6,0,0,6.3);c.fill();c.fillStyle='#3b2416';c.beginPath();c.arc(23,22,1,0,6.3);c.arc(31,22,1,0,6.3);c.fill();
+  c.fillStyle='#d9342b';c.beginPath();c.moveTo(27,16);c.lineTo(23,13);c.lineTo(23,18);c.closePath();c.moveTo(27,16);c.lineTo(31,13);c.lineTo(31,18);c.closePath();c.fill();
+  c.fillStyle='#ffd23f';c.beginPath();c.arc(8,6,2.4,0,6.3);c.fill()});
+/* ---- puzzles: pitched by how much the child has practised; pictures to count; unlimited tries ---- */
+function stMake(spec){
   const L=stLevel(); let q,ans,opts,show='';
-  if(kind==='add'){
-    const a=L===0?RR(2,5):L===1?RR(5,10):RR(8,20), b=L===0?RR(2,4):L===1?RR(4,9):RR(7,19); ans=a+b;
-    q=`Daddy's tin held ${a} chocolate biscuits and ${b} plain ones. How many biscuits have vanished altogether?`;
-    if(ans<=20) show='🍫'.repeat(a)+'  '+'🍪'.repeat(b);
-    opts=stChoices(ans,L===0?[1,2]:[1,2,10]);
-  }else if(kind==='sub'){
-    const n=L===0?RR(6,9):L===1?RR(12,20):RR(3,5)*10, k=L===0?RR(2,n-3):L===1?RR(4,n-4):RR(1,n/10-1)*10+(L===2?RR(0,4):0); ans=n-k;
-    q=`There are ${n} crumbs in the trail. The thief dropped ${k} on the grass. The rest went along the path. How many went along the path?`;
-    if(n<=20) show='🟤'.repeat(k)+'  '+'⚪'.repeat(n-k);
-    opts=stChoices(ans,L===0?[1,2]:[1,2,10]);
+  const rows=(n,e,per)=>{let t=[];for(let k=0;k<n;k+=per)t.push(e.repeat(Math.min(per,n-k)));return t.join('\n')};
+  if(spec.kind==='add'){
+    const a=L===0?RR(2,5):L===1?RR(5,10):RR(8,20), b=L===0?RR(2,4):L===1?RR(4,9):RR(7,19); ans=a+b; q=spec.q(a,b);
+    if(ans<=20) show=(spec.e[0].repeat(a))+'  '+(spec.e[1].repeat(b)); opts=stChoices(ans,L===0?[1,2]:[1,2,10]);
+  }else if(spec.kind==='sub'){
+    const n=L===0?RR(6,9):L===1?RR(12,20):RR(3,5)*10, k=L===0?RR(2,n-3):L===1?RR(4,n-4):RR(1,n/10-1)*10+(L===2?RR(0,4):0); ans=n-k; q=spec.q(n,k);
+    if(n<=20) show=spec.e[0].repeat(k)+'  '+spec.e[1].repeat(n-k); opts=stChoices(ans,L===0?[1,2]:[1,2,10]);
+  }else if(spec.kind==='cmp'){
+    const a=L===0?RR(5,9):L===1?RR(9,16):RR(20,40), b=L===0?RR(2,a-2):L===1?RR(3,a-3):RR(10,a-4); ans=a-b; q=spec.q(a,b);
+    if(a<=16) show=spec.e[0].repeat(a)+'\n'+spec.e[1].repeat(b); opts=stChoices(ans,L===0?[1,2]:[1,2,10]);
+  }else if(spec.kind==='grp'){
+    const c=spec.perRow||(L===0?RR(2,3):RR(2,5)), r=L===0?RR(2,3):L===1?RR(2,4):RR(3,6); ans=r*c; q=spec.q(r,c);
+    show=Array.from({length:r},()=>spec.e[0].repeat(c)).join('\n'); opts=stChoices(ans,L===0?[1,2]:[c,2,1]);
   }else{
-    const s=L===0?1:[2,5,10][RR(0,2)], st=RR(1,4)*s+(L===0?RR(0,3):0), seq=[0,1,2].map(i=>st+i*s); ans=st+3*s;
-    q=`The tiny paw prints are numbered! They go: ${seq.join(', ')}, ... What number is on the next print?`;
-    opts=stChoices(ans,[s,s*2]);
+    const s=L===0?1:[2,5,10][RR(0,2)], st=RR(1,4)*s+(L===0?RR(0,3):0), seq=[0,1,2].map(i=>st+i*s); ans=st+3*s; q=spec.q(seq); opts=stChoices(ans,[s,s*2]);
   }
-  const ask=(msg)=>vsay((msg?msg+'\n\n':'')+q+(show?'\n'+show:''),opts.map(x=>({label:String(x),fn:()=>{
-    if(x===ans){Audio_.fx('pop');onRight()}
+  return {q,ans,opts,show};
+}
+function stPuzzle(spec,onRight){
+  const p=stMake(spec);
+  const ask=(msg)=>vsay((msg?msg+'\n\n':'')+p.q+(p.show?'\n'+p.show:''),p.opts.map(x=>({label:String(x),fn:()=>{
+    if(x===p.ans){Audio_.fx('pop');onRight()}
     else ask('Not quite. Take your time, you can try as often as you like.')}})));
   ask('');
 }
@@ -75,59 +84,116 @@ function stReadPages(pages,done){const go=i=>vsay(pages[i],[{label:i<pages.lengt
 function stClue(id,title,text){const s=stSt();if(!s.clues.some(c=>c.id===id)){s.clues.push({id,title,text});saveState()}}
 function stRefresh(){Village.refresh&&Village.refresh()}
 
-function storySpots(){
-  const c1=stCh(1); if(!c1||c1.done) return;
-  const sp=CH1.spots, st=Math.min(c1.step||0,3);
-  /* show the places already visited and the next one, with a bouncing marker over the next */
-  sp.forEach((p,i)=>{ if(i>st) return;
-    addObj(SPR[p.spr],p.cx,p.cy,p.ax,p.ay,i===3?{glow:[20,24],glowR:36,glowCol:'255,170,60'}:(p.sc?{sc:p.sc}:{}));
-    block([[p.x,p.y]],null,'story:'+i);hitArea(p.x,p.y,[[0,-1],[0,1],[-1,0],[1,0],[0,-2],[-1,-1],[1,-1]]);
-  });
-  const p=sp[st];addObj(SPR.stMark,p.cx,p.cy-1.1,12,26,{bob:true,glow:[12,12],glowR:26,glowCol:'255,214,90'});
-}
-function storyAct(i){
-  const c1=stCh(1); if(!c1||c1.done) return;
-  const st=c1.step||0, D=stName();
-  if(i<st){ vsay(['The biscuit tin. Still empty. Daddy is still being extremely serious about it.','The crumb trail. Whoever dropped these was small, hungry and in a hurry.','Tiny paw prints, each with a tiny bow-shaped dent. A very stylish thief.'][i]); return }
-  if(i>st){ vsay('Not this one yet. Look for the bouncing ! to find the next clue.'); return }
-  if(i===0){
-    vsay("The biscuit tin is empty, the lid is still warm and there is not one biscuit left. Daddy says: \"There were biscuits in there. MANY biscuits. I counted them. Twice.\"",[{label:'Count them',fn:()=>stPuzzle('add',()=>{
-      stClue('crumbs','The crumb trail','A trail of crumbs leads away from Daddy\'s tin across the grass.');c1.step=1;saveState();stRefresh();
-      vsay("Yes! All gone. Daddy goes pale. Then you spot something: a trail of crumbs leading away across the grass. Clue found: the crumb trail! Follow the bouncing !.")})}]);
-  }else if(i===1){
-    vsay("Crumbs, crumbs and more crumbs. Whoever took the biscuits dropped them as they ran. Let's count them properly.",[{label:'Count the crumbs',fn:()=>stPuzzle('sub',()=>{
-      stClue('small','A small, hungry thief','The crumbs are tiny. The thief is small, and in a very big hurry.');c1.step=2;saveState();stRefresh();
-      vsay("Right! And look how small the crumbs are. Our thief is small, hungry and in a hurry. Clue found! The trail goes on. Follow the bouncing !.")})}]);
-  }else if(i===2){
-    vsay(`Tiny paw prints! Each one has a dent shaped like a little bow. ${D} sniffs them and gives a very suspicious look. Each print has a number scratched beside it.`,[{label:'Read the numbers',fn:()=>stPuzzle('pat',()=>{
-      stClue('paws','Tiny paw prints with a bow','Paw prints, smaller than a conker, with a bow-shaped dent. Whoever it was dresses very smartly.');c1.step=3;saveState();stRefresh();
-      vsay("Correct! The prints lead on, towards the sandy bank. Clue found: tiny paw prints with a bow. Follow the bouncing ! one last time.")})}]);
-  }else{
-    stClue('stone','A warm, humming stone','A small orange stone, warm as toast, humming a little tune. It was left where the paw prints end.');
-    c1.done=true;c1.doneDays=S.days.length;S.embers+=6;saveState();hud();Audio_.fx('fanfare');stRefresh();
-    stReadPages([
+/* ---- chapter data: spots are tiles on the home island, shown one at a time with a bouncing marker over the next ---- */
+const KNUT=t=>'Old Knut: '+t;
+const CH1={n:1,title:'The Biscuit Tin Is Empty',
+  intro:[
+   KNUT("Welcome, brave detective! I am Old Knut the Unreliable, and this is my Book of Tall Tales. Every word is true. (Most words. Some words. A few.) Our story begins on the Isle of Ru, on an ordinary morning, when something EXTRAORDINARY happened to a biscuit tin."),
+   KNUT("The tin belonged to Daddy. Daddy takes tea very seriously. He takes biscuits even more seriously. He hid them in a secret place that nobody knew about, except the hens, the gulls and everybody. Knut's Rule of Detecting Number 1: a secret that everybody knows is only a surprise."),
+   "Daddy: \"The tin is EMPTY! I am being extremely serious.\" (A crumb fell off his chin.) \"Detective, find the biscuit thief!\" Look for the bouncing ! on the island."],
+  spots:[
+   {x:24,y:14,spr:'stTin',ax:23,ay:40,cx:24.5,cy:14.95,
+    seen:'The biscuit tin. Still empty. Daddy is still being extremely serious about it.',
+    look:"The biscuit tin is empty, the lid is still warm and there is not one biscuit left. Daddy says: \"There were biscuits in there. MANY biscuits. I counted them. Twice.\"",btn:'Count them',
+    puz:{kind:'add',e:['🍫','🍪'],q:(a,b)=>`Daddy's tin held ${a} chocolate biscuits and ${b} plain ones. How many biscuits have vanished altogether?`},
+    clue:['crumbs','The crumb trail',"A trail of crumbs leads away from Daddy's tin across the grass."],
+    win:"Yes! All gone. Daddy goes pale. Then you spot something: a trail of crumbs leading away across the grass. Clue found: the crumb trail! Follow the bouncing !."},
+   {x:23,y:17,spr:'stCrumbs',ax:24,ay:20,cx:23.5,cy:17.9,sc:1.5,
+    seen:'The crumb trail. Whoever dropped these was small, hungry and in a hurry.',
+    look:"Crumbs, crumbs and more crumbs. Whoever took the biscuits dropped them as they ran. Let's count them properly.",btn:'Count the crumbs',
+    puz:{kind:'sub',e:['🟤','⚪'],q:(n,k)=>`There are ${n} crumbs in the trail. The thief dropped ${k} on the grass. The rest went along the path. How many went along the path?`},
+    clue:['small','A small, hungry thief','The crumbs are tiny. The thief is small, and in a very big hurry.'],
+    win:"Right! And look how small the crumbs are. Our thief is small, hungry and in a hurry. Clue found! The trail goes on. Follow the bouncing !."},
+   {x:21,y:18,spr:'stPaws',ax:26,ay:24,cx:21.5,cy:18.9,
+    seen:'Tiny paw prints, each with a tiny bow-shaped dent. A very stylish thief.',
+    look:(D)=>`Tiny paw prints! Each one has a dent shaped like a little bow. ${D} sniffs them and gives a very suspicious look. Each print has a number scratched beside it.`,btn:'Read the numbers',
+    puz:{kind:'pat',q:seq=>`The tiny paw prints are numbered! They go: ${seq.join(', ')}, ... What number is on the next print?`},
+    clue:['paws','Tiny paw prints with a bow','Paw prints, smaller than a conker, with a bow-shaped dent. Whoever it was dresses very smartly.'],
+    win:"Correct! The prints lead on, towards the sandy bank. Clue found: tiny paw prints with a bow. Follow the bouncing ! one last time."},
+   {x:18,y:21,spr:'stStone',ax:20,ay:30,cx:18.5,cy:21.9,glow:true,
+    seen:'The warm, humming stone is in your Clue Book.',
+    clue:['stone','A warm, humming stone','A small orange stone, warm as toast, humming a little tune. It was left where the paw prints end.'],
+    end:(D)=>[
       "In the sand, where the paw prints end, something is humming. A small orange stone, warm as toast. You pick it up. It hums a little tune. (+6 embers.)",
       `${D} sniffs the stone, sneezes a tiny puff of smoke, and the stone hums LOUDER.`,
       "Then, from far out across the water, a tiny light blinks three times. And from the dark comes a bark. A very small, very smug bark.",
-      KNUT("I would tell you who it was, but my tea has gone cold and I am NOT going on. Come back soon for Chapter 2: Suspect Number One. (Chapter 2 opens after "+STORY_EVERY+" more days of practice.)")
-    ],()=>stRefresh());
+      KNUT("I would tell you who it was, but my tea has gone cold and I am NOT going on. Come back soon for Chapter 2: Suspect Number One. (Chapter 2 opens after "+STORY_EVERY+" more days of practice.)")]}],
+  recap:["You found the empty tin, the crumb trail, the tiny paw prints and a warm, humming stone. And out in the dark, someone barked."]};
+const CH2={n:2,title:'Suspect Number One',
+  intro:[
+   KNUT("Last time: an empty biscuit tin, a trail of crumbs, tiny paw prints and a stone that hums. Today, every grown-up on Ru has a THEORY."),
+   KNUT("Daddy blames the cows. (Daddy is scared of cows, so he blames them from a very long way away.) Mummy blames the deer. Uncle Andy blames geese. (He is scared of those.) Nobody blames the cutest suspect of all, because Crumpet is SO cute. Knut's Rule of Detecting Number 2: the cuter the suspect, the harder you must look."),
+   KNUT("Grimble the gull saw everything. Grimble the gull always sees everything, slightly wrong. Find the bouncing ! and hear his story.")],
+  spots:[
+   {x:13,y:14,spr:'stGull',ax:23,ay:50,cx:13.5,cy:14.95,
+    seen:'Grimble is still talking. He has now forgotten what he saw, but is very sure about it.',
+    look:"Grimble the gull flaps onto his post. \"I saw EVERYTHING,\" he squawks. \"It was dark. Or foggy. Or I had my eyes shut. But I definitely saw them!\"",btn:'Listen carefully',
+    puz:{kind:'cmp',e:['🐕','🐄'],q:(a,b)=>`Grimble says: "I saw ${a} small furry things and ${b} big hairy ones!" (Knut's footnote: he did NOT.) How many MORE small furry things than big hairy ones did Grimble say he saw?`},
+    clue:['grimble','Grimble the gull saw a small furry thing','Grimble saw a small furry thing wearing a hat. Grimble also once saw a cheese fly, so check everything he says.'],
+    win:"Right! More small furry things than big hairy ones. So the thief was small, not big and hairy. Grimble adds: \"And it was wearing a HAT!\" Clue found. Follow the bouncing !."},
+   {x:30,y:14,spr:"stHoof",ax:26,ay:26,cx:30.5,cy:14.9,
+    seen:'Hoofprints in the mud, nowhere near the biscuit tin. The cows are innocent.',
+    look:(D)=>`Daddy says it was the cows. ${D} checks the cow paddock for evidence. There are lots of muddy hoofprints here, but cows have four legs each.`,btn:'Count the hoofprints',
+    puz:{kind:'grp',perRow:4,e:['🐾'],q:(r,c)=>`There are ${r} cows in the paddock. Each cow has ${c} legs, so each makes ${c} hoofprints. How many hoofprints do ${r} cows make?`},
+    clue:['cows','The cows are innocent','Cows make lots of hoofprints, but there were none near Daddy\'s tin, only tiny paw prints. Daddy is wrong about the cows.'],
+    win:"Yes! And there were NO hoofprints anywhere near Daddy's tin. The cows are innocent. (Daddy will still keep a safe distance from them.) Clue found. Follow the bouncing !."},
+   {x:26,y:12,spr:'stPhoto',ax:27,ay:58,cx:26.5,cy:12.95,glow:false,
+    seen:'Uncle Andy\'s alibi photo, pinned to the board. Something about it is not right.',
+    look:"Uncle Andy has pinned up his alibi: photos of Crumpet fast asleep in bed all night. \"Crumpet NEVER leaves his basket,\" he says proudly. The photos are numbered, but one is smudged.",btn:'Read the numbers',
+    puz:{kind:'pat',q:seq=>`The alibi photos are numbered: ${seq.join(', ')}, ... What number is the next photo?`},
+    clue:['photo','The alibi photo is fake','In Uncle Andy\'s alibi photo, Crumpet is not Crumpet. It is a pillow wearing a tiny hat with a bow.'],
+    end:(D)=>[
+      "Correct! You lean closer to the last photo. There is Crumpet, fast asleep in his basket. Very cute. Very still. TOO still. (+6 embers.)",
+      "Because it is not Crumpet. It is a PILLOW. Wearing a tiny hat. Someone has propped it up with a very small, very neat bow.",
+      KNUT("Uncle Andy swears on his best teaspoon that Crumpet was in bed all night. But if that is a pillow, then WHERE was Crumpet? And where is Uncle Andy's best teaspoon? Come back soon for Chapter 3: The Cheese Cellar Job.")]}]};
+const CHAPTERS=[CH1,CH2];
+const stChap=n=>CHAPTERS.find(c=>c.n===n);
+
+function storySpots(){
+  CHAPTERS.forEach(ch=>{
+    const st0=stCh(ch.n); if(!st0||st0.done) return;
+    const st=Math.min(st0.step||0,ch.spots.length-1);
+    ch.spots.forEach((p,i)=>{ if(i>st) return;
+      addObj(SPR[p.spr],p.cx,p.cy,p.ax,p.ay,p.glow?{glow:[20,24],glowR:36,glowCol:'255,170,60'}:(p.sc?{sc:p.sc}:{}));
+      block([[p.x,p.y]],null,'story:'+ch.n+':'+i);hitArea(p.x,p.y,[[0,-1],[0,1],[-1,0],[1,0],[0,-2],[-1,-1],[1,-1]]);
+    });
+    const p=ch.spots[st];addObj(SPR.stMark,p.cx,p.cy-1.1,12,26,{bob:true,glow:[12,12],glowR:26,glowCol:'255,214,90'});
+  });
+}
+function storyAct(n,i){
+  const ch=stChap(n), c=stCh(n); if(!ch||!c||c.done) return;
+  const st=c.step||0, D=stName(), p=ch.spots[i];
+  if(i<st){ vsay(p.seen); return }
+  if(i>st){ vsay('Not this one yet. Look for the bouncing ! to find the next clue.'); return }
+  const last=i===ch.spots.length-1;
+  if(!last){
+    const look=typeof p.look==='function'?p.look(D):p.look;
+    vsay(look,[{label:p.btn,fn:()=>stPuzzle(p.puz,()=>{
+      stClue(...p.clue);c.step=i+1;saveState();stRefresh();vsay(p.win)})}]);
+  }else{
+    const finish=()=>{stClue(...p.clue);c.done=true;c.doneDays=S.days.length;S.embers+=6;saveState();hud();Audio_.fx('fanfare');stRefresh();stReadPages(p.end(D),()=>stRefresh())};
+    if(p.puz){const look=typeof p.look==='function'?p.look(D):p.look;vsay(look,[{label:p.btn,fn:()=>stPuzzle(p.puz,finish)}])}
+    else finish();
   }
 }
 
 /* ---- the book: chapters and the clue book ---- */
-const CHAPTERS=[CH1];
 function openStory(){
   const s=stSt(); if(!s.seen){s.seen=true;saveState();hud&&hud()}
-  const c1=stCh(1);
-  if(!c1){ stReadPages(CH1.intro,()=>{s.ch[1]={step:0,done:false};saveState();stRefresh();vsay("Chapter 1 has begun! Find the bouncing ! on the island and tap it. Open the Story book any time from the Story button.")}); return }
-  const btns=[];
-  if(!c1.done) btns.push({label:'Chapter 1: '+CH1.title+' (in progress)',fn:()=>vsay("Chapter 1: "+CH1.title+". Look for the bouncing ! on the island and tap it to find the next clue.")});
-  else btns.push({label:'Chapter 1: '+CH1.title+' (finished)',fn:()=>stReadPages(CH1.intro.slice(0,1).concat(["You found the empty tin, the crumb trail, the tiny paw prints and a warm, humming stone. And out in the dark, someone barked."]))});
-  btns.push({label:'Clue Book ('+s.clues.length+')',fn:openClues});
-  btns.push({label:'Close'});
-  let t="Old Knut's Book of Tall Tales.";
-  if(c1.done){ const o=stOpens(2); t+=` Chapter 2: Suspect Number One is being written. It will open in a coming update, after ${STORY_EVERY} practised days.`; }
-  vsay(t,btns);
+  const begin=ch=>stReadPages(ch.intro,()=>{s.ch[ch.n]={step:0,done:false};saveState();stRefresh();vsay("Chapter "+ch.n+" has begun! Find the bouncing ! on the island and tap it. Open the Story book any time from the Story button.")});
+  if(!stCh(1)){ begin(CH1); return }
+  const btns=[]; let note="Old Knut's Book of Tall Tales.";
+  CHAPTERS.forEach(ch=>{
+    const c=stCh(ch.n), o=stOpens(ch.n);
+    if(c&&c.done) btns.push({label:`Chapter ${ch.n}: ${ch.title} (finished)`,fn:()=>stReadPages(ch.intro.slice(0,1).concat(ch.recap||[`Chapter ${ch.n} is finished. Well done, detective.`]))});
+    else if(c) btns.push({label:`Chapter ${ch.n}: ${ch.title} (in progress)`,fn:()=>vsay(`Chapter ${ch.n}: ${ch.title}. Look for the bouncing ! on the island and tap it to find the next clue.`)});
+    else if(o.open) btns.push({label:`Chapter ${ch.n}: ${ch.title} (new!)`,fn:()=>begin(ch)});
+    else if(o.left!=null) note+=` Chapter ${ch.n} opens after ${o.left} more practised day${o.left===1?'':'s'}.`;
+  });
+  const lastDone=CHAPTERS.filter(ch=>stDone(ch.n)).length;
+  if(lastDone===CHAPTERS.length) note+=` The next chapter is being written and will arrive in a coming update.`;
+  btns.push({label:'Clue Book ('+s.clues.length+')',fn:openClues});btns.push({label:'Close'});
+  vsay(note,btns);
 }
 function openClues(){
   const s=stSt();
@@ -136,4 +202,5 @@ function openClues(){
    <p class="note">Every clue you have found as the island's detective.</p>
    ${s.clues.map((c,i)=>`<div class="box"><h3>${i+1}. ${esc(c.title)}</h3><p class="note">${esc(c.text)}</p></div>`).join('')}`);
 }
-const storyNew=()=>!stSt().seen;
+/* the Story button pulses until the book is opened, and again whenever a new chapter has opened but not been started */
+const storyNew=()=>{const s=stSt();if(!s.seen)return true;return CHAPTERS.some(ch=>!stCh(ch.n)&&stOpens(ch.n).open)};

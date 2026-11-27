@@ -75,7 +75,8 @@ function buildObjects(){
   if(own('tower')){addObj(SPR.tower,36,9.95,60,176,{});block([[35,9],[36,9]],MSG.tower,'use:tower');hitArea(35,9,[[0,-1],[0,-2],[-1,0]]);hitArea(36,9,[[0,-1],[0,-2],[1,0],[0,1]])}else plot('tower');
   buildSite();
   storySpots();
-  if(own('garden'))addObj(SPR.garden,16.4,16.7,48,34,{under:true});else plot('garden');
+  farmBuild();
+  if(own('garden')){addObj(SPR.garden,16.4,16.7,48,34,{under:true});block([[16,16]],'Flowers hum with bees.','use:garden');hitArea(16,16,[[0,-1],[-1,0],[1,0],[0,1]])}else plot('garden');
   if(own('fountain')){addObj(SPR.fountain,19.5,16.2,45,76,{sc:.9});block([[19,15]],"A little fountain. The water sparkles.",'use:fountain');hitArea(19,15,[[0,-1],[-1,0],[1,0],[0,1]])}else plot('fountain');
   if(own('windmill')){addObj(SPR.windmill,6.6,15.5,50,150,{sc:.9});block([[6,15]],"The windmill creaks round and round.")}else plot('windmill');
   { const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
@@ -168,7 +169,9 @@ function runAct(a){
   if(a==='use:jetty')return fishJetty();
   if(a==='use:lighthouse')return useLighthouse();
   if(a==='use:longship')return useLongship();
-  if(a.startsWith('story:'))return storyAct(+a.slice(6));
+  if(a.startsWith('story:')){const [,n,i]=a.split(':');return storyAct(+n,+i)}
+  if(a==='farm')return farmAct();
+  if(a==='use:garden')return gardenAct();
   if(a.startsWith('use:'))return useItem(a.slice(4));
   if(a==='nest')return openNest();
   if(a==='stall')return openShop();
