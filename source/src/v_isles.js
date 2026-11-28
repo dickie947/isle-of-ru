@@ -52,7 +52,7 @@ function buildIsle(){
   (z.stones||[]).forEach(([x,y,t],k)=>{addObj(SPR.stone[z.id==='beach'?1:z.id==='lava'?2:0],x,y,26,70,{glow:[26,44],glowCol:z.id==='lava'?'255,150,70':z.id==='beach'?'255,220,110':'150,200,255'});block([[Math.floor(x),Math.floor(y-.3)]],t)});
   if(z.chest){const ch=zoneState(z.id).chest;
   addObj(ch?SPR.chestOpen:SPR.chest,z.chest.x,z.chest.y,26,40,{});block([[Math.floor(z.chest.x),Math.floor(z.chest.y-.3)]],null,'chest');}
-  z.build();
+  z.build();castBuild(z.id);
 }
 function openChest(){
   const z=Z,zs=zoneState(z.id);

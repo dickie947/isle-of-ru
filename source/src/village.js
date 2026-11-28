@@ -180,7 +180,7 @@ function runAct(a){
   if(a==='clothes')return openClothes();
   if(a==='chest')return openChest();
   if(a==='famchest')return chestTap();
-  if(a.startsWith('vill:')){const v=VILLAGERS.find(x=>x.id===a.slice(5));if(v)talkVillager(v);return}
+  if(a.startsWith('vill:')){const v=VILLAGERS.find(x=>x.id===a.slice(5))||CAST.find(x=>x.id===a.slice(5));if(v)talkVillager(v);return}
   if(a.startsWith('dig:')){digMound(+a.slice(4));return}
   if(a==='millie'){const mi=millieToday(),sp=MILLIE_SPOTS[mi.spot];
     if(mi.rescued){vsay(pick(["Millie purrs and rubs against your leg.","Millie is washing her paw and pretending nothing happened.","Millie stares at you, then at the fish stall. She wants a fish.","Millie is eyeing the lantern. This will end badly."]),[{label:'Stroke her',fn:()=>Audio_.fx('pop')}].concat(S.day.trained&&!(S.day.bld&&S.day.bld.hide)?[{label:'Play hide and seek',fn:()=>{travelTo('green').then(()=>{if(Z.id!=='green')return;const[x,y]=nearestWalkable(21.5,19.6);P.x=x;P.y=y;P.dir='u';Dg.x=x-1;Dg.y=y;Dg.trail=[];VS.pos={x:P.x,y:P.y,dir:P.dir};cam.init=false;setTimeout(()=>{if(Z.id==='green'&&!VS.traveling&&typeof hsBoard==='function')hsBoard()},1700)})}}]:[]));return}
@@ -299,7 +299,7 @@ function talkVillager(v){
   if(hasQ)btns.push({label:v.quest.btn,fn:()=>vsay(v.quest.story,[{label:"Let's do it",fn:()=>runQuest(v)},{label:'Later'}])});
   else btns.push({label:'Any tips?',fn:()=>vsay(v.tip,[{label:'Thanks'}])});
   btns.push({label:'Bye'});
-  vsay(`${v.name} the ${v.role}: ${text}`,btns)}
+  vsay(v.isle?castSay(v,text):`${v.name} the ${v.role}: ${text}`,btns)}
 function runQuest(v){
   const total=v.quest.kinds.length;let step=0,right=0;
   const finish=()=>{const st=villState();st.done.push(v.id);let e=v.quest.embers+(right===total?3:0);S.embers+=e;
@@ -307,7 +307,7 @@ function runQuest(v){
     saveState();buildObjects();hud();Audio_.fx('fanfare');
     vsay(`${v.quest.done} (+${e} embers${right===total?', including 3 for getting every one right first time':''}.)`,[{label:'Thank you',fn:()=>{if(v.id==='sigrun')setTimeout(()=>vsay("Open your dragon's nest to start a skill. Fire breath is the cheapest.",[{label:'OK'}]),200)}}])};
   const next=()=>{if(step>=total){finish();return}
-    const ok=shardQuestion(0,0,{q:wordProb(v.quest.kinds[step]),title:`${v.name}'s problem ${step+1} of ${total}`,bonus:0,intro:'Take your time. Pick the answer.',ok:'Yes!',fail:'We will do it together another time.',okLabel:'Next',skipLabel:'Later',done:(g)=>{if(g)right++;step++;next()}});
+    const ok=shardQuestion(0,0,{q:(v.isle?castProb(v.quest.kinds[step],v):wordProb(v.quest.kinds[step])),title:`${v.name}'s problem ${step+1} of ${total}`,bonus:0,intro:'Take your time. Pick the answer.',ok:'Yes!',fail:'We will do it together another time.',okLabel:'Next',skipLabel:'Later',done:(g)=>{if(g)right++;step++;next()}});
     if(!ok)finish()};
   next()}
 function digMound(n){
